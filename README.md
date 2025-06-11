@@ -21,6 +21,27 @@ This is a minimalist full-stack project template for applications with multi-use
   - **Material UI** for frontend components
   - **Nginx** for serving the frontend
 
+## Run locally
+
+### Configure environmnet variables
+
+Rename `.env.example` to `.env` and set the variables.
+
+### Frontend:
+
+Install node modules: `npm install`
+
+Run development server: `npm start`
+
+Build: `npm build`
+
+### Backend
+
+Install dependencies: `pip install -r requirements.txt`
+
+Run a server: `python -m app.main`
+
+
 ## References
 
 This template is inspired by:
