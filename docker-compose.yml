@@ -23,7 +23,6 @@ services:
       - ./backend/.env # Load backend-specific .env file (variables here override .env if names clash)
     environment:
       # Construct DATABASE_URL using variables from the root .env file
-      # This will override DATABASE_URL if it's also set in ./backend/.env
       DATABASE_URL: postgresql://${PG_USER}:${PG_PASSWORD}@db:5432/${PG_DB}
     depends_on:
       - db
