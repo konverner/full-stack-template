@@ -7,6 +7,7 @@ import LoginPage from './pages/auth/login.js';
 import RegisterPage from './pages/auth/register.js';
 import ProfilePage from './pages/auth/profile.js';
 import ItemsDetailsPage from './pages/items/ItemsDetailsPage.js';
+import CreateItemPage from './pages/items/Create.js';
 
 // Basic theme for Material UI
 const theme = createTheme({
@@ -40,10 +41,11 @@ function App() {
                 <Routes>
                     <Route path="/" element={<IndexPage />} />
                     <Route path="/items" element={<ItemsTablePage />} />
+                    <Route path="/items/create" element={<CreateItemPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/items/:itemId" element={< ItemsDetailsPage />} />
+                    <Route path="/items/:itemSlug" element={< ItemsDetailsPage />} />
                 </Routes>
             </main>
         </ThemeProvider>

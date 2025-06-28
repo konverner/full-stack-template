@@ -61,16 +61,29 @@ const Header = () => {
           </MuiLink>
 
           {/* Site Navigation (center) */}
-          <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'center' }}> {/* Preserving original class */}
+          <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'center' }}>
             <Button
               component={NavLink}
               to="/items"
               color="inherit"
-              className="nav-link" // Preserving original class, active state handled by NavLink
+              className="nav-link"
               style={activeLinkStyle}
             >
               Items
             </Button>
+            {isAuthenticated && (
+              <Button
+                component={RouterLink}
+                to="/items/create"
+                color="primary"
+                variant="outlined"
+                className="nav-link"
+                id="nav-add-item-btn"
+                sx={{ ml: 2 }}
+              >
+                Add Item
+              </Button>
+            )}
           </Box>
 
           {/* Auth Navigation (right) */}
