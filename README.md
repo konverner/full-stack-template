@@ -19,7 +19,7 @@ This is a minimalist full-stack project template for applications with multi-use
 
 🚀 **React** for the frontend
   - **Material UI** for frontend components
-  - **Nginx** for serving the frontend
+  - **Nginx** for serving the frontend and reverse proxy
 
 ## Run locally
 
