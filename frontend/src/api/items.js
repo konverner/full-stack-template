@@ -6,14 +6,13 @@ import { fetchApi } from './api.js'; // Import the fetchApi function
 // --- Specific API Functions ---
 
 /**
- * Gets details for a specific item by its ID.
- * @param {string|number} itemId - The ID of the item.
+ * Gets details for a specific item by its slug.
+ * @param {string} itemSlug - The slug of the item.
  * @returns {Promise<object>} - The item details object.
  */
-export async function getItemDetails(itemId) {
-    return fetchApi(`/items/${itemId}`, { method: 'GET' }); // Assuming public endpoint
+export async function getItemDetails(itemSlug) {
+    return fetchApi(`/items/${itemSlug}`, { method: 'GET' }); // Assuming public endpoint
 }
-
 
 /**
  * Lists all users (admin function)
@@ -34,6 +33,18 @@ export async function adminListUsers(params = { skip: 0, limit: 50 }) {
 export async function fetchItems(params = {}) {
     const query = new URLSearchParams(params).toString();
     return fetchApi(`/items/?${query}`, { method: 'GET' });
+}
+
+/**
+ * Creates a new item.
+ * @param {object} itemData - The data for the new item.
+ * @returns {Promise<object>} - The created item object.
+ */
+export async function createItem(itemData) {
+    return fetchApi('/items/', {
+        method: 'POST',
+        body: JSON.stringify(itemData),
+    }, true); // Requires authentication
 }
 
 

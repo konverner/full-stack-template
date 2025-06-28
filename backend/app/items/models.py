@@ -17,6 +17,7 @@ class Item(Base, TimeStampMixin):
 
     # common fields moved from Exchange / defined for Book
     name = Column(String(255), nullable=False, index=True)
+    slug = Column(String(255), nullable=False, unique=True, index=True)
     description = Column(Text, nullable=True)
     image_url = Column(String(512), nullable=True)
     website_url = Column(String(512), nullable=True)

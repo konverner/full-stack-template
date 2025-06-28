@@ -142,7 +142,7 @@ const ItemsTable = () => {
                   <TableRow
                     hover
                     key={item.id}
-                    onClick={(event) => handleRowClick(event, item.id)}
+                    onClick={(event) => handleRowClick(event, item.slug)}
                     sx={{ cursor: 'pointer' }}
                   >
                     {/* Index */}
@@ -182,7 +182,7 @@ const ItemsTable = () => {
 
                     {/* Owner */}
                     <TableCell align="center">
-                        <MuiLink color='secondary' component={RouterLink} to={`/items/${item.id}`} onClick={(e) => e.stopPropagation()}>
+                        <MuiLink color='secondary' component={RouterLink} to={`/items/${item.slug}`} onClick={(e) => e.stopPropagation()}>
                         {item.owner.name || 'N/A'}
                         </MuiLink>
                     </TableCell>
@@ -191,7 +191,7 @@ const ItemsTable = () => {
                     <TableCell align="center">
                       <Button
                         component={RouterLink}
-                        to={`/items/${item.id}`}
+                        to={`/items/${item.slug}`}
                         variant="outlined"
                         size="small"
                         onClick={(e) => e.stopPropagation()}

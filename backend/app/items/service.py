@@ -1,8 +1,9 @@
-# app/item/service.py
 from sqlalchemy.orm import Session
 from sqlalchemy import select, asc, desc
 from typing import Optional, List
 import logging
+from slugify import slugify
+
 
 from app.items import models as item_models
 from app.items import schemas as item_schemas
@@ -11,6 +12,23 @@ from app.items import schemas as item_schemas
 logger = logging.getLogger(__name__)
 
 class ItemService:
+
+    def _ensure_unique_slug(self, db: Session, base_slug: str, item_id: Optional[int] = None) -> str:
+        """Ensure slug is unique by appending numbers if necessary."""
+        slug = base_slug
+        counter = 1
+        
+        while True:
+            query = db.query(item_models.Item).filter(item_models.Item.slug == slug)
+            if item_id:
+                query = query.filter(item_models.Item.id != item_id)
+            
+            if not query.first():
+                return slug
+            
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
     def get_item_by_id(self, db: Session, item_id: int, options: List = None) -> Optional[item_models.Item]:
         """Retrieve a single item by its ID."""
         logger.info(f"Retrieving item with id {item_id}.")
@@ -19,6 +37,16 @@ class ItemService:
             query = query.options(*options)
         item = query.filter(item_models.Item.id == item_id).first()
         logger.info(f"Item with id {item_id} {'found' if item else 'not found'}.")
+        return item
+    
+    def get_item_by_slug(self, db: Session, item_slug: str, options: List = None) -> Optional[item_models.Item]:
+        """Retrieve a single item by its slug."""
+        logger.info(f"Retrieving item with slug '{item_slug}'.")
+        query = db.query(item_models.Item)
+        if options:
+            query = query.options(*options)
+        item = query.filter(item_models.Item.slug == item_slug).first()
+        logger.info(f"Item with slug '{item_slug}' {'found' if item else 'not found'}.")
         return item
 
     def list_items(
@@ -84,7 +112,14 @@ class ItemService:
 
     def create_item(self, db: Session, item_in: item_schemas.ItemCreate, owner_id: Optional[int] = None) -> item_models.Item:
         """Create a new item."""
-        item = item_models.Item(**item_in.dict(), owner_id=owner_id)
+        item_data = item_in.dict()
+        
+        # Generate slug if not provided
+        if not item_data.get('slug'):
+            base_slug = slugify(item_data['name'])
+            item_data['slug'] = self._ensure_unique_slug(db, base_slug)
+        
+        item = item_models.Item(**item_data, owner_id=owner_id)
         db.add(item)
         db.commit()
         db.refresh(item)
@@ -92,7 +127,18 @@ class ItemService:
 
     def update_item(self, db: Session, item: item_models.Item, item_in: item_schemas.ItemUpdate) -> item_models.Item:
         """Update an existing item."""
-        for field, value in item_in.dict(exclude_unset=True).items():
+        update_data = item_in.dict(exclude_unset=True)
+        
+        # Handle slug generation/update
+        if 'name' in update_data and 'slug' not in update_data:
+            # Name changed but no slug provided - regenerate from name
+            base_slug = self._generate_slug(update_data['name'])
+            update_data['slug'] = self._ensure_unique_slug(db, base_slug, item.id)
+        elif 'slug' in update_data:
+            # Slug provided - ensure it's unique
+            update_data['slug'] = self._ensure_unique_slug(db, update_data['slug'], item.id)
+        
+        for field, value in update_data.items():
             setattr(item, field, value)
         db.commit()
         db.refresh(item)

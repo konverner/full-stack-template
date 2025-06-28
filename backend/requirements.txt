@@ -6,6 +6,7 @@ uvicorn[standard]==0.30.1
 sqlalchemy[asyncio]==2.0.31
 psycopg==3.1.9
 alembic==1.13.2
+python-slugify==8.0.4
 
 # Data Validation & Settings
 pydantic[email]==2.8.2

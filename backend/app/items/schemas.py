@@ -1,21 +1,37 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional
+import re
 from app.auth.schemas import UserRead  # add this import
 
 class ItemBase(BaseModel):
     name: str
+    slug: Optional[str] = None
     description: Optional[str] = None
     image_url: Optional[str] = None
     website_url: Optional[str] = None
+
+    @validator('slug')
+    def validate_slug(cls, v):
+        if v is not None:
+            # Check if slug matches URL-friendly pattern
+            if not re.match(r'^[a-z0-9]+(?:-[a-z0-9]+)*$', v):
+                raise ValueError('Slug must contain only lowercase letters, numbers, and hyphens. Cannot start or end with hyphens.')
+            # Check length
+            if len(v) > 255:
+                raise ValueError('Slug cannot exceed 255 characters')
+            if len(v) < 1:
+                raise ValueError('Slug cannot be empty')
+        return v
 
 class ItemCreate(ItemBase):
     pass
 
 class ItemUpdate(ItemBase):
-    pass
+    name: Optional[str] = None
 
 class ItemRead(ItemBase):
     id: int
+    slug: str
     average_rating: Optional[float] = None
     owner: Optional[UserRead] = None  # add this field
 
