@@ -20,7 +20,6 @@ services:
       - "8000:8000"
     env_file:
       - ./.env # Load variables from the root .env file
-      - ./backend/.env # Load backend-specific .env file (variables here override .env if names clash)
     environment:
       # Construct DATABASE_URL using variables from the root .env file
       DATABASE_URL: postgresql://${PG_USER}:${PG_PASSWORD}@db:5432/${PG_DB}
