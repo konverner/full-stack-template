@@ -3,37 +3,41 @@ import React from 'react';
 import { Box, Typography, Grid, Paper, Avatar, Rating, Link, Chip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { Container } from '@mui/system';
 
 const ItemDetails = ({ item }) => {
     if (!item) return null;
 
     return (
-        <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
-            <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-                <Grid item sx={{ mr: 2 }}> {/* Image */}
-                    <Avatar src={item.image_url || '/assets/images/image-placeholder.png'} alt={`${item.name} Image`} sx={{ width: 56, height: 56 }} variant="rounded" />
-                </Grid>
-
-                {/* Name */}
-                <Grid item xs={10} sm md={4}>
-                    <Typography variant="h4">{item.name}</Typography>
-                </Grid>
-
-                {/* Rating */}
-                {item.average_rating !== null && typeof item.average_rating !== 'undefined' && (
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Rating value={parseFloat(item.average_rating) || 0} precision={0.1} readOnly />
-                        {item.total_rating_count !== null && typeof item.total_rating_count !== 'undefined' && (
-                            <Typography variant='caption' color="text.secondary" sx={{ ml: 1 }}>
-                                ({item.total_rating_count} {item.total_rating_count === 1 ? 'review' : 'reviews'})
-                            </Typography>
-                        )}
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+            <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+                <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                    <Grid item sx={{ mr: 2 }}> {/* Image */}
+                        <Avatar src={item.image_url || '/assets/images/image-placeholder.png'} alt={`${item.name} Image`} sx={{ width: 56, height: 56 }} variant="rounded" />
                     </Grid>
-                )}
-            </Grid>
+
+                    {/* Name */}
+                    <Grid item xs={10} sm md={4}>
+                        <Typography variant="h4">{item.name}</Typography>
+                    </Grid>
+
+                    {/* Rating */}
+                    {item.average_rating !== null && typeof item.average_rating !== 'undefined' && (
+                        <Grid item xs={12} sm={6} md={3}>
+                            <Rating value={parseFloat(item.average_rating) || 0} precision={0.1} readOnly />
+                            {item.total_rating_count !== null && typeof item.total_rating_count !== 'undefined' && (
+                                <Typography variant='caption' color="text.secondary" sx={{ ml: 1 }}>
+                                    ({item.total_rating_count} {item.total_rating_count === 1 ? 'review' : 'reviews'})
+                                </Typography>
+                            )}
+                        </Grid>
+                    )}
+                </Grid>
+
+            </Paper>
 
             {item.description && (
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, mt: 3 }}>
                     <Typography variant="h6" gutterBottom>Description</Typography>
                     <Typography variant="body1" dangerouslySetInnerHTML={{ __html: item.description }} />
                 </Box>
@@ -85,7 +89,8 @@ const ItemDetails = ({ item }) => {
                     </Grid>
                 )}
             </Grid>
-        </Paper>
+        </Container>
+        
     );
 };
 

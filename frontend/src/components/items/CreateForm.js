@@ -38,7 +38,7 @@ const CreateForm = () => {
 
         try {
             const newItem = await createItem(dataToSubmit);
-            navigate(`/items/${newItem.id}`);
+            navigate(`/items/${newItem.slug}`);
         } catch (err) {
             setError(err.message || 'An error occurred while creating the item.');
             console.error(err);

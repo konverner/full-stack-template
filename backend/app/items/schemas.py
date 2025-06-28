@@ -36,10 +36,10 @@ class ItemRead(ItemBase):
     owner: Optional[UserRead] = None  # add this field
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ItemReadDetails(ItemRead):
-    avaliable: Optional[bool] = None
+    available: Optional[bool] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
@@ -55,7 +55,7 @@ class ItemSort(BaseModel):
     direction: str  # 'asc' or 'desc'
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "field": "name",
                 "direction": "asc"
@@ -67,8 +67,8 @@ class ItemListResponse(BaseModel):
     total: int
 
     class Config:
-        orm_mode = True
-        schema_extra = {
+        from_attributes = True
+        json_schema_extra = {
             "example": {
                 "items": [
                     {

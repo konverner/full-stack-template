@@ -6,7 +6,7 @@ import Footer from '../../components/common/Footer';
 
 const CreateItemPage = () => {
     return (
-        <>
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
             <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
                 <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
@@ -21,7 +21,7 @@ const CreateItemPage = () => {
                 <CreateForm />
             </Container>
             <Footer />
-        </>
+        </Box>
     );
 };
 

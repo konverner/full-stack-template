@@ -2,11 +2,11 @@ import React from 'react';
 import { Routes, Route } from 'react-router';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import IndexPage from './pages/index.js';
-import ItemsTablePage from './pages/items/ItemsTablePage.js';
+import ItemsTablePage from './pages/items/Table.js';
 import LoginPage from './pages/auth/login.js';
 import RegisterPage from './pages/auth/register.js';
 import ProfilePage from './pages/auth/profile.js';
-import ItemsDetailsPage from './pages/items/ItemsDetailsPage.js';
+import ItemsDetailsPage from './pages/items/Details.js';
 import CreateItemPage from './pages/items/Create.js';
 
 // Basic theme for Material UI

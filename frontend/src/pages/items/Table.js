@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { Container, Typography, Box } from '@mui/material';
-import ItemsTable from '../../components/items/ItemsTable';
+import ItemsTable from '../../components/items/Table';
 
 const ItemsTablePage = () => {
   return (

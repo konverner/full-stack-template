@@ -61,7 +61,7 @@ const Header = () => {
           </MuiLink>
 
           {/* Site Navigation (center) */}
-          <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'center' }}>
+          <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'left' }}>
             <Button
               component={NavLink}
               to="/items"
@@ -71,19 +71,6 @@ const Header = () => {
             >
               Items
             </Button>
-            {isAuthenticated && (
-              <Button
-                component={RouterLink}
-                to="/items/create"
-                color="primary"
-                variant="outlined"
-                className="nav-link"
-                id="nav-add-item-btn"
-                sx={{ ml: 2 }}
-              >
-                Add Item
-              </Button>
-            )}
           </Box>
 
           {/* Auth Navigation (right) */}
@@ -107,6 +94,15 @@ const Header = () => {
               </>
             ) : (
               <>
+                <Button
+                  component={RouterLink}
+                  to="/items/create"
+                  color="inherit"
+                  className="nav-link"
+                  id="nav-add-item-btn"
+                >
+                  Add Item
+                </Button>
                 <Button
                   component={RouterLink}
                   to="/profile" 
