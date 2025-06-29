@@ -1,4 +1,3 @@
-# app/main.py
 from fastapi import FastAPI
 from fastapi import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,7 +15,9 @@ else:
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.PROJECT_VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json" # Customize OpenAPI path
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",  # Customize OpenAPI path
+    docs_url=f"{settings.API_V1_STR}/docs",  # Customize Swagger UI path
+    redoc_url=f"{settings.API_V1_STR}/redoc",  # Customize ReDoc path
 )
 
 # --- Middleware ---
@@ -52,8 +53,8 @@ async def read_root():
     return {
         "message": f"Welcome to the {settings.PROJECT_NAME} API",
         "version": settings.PROJECT_VERSION,
-        "docs_url": "/docs",
-        "redoc_url": "/redoc"
+        "docs_url": f"{settings.API_V1_STR}/docs",
+        "redoc_url": f"{settings.API_V1_STR}/redoc"
         }
     
     

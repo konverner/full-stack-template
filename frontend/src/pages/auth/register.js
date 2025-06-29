@@ -3,7 +3,7 @@ import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
 import { handleRegister } from '../../api/auth'; // Assuming handleRegister is updated
-// import { useNavigate } from 'react-router'; // Uncomment if using React Router
+import { useNavigate } from 'react-router'; // Uncomment if using React Router
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +11,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  // const navigate = useNavigate(); // Uncomment if using React Router
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,12 +19,10 @@ const RegisterPage = () => {
     setSuccessMessage(null);
     try {
       const userProfile = await handleRegister(email, name, password);
-      setSuccessMessage(`Registration successful for ${userProfile.name}! You can now log in.`);
-      // Optionally redirect to login page or clear form
-      // navigate('/login'); // Uncomment if using React Router and want to redirect
-      setEmail('');
-      setNickname('');
-      setPassword('');
+      setSuccessMessage(`Registration successful for ${userProfile.name}! Redirecting to login...`);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
     }

@@ -3,6 +3,8 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   TableSortLabel, TablePagination, CircularProgress, Typography, Box, Button, Link as MuiLink, Avatar
 } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DoneIcon from '@mui/icons-material/Done';
 import { Link as RouterLink, useNavigate } from 'react-router';
 import { fetchItems as fetchItemsAPI } from '../../api/items'; // <-- Use API module
 
@@ -12,7 +14,7 @@ const headCells = [
   { id: 'index', numeric: true, disablePadding: false, label: '#', sortable: false, align: 'center' },
   { id: 'image', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
   { id: 'name', numeric: false, disablePadding: false, label: 'Name', sortable: true, align: 'center' },
-  { id: 'rating', numeric: true, disablePadding: false, label: 'Rating', sortable: true, align: 'center' },
+  { id: 'available', numeric: false, disablePadding: false, label: 'Available', sortable: true, align: 'center' },
   { id: 'creator', numeric: true, disablePadding: false, label: 'Creator', sortable: true, align: 'center' },
   { id: 'actions', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
 ];
@@ -173,10 +175,10 @@ const ItemsTable = () => {
                       </Typography>
                     </TableCell>
 
-                    {/* Rating */}
+                    {/* Availability */}
                     <TableCell align="center">
-                        <Box component="span" sx={{ fontWeight: 'bold', color: 'goldenrod' }}>
-                        ★ {formattedRating}
+                        <Box component="span">
+                        {item.available ? <DoneIcon /> : <CancelIcon />}
                         </Box>
                     </TableCell>
 

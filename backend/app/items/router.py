@@ -1,13 +1,13 @@
-# app/item/router.py
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload
 
 from app.database.core import get_db
 from app.items import schemas as item_schemas
-from app.items import service as item_service
+from app.items.service import item_service
 from app.dependencies import get_current_active_user
 from app.auth.models import User
-from app.items.models import Item  # add this import
+from app.items.models import Item
 
 router = APIRouter(
     tags=["Items"],
@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=item_schemas.ItemListResponse)
-async def list_items(  # Changed async async def to async def
+async def list_items(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     name: str = Query(None),
@@ -37,7 +37,7 @@ async def list_items(  # Changed async async def to async def
         field=sort_field,
         direction=sort_direction
     )
-    items = item_service.item_service.list_items(  # Removed await
+    items = item_service.list_items(
         db=db,
         skip=skip,
         limit=limit,
@@ -56,8 +56,8 @@ async def create_item(
     """
     Create a new item.
     """
-    item = item_service.item_service.create_item(db=db, item_in=item_in, owner_id=current_user.id) # Removed await
-    db.refresh(item, attribute_names=["owner"]) # Removed await
+    item = item_service.create_item(db=db, item_in=item_in, owner_id=current_user.id) 
+    db.refresh(item, attribute_names=["owner"]) 
     return item
 
 @router.get("/{item_slug}", response_model=item_schemas.ItemRead)
@@ -68,7 +68,7 @@ async def get_item_by_slug(
     """
     Get a specific item by its slug.
     """
-    item = item_service.item_service.get_item_by_slug(db=db, item_slug=item_slug, options=[selectinload(Item.owner)]) # Removed await
+    item = item_service.get_item_by_slug(db=db, item_slug=item_slug, options=[selectinload(Item.owner)]) 
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     return item
@@ -83,13 +83,13 @@ async def update_item(
     """
     Update an item.
     """
-    item = item_service.item_service.get_item_by_id(db=db, item_id=item_id, options=[selectinload(Item.owner)]) # Removed await
+    item = item_service.get_item_by_id(db=db, item_id=item_id, options=[selectinload(Item.owner)]) 
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     if item.owner_id != current_user.id and not current_user.is_superuser:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
-    updated_item = item_service.item_service.update_item(db=db, item=item, item_in=item_in) # Removed await
-    db.refresh(updated_item, attribute_names=["owner"]) # Removed await
+    updated_item = item_service.update_item(db=db, item=item, item_in=item_in) 
+    db.refresh(updated_item, attribute_names=["owner"]) 
     return updated_item
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -101,10 +101,10 @@ async def delete_item(
     """
     Delete an item.
     """
-    item = item_service.item_service.get_item_by_id(db=db, item_id=item_id, options=[selectinload(Item.owner)]) # Removed await
+    item = item_service.get_item_by_id(db=db, item_id=item_id, options=[selectinload(Item.owner)]) 
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     if item.owner_id != current_user.id and not current_user.is_superuser:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
-    item_service.item_service.delete_item(db=db, item=item) # Removed await
+    item_service.delete_item(db=db, item=item) 
     return None

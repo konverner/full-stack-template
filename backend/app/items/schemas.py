@@ -1,7 +1,9 @@
 from pydantic import BaseModel, validator
 from typing import Optional
 import re
-from app.auth.schemas import UserRead  # add this import
+from datetime import datetime
+from app.auth.schemas import UserRead
+
 
 class ItemBase(BaseModel):
     name: str
@@ -32,16 +34,19 @@ class ItemUpdate(ItemBase):
 class ItemRead(ItemBase):
     id: int
     slug: str
+    available: Optional[bool] = None
     average_rating: Optional[float] = None
-    owner: Optional[UserRead] = None  # add this field
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    owner: Optional[UserRead] = None
 
     class Config:
         from_attributes = True
 
 class ItemReadDetails(ItemRead):
     available: Optional[bool] = None
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 # --- Filtering and Sorting ---
 

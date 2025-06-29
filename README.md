@@ -8,7 +8,7 @@ This is a minimalist full-stack project template for applications with multi-use
 - Users have an avatar, name, email, and password.
 - Users can create items and rate items created by other users.
 - Items are displayed in a table on the `/items` page.
-- Item details can be viewed on the `/items/{itemId}` page.
+- Item details can be viewed on the `/items/{itemSlug}` page.
 
 ## Technology Stack
 

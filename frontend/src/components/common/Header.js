@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Link as MuiLink, Container } from '@mui/material';
 import { Link as RouterLink, NavLink } from 'react-router';
 import { useNavigate } from 'react-router';
-import { isLoggedIn, getUserProfileData, handleLogout as authHandleLogout } from '../../api/auth'; // Added for auth
+import { isLoggedIn, getUserProfileData, handleLogout as authHandleLogout } from '../../api/auth';
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,54 +14,44 @@ const Header = () => {
     setIsAuthenticated(authStatus);
     if (authStatus) {
       const userProfile = getUserProfileData();
-      // Assuming userProfile has an 'is_admin' boolean field or similar
-      // e.g., userProfile.role === 'admin' or userProfile.roles.includes('admin')
       setIsAdmin(userProfile?.is_admin === true); 
     } else {
       setIsAdmin(false);
     }
-  }, []); // Runs on component mount. Re-run if dependencies change or via global state.
+  }, []);
 
   const onLogoutClick = () => {
-    authHandleLogout(); // Calls the original logout logic from auth.js
+    authHandleLogout();
     setIsAuthenticated(false);
     setIsAdmin(false);
-    navigate('/login'); // Navigate to login page using React Router
+    navigate('/login');
   };
 
-  const activeLinkStyle = ({ isActive }) => {
-    return {
-      fontWeight: isActive ? 'bold' : 'normal',
-      // Add other active styles if needed, e.g., textDecoration: 'underline'
-    };
-  };
+  const activeLinkStyle = ({ isActive }) => ({
+    fontWeight: isActive ? 'bold' : 'normal',
+  });
 
   return (
-    <AppBar position="static" className="main-header"> {/* Preserving original class */}
-      <Container maxWidth="lg"> {/* Mimics <div class="container"> behavior */}
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}> {/* disableGutters is recommended when Toolbar is a direct child of Container */}
-          
-          {/* Logo Title (left) */}
+    <AppBar position="static" className="main-header">
+      <Container maxWidth="lg">
+        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <MuiLink
             component={RouterLink}
             to="/"
             className="logo"
             sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
-            >
+          >
             <Box
               component="img"
-              // Ensure this path is correct for your React project (e.g., in public folder or imported)
-              src="../../assets/images/logo.png" 
+              src="../../assets/images/logo.png"
               alt="Full-stack Template Logo"
-              sx={{ height: 40, mr: 1 }} // mr is margin-right
+              sx={{ height: 40, mr: 1 }}
             />
-            <Typography variant="h6" component="div" className="logo-text"> {/* Preserving original class */}
+            <Typography variant="h6" component="div" className="logo-text">
               Full-Stack Template
             </Typography>
           </MuiLink>
-
-          {/* Site Navigation (center) */}
-          <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'left' }}>
+          <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'left', ml: 2 }}>
             <Button
               component={NavLink}
               to="/items"
@@ -72,22 +62,17 @@ const Header = () => {
               Items
             </Button>
           </Box>
-
-          {/* Auth Navigation (right) */}
-          <Box component="nav" id="main-nav" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}> {/* Preserving original id */}
+          <Box component="nav" id="main-nav" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {!isAuthenticated ? (
               <>
-                {/* The "Sign Up" button was commented out in the original HTML */}
-                {/* <Button component={RouterLink} to="/register" variant="contained" color="primary" size="small" id="nav-register-btn">Sign Up</Button> */}
-                
                 <Button
                   component={RouterLink}
-                  to="/login" 
-                  variant="contained" 
-                  color="secondary" 
+                  to="/login"
+                  variant="contained"
+                  color="secondary"
                   size="small"
-                  id="nav-login-btn" 
-                  sx={{ color: 'white' }} 
+                  id="nav-login-btn"
+                  sx={{ color: 'white' }}
                 >
                   Sign In
                 </Button>
@@ -105,29 +90,29 @@ const Header = () => {
                 </Button>
                 <Button
                   component={RouterLink}
-                  to="/profile" 
+                  to="/profile"
                   color="inherit"
-                  className="nav-link" 
-                  id="nav-profile-link" 
+                  className="nav-link"
+                  id="nav-profile-link"
                 >
                   My Profile
                 </Button>
                 {isAdmin && (
                   <Button
                     component={RouterLink}
-                    to="/admin" 
+                    to="/admin"
                     color="inherit"
-                    className="nav-link" 
-                    id="nav-admin-link" 
+                    className="nav-link"
+                    id="nav-admin-link"
                   >
                     Admin Panel
                   </Button>
                 )}
                 <Button
-                  variant="contained" 
-                  color="secondary" 
-                  id="nav-logout-btn" 
-                  onClick={onLogoutClick} 
+                  variant="contained"
+                  color="secondary"
+                  id="nav-logout-btn"
+                  onClick={onLogoutClick}
                 >
                   Sign Out
                 </Button>

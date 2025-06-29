@@ -1,4 +1,3 @@
-// filepath: /home/konstantin/workspace/crypta-info-react/frontend/src/components/ExchangeDetails/ExchangeInfo.js
 import React from 'react';
 import { Box, Typography, Grid, Paper, Avatar, Rating, Link, Chip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -21,17 +20,17 @@ const ItemDetails = ({ item }) => {
                         <Typography variant="h4">{item.name}</Typography>
                     </Grid>
 
-                    {/* Rating */}
-                    {item.average_rating !== null && typeof item.average_rating !== 'undefined' && (
-                        <Grid item xs={12} sm={6} md={3}>
-                            <Rating value={parseFloat(item.average_rating) || 0} precision={0.1} readOnly />
-                            {item.total_rating_count !== null && typeof item.total_rating_count !== 'undefined' && (
-                                <Typography variant='caption' color="text.secondary" sx={{ ml: 1 }}>
-                                    ({item.total_rating_count} {item.total_rating_count === 1 ? 'review' : 'reviews'})
-                                </Typography>
-                            )}
-                        </Grid>
-                    )}
+                    {/* Availability */}
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Typography variant="h6">Availability</Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            {item.available ? <DoneIcon color="success" /> : <CancelIcon color="error" />}
+                            <Typography variant="body2" sx={{ ml: 1 }}>
+                                {item.available ? 'Available' : 'Not Available'}
+                            </Typography>
+                        </Box>
+                    </Grid>
+
                 </Grid>
 
             </Paper>
@@ -54,7 +53,6 @@ const ItemDetails = ({ item }) => {
                         )}
                         {typeof item.available === 'boolean' && (
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                <Typography variant="body2" sx={{ mr: 1 }}>Available:</Typography>
                                 {item.available ? <CheckCircleIcon color="success" /> : <CancelIcon color="error" />}
                             </Box>
                         )}

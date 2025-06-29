@@ -62,9 +62,10 @@ const UserProfilePage = () => {
                                 <Typography><strong>Name:</strong> {userProfile.name}</Typography>
                                 <Typography><strong>Email:</strong> {userProfile.email}</Typography>
                                 <Typography><strong>Role:</strong> {userProfile.role || "User"}</Typography>
+                                <Typography><strong>Joined:</strong> {new Date(userProfile.created_at).toLocaleDateString()}</Typography>
                             </>
                         ) : (
-                            <Typography>Не удалось загрузить профиль пользователя.</Typography>
+                            <Typography>An error occurred while fetching user profile data.</Typography>
                         )}
                     </Paper>
                 </Container>
