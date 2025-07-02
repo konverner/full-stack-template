@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:13-alpine
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
@@ -10,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
     ports:
-      - "5432:5432" # Optional: if you need to connect to DB from host machine
+      - "5432:5432"
 
   backend:
     build:
@@ -19,15 +20,11 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./.env # Load variables from the root .env file
+      - ./.env
     environment:
-      # Construct DATABASE_URL using variables from the root .env file
       DATABASE_URL: postgresql://${PG_USER}:${PG_PASSWORD}@db:5432/${PG_DB}
     depends_on:
       - db
-    # Optional: For development, you might want to mount your code
-    # volumes:
-    #   - ./backend:/app
 
   frontend:
     build:
