@@ -36,6 +36,14 @@ export async function registerUser(email, name, password) {
 export async function loginUser(email, password) {
     return fetchApi('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }), // Sending JSON
+        body: JSON.stringify({ email, password }),
     });
+}
+
+/**
+ * Logs out the current user.
+ * @returns {Promise<object>} - Response from the logout endpoint.
+ */
+export async function logoutUser() {
+    return fetchApi('/auth/logout', { method: 'POST' }, true); // Requires authentication
 }

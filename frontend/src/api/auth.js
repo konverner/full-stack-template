@@ -48,7 +48,6 @@ export function getUserProfileData() {
  * @throws {Error} - If login fails or encounters an issue.
  */
 export async function handleLogin(email, password) {
-    // clearErrorMessage(errorElementId); // Clear previous errors - Removed for React
     try {
         console.log(`Attempting login for ${email}...`);
         const data = await loginUser(email, password);
@@ -69,16 +68,44 @@ export async function handleLogin(email, password) {
                 throw new Error('Login succeeded but failed to fetch profile. Please try again.');
             }
 
-            window.location.href = '/'; // Or '/'
-            return profile; // Return profile on success
+            window.location.href = '/';
+            return profile;
         } else {
             console.error("Login response missing tokens:", data);
-            throw new Error('Login failed: Invalid response from server.');
+            throw new Error('Invalid email or password.');
         }
     } catch (error) {
-        console.error('Login failed:', error);
-        // Re-throw the error so the calling component can handle it
-        throw error;
+        console.error('Login error:', error);
+        
+        // Extract specific error message from backend response
+        let message = ' ';
+        
+        // Check if it's a structured error response from the backend
+        if (error && typeof error === 'object') {
+            // Backend returns { detail: "Incorrect email or password" } for auth failures
+            if (error.detail) {
+                message = error.detail;
+            } 
+            // Handle validation errors or other structured errors
+            else if (error.message && typeof error.message === 'string') {
+                // Don't show generic HTTP error messages, use our specific ones
+                if (!error.message.startsWith('HTTP error!') && 
+                    !error.message.includes('fetch')) {
+                    message = error.message;
+                }
+            }
+            // Handle case where error might have nested error info
+            else if (error.error && typeof error.error === 'string') {
+                message = error.error;
+            }
+        }
+        
+        // For 401 specifically, ensure we show a user-friendly message
+        if (error.status === 401) {
+            message = 'Incorrect email or password. Please try again.';
+        }
+        
+        throw new Error(message);
     }
 }
 
