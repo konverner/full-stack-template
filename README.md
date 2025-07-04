@@ -21,13 +21,25 @@ This is a minimalist full-stack project template for applications with multi-use
   - **Material UI** for frontend components
   - **Nginx** for serving the frontend and reverse proxy
 
-## Run locally
+## Run in docker
 
-### Configure environmnet variables
+### 1. Configure environmnet variables
 
 Rename `.env.example` to `.env` and set the variables.
 
-### Frontend:
+### 2. Run
+
+```
+docker-compose up -d
+```
+
+## Run directly
+
+### 1. Configure environmnet variables
+
+Rename `.env.example` to `.env` and set the variables.
+
+### 2. Frontend:
 
 Install node modules: `npm install`
 
@@ -35,7 +47,7 @@ Run development server: `npm start`
 
 Build: `npm build`
 
-### Backend
+### 3. Backend
 
 Install dependencies: `pip install -r requirements.txt`
 
