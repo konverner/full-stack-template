@@ -54,10 +54,18 @@ Install dependencies: `pip install -r requirements.txt`
 Run a server: `python -m app.main`
 
 
-## References
+## Credits
 
 This template is inspired by:
 
 - https://github.com/fastapi/full-stack-fastapi-template
 - https://github.com/Netflix/dispatch/tree/main
 - https://github.com/alan2207/bulletproof-react
+
+## Sources
+
+The following literature was used:
+
+- [RFC 6749: The OAuth 2.0 Authorization Framework](https://datatracker.ietf.org/doc/html/rfc6749)
+- [RFC 7591: OAuth 2.0 Dynamic Registration](https://datatracker.ietf.org/doc/html/rfc7591)
+
