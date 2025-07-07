@@ -9,10 +9,7 @@ from app.dependencies import get_current_active_user
 from app.auth.models import User
 from app.items.models import Item
 
-router = APIRouter(
-    tags=["Items"],
-    prefix="/items",
-)
+router = APIRouter()
 
 @router.get("/", response_model=item_schemas.ItemListResponse)
 async def list_items(

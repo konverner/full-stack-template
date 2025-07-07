@@ -1,6 +1,5 @@
-# app/auth/router.py
 from fastapi import APIRouter, Depends, HTTPException, status, Body
-from sqlalchemy.orm import Session # Changed from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from typing import Annotated
 
 from ..database.core import get_db
@@ -12,15 +11,12 @@ from ..dependencies import get_current_active_user
 from .models import User
 from .. import schemas as common_schemas
 
-router = APIRouter(
-    prefix="/auth",
-    tags=["Authentication & Profile"]
-)
+router = APIRouter()
 
 @router.post("/register", response_model=schemas.UserRead, status_code=status.HTTP_201_CREATED)
-async def register_user( # Changed async async def to async def
+async def register_user(
     user_in: schemas.UserCreate,
-    db: Session = Depends(get_db) # Changed AsyncSession to Session
+    db: Session = Depends(get_db)
 ):
     """
     Register a new user.
@@ -28,9 +24,9 @@ async def register_user( # Changed async async def to async def
     db_user = auth_service.create_user(db=db, user_in=user_in) # Removed await (already done in input)
     return db_user
 
-@router.post("/login", response_model=schemas.Token)
-async def login_for_access_token( # Changed async async def to async def
-    db: Session = Depends(get_db), # Changed AsyncSession to Session
+@router.post("/token", response_model=schemas.Token)
+async def login_for_access_token(
+    db: Session = Depends(get_db),
     form_data: schemas.LoginRequest = Body(...) # Use Body for JSON payload
 ):
     """
@@ -52,9 +48,9 @@ async def login_for_access_token( # Changed async async def to async def
     return schemas.Token(access_token=access_token, refresh_token=refresh_token)
 
 @router.post("/refresh", response_model=schemas.Token)
-async def refresh_access_token( # Changed async async def to async def
+async def refresh_access_token(
     refresh_request: schemas.RefreshTokenRequest,
-    db: Session = Depends(get_db) # Changed AsyncSession to Session
+    db: Session = Depends(get_db)
 ):
     """
     Get a new access token using a refresh token.
@@ -88,22 +84,22 @@ async def refresh_access_token( # Changed async async def to async def
     return schemas.Token(access_token=new_access_token, refresh_token=new_refresh_token)
 
 
-# --- Profile Endpoints ---
+# --- User Info Endpoints ---
 
 CurrentUser = Annotated[User, Depends(get_current_active_user)]
 
-@router.get("/profile", response_model=schemas.UserRead)
-async def read_users_me(current_user: CurrentUser): # Changed async async def to async def
+@router.get("/me", response_model=schemas.UserRead)
+async def read_users_me(current_user: CurrentUser):
     """
     Get current logged-in user's profile.
     """
     return current_user
 
-@router.patch("/profile", response_model=schemas.UserRead)
-async def update_users_me( # Changed async async def to async def
+@router.patch("/me", response_model=schemas.UserRead)
+async def update_users_me(
     user_in: schemas.UserUpdate,
     current_user: CurrentUser,
-    db: Session = Depends(get_db), # Changed AsyncSession to Session
+    db: Session = Depends(get_db),
 ):
     """
     Update current logged-in user's profile (name, avatar).
@@ -111,11 +107,12 @@ async def update_users_me( # Changed async async def to async def
     updated_user = auth_service.update_user_profile(db=db, db_user=current_user, user_in=user_in) # Removed await (already done in input)
     return updated_user
 
-@router.put("/profile/password", response_model=common_schemas.Message)
-async def update_users_password( # Changed async async def to async def
+# --- Password Endpoints ---
+@router.put("/password", response_model=common_schemas.Message)
+async def update_users_password(
     password_in: schemas.UserPasswordUpdate,
     current_user: CurrentUser,
-    db: Session = Depends(get_db), # Changed AsyncSession to Session
+    db: Session = Depends(get_db),
 ):
     """
     Update current logged-in user's password.

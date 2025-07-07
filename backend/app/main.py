@@ -36,12 +36,15 @@ app.add_middleware(
 )
 
 # --- Routers ---
-# Include modular routers
-api_router_v1 = APIRouter() # Create a router for versioning
-api_router_v1.include_router(auth_router)
-api_router_v1.include_router(items_router)
+# Resource routers (one or more)
+api_router_v1 = APIRouter()
 
-app.include_router(api_router_v1, prefix=settings.API_V1_STR)
+api_router_v1.include_router(items_router, prefix="/items", tags=["Items"])
+
+app.include_router(api_router_v1, prefix=settings.API_V1_STR, tags=["API v1"])
+
+# Authorization router
+app.include_router(auth_router, prefix=settings.AUTH_STR, tags=["Authorization & Profile"])
 
 
 # --- Root Endpoint ---
@@ -56,8 +59,17 @@ async def read_root():
         "docs_url": f"{settings.API_V1_STR}/docs",
         "redoc_url": f"{settings.API_V1_STR}/redoc"
         }
-    
-    
+ 
+# --- Health Check Endpoint ---   
+@app.head("/health", tags=["Health Check"])
+async def head_root():
+    """
+    Root endpoint providing health check via HEAD request.
+    This endpoint can be used to check if the API is up and running.
+    """
+    return {"message": "OK"}
+
+
 if __name__ == "__main__":
     import uvicorn
     from app.database.core import init_db
