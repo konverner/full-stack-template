@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Grid, Paper, Avatar, Link, Chip } from '@mui/material';
+import { Box, Typography, Grid, Paper, Avatar, Link, Chip, Button, Stack } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -13,8 +13,15 @@ const formatDate = (dateString) => {
     });
 };
 
-const ItemDetails = ({ item }) => {
+const ItemDetails = ({ item, currentUser, onDelete }) => {
     if (!item) return null;
+
+    // Determine if user is owner or admin
+    const canEditOrDelete =
+        currentUser &&
+        (currentUser.is_admin || (item.owner && currentUser.id === item.owner.id));
+
+    console.log("Item Details:", item, "Current User:", currentUser, "Can Edit/Delete:", canEditOrDelete);
 
     return (
         <Box>
@@ -108,6 +115,26 @@ const ItemDetails = ({ item }) => {
                     </Grid>
                 )}
             </Grid>
+
+            {/* Buttons at the bottom */}
+            {canEditOrDelete && (
+                <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        href={`/items/${item.slug}/edit`}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={onDelete}
+                    >
+                        Delete
+                    </Button>
+                </Stack>
+            )}
         </Box>
     );
 };

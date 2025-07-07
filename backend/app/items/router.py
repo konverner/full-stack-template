@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload
 
@@ -70,23 +69,23 @@ async def get_item_by_slug(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     return item
 
-@router.put("/{item_id}", response_model=item_schemas.ItemRead)
-async def update_item(
-    item_id: int,
+@router.put("/{item_slug}", response_model=item_schemas.ItemRead)
+async def update_item_by_slug(
+    item_slug: str,
     item_in: item_schemas.ItemUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """
-    Update an item.
+    Update an item by slug.
     """
-    item = item_service.get_item_by_id(db=db, item_id=item_id, options=[selectinload(Item.owner)]) 
+    item = item_service.get_item_by_slug(db=db, item_slug=item_slug, options=[selectinload(Item.owner)])
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     if item.owner_id != current_user.id and not current_user.is_superuser:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
-    updated_item = item_service.update_item(db=db, item=item, item_in=item_in) 
-    db.refresh(updated_item, attribute_names=["owner"]) 
+    updated_item = item_service.update_item(db=db, item=item, item_in=item_in)
+    db.refresh(updated_item, attribute_names=["owner"])
     return updated_item
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)

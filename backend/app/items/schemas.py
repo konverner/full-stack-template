@@ -25,11 +25,17 @@ class ItemBase(BaseModel):
                 raise ValueError('Slug cannot be empty')
         return v
 
+    class Config:
+        extra = "ignore"
+
 class ItemCreate(ItemBase):
     pass
 
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
+
+    class Config:
+        extra = "ignore"
 
 class ItemRead(ItemBase):
     id: int

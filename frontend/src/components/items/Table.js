@@ -159,7 +159,7 @@ const ItemsTable = () => {
                         alt={`${item.name || 'Book'} Cover`}
                         variant="square"
                         sx={{ 
-                          width: 50, 
+                          width: 90, 
                           height: 75, 
                           mx: 'auto',
                           bgcolor: 'grey.200'

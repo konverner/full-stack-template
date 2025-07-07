@@ -6,6 +6,8 @@ import ItemDetails from '../../components/items/Details.js';
 import { getItemDetails } from '../../api/items.js'; // Adjust the path as necessary
 import Header from '../../components/common/Header.js';
 import Footer from '../../components/common/Footer.js';
+// Add import for delete API
+import { fetchApi } from '../../api/api.js';
 
 const ItemsDetailsPage = () => {
     const { itemSlug } = useParams();
@@ -13,6 +15,17 @@ const ItemsDetailsPage = () => {
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Use localStorage to get the current user data
+    const getStoredUser = () => {
+        const user = localStorage.getItem('userProfile');
+        return user ? JSON.parse(user) : null;
+    };
+    const [currentUser, setCurrentUser] = useState(getStoredUser());
+
+    useEffect(() => {
+        setCurrentUser(getStoredUser());
+    }, []);
 
     useEffect(() => {
         const fetchItemDetails = async () => {
@@ -33,6 +46,17 @@ const ItemsDetailsPage = () => {
             fetchItemDetails();
         }
     }, [itemSlug]);
+
+    // Delete handler
+    const handleDelete = async () => {
+        if (!window.confirm('Are you sure you want to delete this item?')) return;
+        try {
+            await fetchApi(`/items/${itemSlug}`, { method: 'DELETE' }, true);
+            navigate('/items');
+        } catch (err) {
+            alert('Failed to delete item.');
+        }
+    };
 
     if (loading) {
         return (
@@ -78,8 +102,20 @@ const ItemsDetailsPage = () => {
                         </Link>
                         <Typography color="text.primary">{item.name}</Typography>
                     </Breadcrumbs>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => navigate(`/items/${item.slug}/edit`)}
+                        sx={{ ml: 2 }}
+                    >
+                        Edit
+                    </Button>
                 </Box>
-                <ItemDetails item={item} />
+                <ItemDetails
+                    item={item}
+                    currentUser={currentUser}
+                    onDelete={handleDelete}
+                />
             </Container>
             <Footer />
         </Box>

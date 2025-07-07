@@ -6,7 +6,6 @@ import { getUserProfileData } from '../../api/auth.js';
 
 const UserProfilePage = () => {
     const [userProfile, setUserProfile] = useState(null);
-    const [userReviews, setUserReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 

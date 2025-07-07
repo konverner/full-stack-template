@@ -61,6 +61,8 @@ export async function handleLogin(email, password) {
             try {
                  profile = await getUserProfile();
                  saveUserProfile(profile);
+                 // Store user in window for session-wide access
+                 window.currentUser = profile;
                  console.log("User profile fetched and saved:", profile);
             } catch (profileError) {
                 console.error("Failed to fetch profile after login:", profileError);

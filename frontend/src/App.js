@@ -8,6 +8,7 @@ import RegisterPage from './pages/auth/register.js';
 import ProfilePage from './pages/auth/profile.js';
 import ItemsDetailsPage from './pages/items/Details.js';
 import CreateItemPage from './pages/items/Create.js';
+import EditItemPage from './pages/items/Edit.js';
 
 // Basic theme for Material UI
 const theme = createTheme({
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/items/:itemSlug" element={< ItemsDetailsPage />} />
+                    <Route path="/items/:itemSlug/edit" element={<EditItemPage />} />
                 </Routes>
             </main>
         </ThemeProvider>

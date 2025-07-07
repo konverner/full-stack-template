@@ -27,24 +27,11 @@ export async function adminListUsers(params = { skip: 0, limit: 50 }) {
 
 /**
  * Fetches a paginated, sorted list of items.
- * @param {object} params - { sort_field, sort_direction, limit, skip, page }
+ * @param {object} params - { field, direction, limit, page }
  * @returns {Promise<object>} - { items: [], total: number }
  */
 export async function fetchItems(params = {}) {
-    // Convert frontend parameters to backend format
-    const backendParams = {
-        skip: params.skip || 0,
-        limit: params.limit || 100,
-        sort_field: params.sort_field || params.field || 'id',
-        sort_direction: params.sort_direction || params.direction || 'asc',
-        ...Object.fromEntries(
-            Object.entries(params).filter(([key]) => 
-                !['field', 'direction', 'page'].includes(key)
-            )
-        )
-    };
-    
-    const query = new URLSearchParams(backendParams).toString();
+    const query = new URLSearchParams(params).toString();
     return fetchApi(`/items/?${query}`, { method: 'GET' });
 }
 
@@ -56,6 +43,19 @@ export async function fetchItems(params = {}) {
 export async function createItem(itemData) {
     return fetchApi('/items/', {
         method: 'POST',
+        body: JSON.stringify(itemData),
+    }, true); // Requires authentication
+}
+
+/**
+ * Updates an existing item by slug.
+ * @param {string} itemSlug - The slug of the item.
+ * @param {object} itemData - The updated data for the item.
+ * @returns {Promise<object>} - The updated item object.
+ */
+export async function updateItem(itemSlug, itemData) {
+    return fetchApi(`/items/${itemSlug}`, {
+        method: 'PUT',
         body: JSON.stringify(itemData),
     }, true); // Requires authentication
 }
