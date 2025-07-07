@@ -32,7 +32,7 @@ async def login_for_access_token(
     """
     Authenticate user and return access and refresh tokens.
     """
-    user = auth_service.authenticate_user( # Removed await (already done in input)
+    user = auth_service.authenticate_user(
         db, email=form_data.email, password=form_data.password
     )
     if not user:

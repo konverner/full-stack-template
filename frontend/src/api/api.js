@@ -71,7 +71,7 @@ export async function fetchApi(endpoint, options = {}, requiresAuth = false) {
  * @returns {Promise<any>} - Resolves with the JSON response data or rejects with an error.
  */
 export async function fetchAuth(endpoint, options = {}, requiresAuth = false) {
-    const url = `/auth${endpoint}`;
+    const url = `http://localhost:8000/auth${endpoint}`;
     const defaultHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

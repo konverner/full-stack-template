@@ -5,7 +5,7 @@ import { fetchApi, fetchAuth } from './api.js';
  * @returns {Promise<object>} - The user profile object.
  */
 export async function getUserProfile() {
-    return fetchApi('/auth/profile', { method: 'GET' }, true); // Requires authentication
+    return fetchAuth('/me', { method: 'GET' }, true); // Requires authentication
 }
 
 /**

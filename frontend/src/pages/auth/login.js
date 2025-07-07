@@ -16,9 +16,6 @@ const LoginPage = () => {
     setError(null);
     try {
       await handleLogin(email, password);
-      // handleLogin in auth.js now handles redirection via window.location.href
-      // If you prefer React Router:
-      // navigate('/'); // Uncomment if using React Router
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
     }
