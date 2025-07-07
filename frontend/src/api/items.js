@@ -27,11 +27,24 @@ export async function adminListUsers(params = { skip: 0, limit: 50 }) {
 
 /**
  * Fetches a paginated, sorted list of items.
- * @param {object} params - { field, direction, limit, page }
+ * @param {object} params - { sort_field, sort_direction, limit, skip, page }
  * @returns {Promise<object>} - { items: [], total: number }
  */
 export async function fetchItems(params = {}) {
-    const query = new URLSearchParams(params).toString();
+    // Convert frontend parameters to backend format
+    const backendParams = {
+        skip: params.skip || 0,
+        limit: params.limit || 100,
+        sort_field: params.sort_field || params.field || 'id',
+        sort_direction: params.sort_direction || params.direction || 'asc',
+        ...Object.fromEntries(
+            Object.entries(params).filter(([key]) => 
+                !['field', 'direction', 'page'].includes(key)
+            )
+        )
+    };
+    
+    const query = new URLSearchParams(backendParams).toString();
     return fetchApi(`/items/?${query}`, { method: 'GET' });
 }
 
