@@ -3,6 +3,16 @@ import { Box, Typography, Grid, Paper, Avatar, Link, Chip } from '@mui/material'
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};
+
 const ItemDetails = ({ item }) => {
     if (!item) return null;
 
@@ -72,12 +82,12 @@ const ItemDetails = ({ item }) => {
                         )}
                         {item.created_at && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
-                                Created at: <Box component="span" sx={{ fontWeight: 400 }}>{new Date(item.created_at).toLocaleString()}</Box>
+                                Created on: <Box component="span" sx={{ fontWeight: 400 }}>{formatDate(item.created_at)}</Box>
                             </Typography>
                         )}
                         {item.updated_at && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
-                                Last Updated: <Box component="span" sx={{ fontWeight: 400 }}>{new Date(item.updated_at).toLocaleString()}</Box>
+                                Last Updated: <Box component="span" sx={{ fontWeight: 400 }}>{formatDate(item.updated_at)}</Box>
                             </Typography>
                         )}
                     </Paper>
