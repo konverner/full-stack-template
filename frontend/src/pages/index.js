@@ -9,6 +9,10 @@ const IndexPage = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
       <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+        <Box sx={{ textAlign: 'center', mt: 8 }}>
+          <h1>Welcome to the Full Stack Template</h1>
+          <p>This is a basic template for a full stack application using React and Material UI.</p>
+        </Box>
       </Container>
       <Footer />
     </Box>

@@ -1,4 +1,4 @@
-import { fetchApi } from './api.js';
+import { fetchApi, fetchAuth } from './api.js';
 
 /**
  * Fetches the current user's profile.
@@ -21,7 +21,7 @@ export async function registerUser(email, name, password) {
         name,
         password,
     };
-    return fetchApi('/auth/register', {
+    return fetchAuth('/register', {
         method: 'POST',
         body: JSON.stringify(payload),
     });
@@ -34,7 +34,7 @@ export async function registerUser(email, name, password) {
  * @returns {Promise<object>} - The token object { access_token, refresh_token, token_type } from the API.
  */
 export async function loginUser(email, password) {
-    return fetchApi('/auth/login', {
+    return fetchAuth('/token', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
     });
@@ -45,5 +45,5 @@ export async function loginUser(email, password) {
  * @returns {Promise<object>} - Response from the logout endpoint.
  */
 export async function logoutUser() {
-    return fetchApi('/auth/logout', { method: 'POST' }, true); // Requires authentication
+    return fetchAuth('/logout', { method: 'POST' }, true);
 }
