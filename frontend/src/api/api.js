@@ -9,7 +9,7 @@ import { getAccessToken } from '../api/auth';
  * @returns {Promise<any>} - Resolves with the JSON response data or rejects with an error.
  */
 export async function fetchApi(endpoint, options = {}, requiresAuth = false) {
-    const url = `http://localhost:8000/api/v1${endpoint}`;
+    const url = `/api/v1${endpoint}`;
     const defaultHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -71,7 +71,7 @@ export async function fetchApi(endpoint, options = {}, requiresAuth = false) {
  * @returns {Promise<any>} - Resolves with the JSON response data or rejects with an error.
  */
 export async function fetchAuth(endpoint, options = {}, requiresAuth = false) {
-    const url = `http://localhost:8000/auth${endpoint}`;
+    const url = `/auth${endpoint}`;
     const defaultHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -108,8 +108,15 @@ export async function fetchAuth(endpoint, options = {}, requiresAuth = false) {
                 errorData = { message: `HTTP error! status: ${response.status}` };
             }
             // Enhance error message if possible
-            const errorMessage = errorData?.detail?.[0]?.msg || errorData?.message || `HTTP error! status: ${response.status}`;
-            throw new Error(errorMessage);
+            const errorMessage =
+                errorData?.detail?.[0]?.msg ||
+                errorData?.detail ||
+                errorData?.message ||
+                `HTTP error! status: ${response.status}`;
+            const error = new Error(errorMessage);
+            error.response = response;
+            error.data = errorData;
+            throw error;
         }
 
         // Handle cases with no content (e.g., 204 No Content)

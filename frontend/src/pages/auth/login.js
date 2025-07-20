@@ -2,22 +2,36 @@ import React, { useState } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
-import { handleLogin } from '../../api/auth'; // Assuming handleLogin is updated
-// import { useNavigate } from 'react-router'; // Uncomment if using React Router
+import { handleLogin } from '../../api/auth';
+
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  // const navigate = useNavigate(); // Uncomment if using React Router
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
+    setLoading(true);
+    
     try {
-      await handleLogin(email, password);
+      // Send as form data to match OAuth2PasswordRequestForm
+      const formData = new URLSearchParams();
+      formData.append('username', username);
+      formData.append('password', password);
+      formData.append('grant_type', '');
+      formData.append('scope', '');
+      formData.append('client_id', '');
+      formData.append('client_secret', '');
+
+      await handleLogin(formData);
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || 'Login failed. Please check your username and password.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,7 +50,7 @@ const LoginPage = () => {
             Sign In
           </Typography>
           {error && (
-            <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+            <Alert severity="error" sx={{ width: '100%', mt: 2, mb: 2 }}>
               {error}
             </Alert>
           )}
@@ -45,13 +59,14 @@ const LoginPage = () => {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              error={!!error}
             />
             <TextField
               margin="normal"
@@ -64,14 +79,16 @@ const LoginPage = () => {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              error={!!error}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Sign In
+              {loading ? 'Signing In...' : 'Sign In'}
             </Button>
           </Box>
           <Typography variant="body2" color="text.secondary" align="center">

@@ -42,15 +42,16 @@ export function getUserProfileData() {
 /**
  * Handles the login process triggered by the form submission.
  * Calls the API, saves tokens, fetches profile, updates UI, and redirects.
- * @param {string} email
- * @param {string} password
+ * @param {URLSearchParams} formData - Form data with username, password, etc.
  * @returns {Promise<object>} - User profile if login successful.
  * @throws {Error} - If login fails or encounters an issue.
  */
-export async function handleLogin(email, password) {
+export async function handleLogin(formData) {
     try {
-        console.log(`Attempting login for ${email}...`);
-        const data = await loginUser(email, password);
+        // Extract username for logging/debugging
+        const username = formData.get('username');
+        console.log(`Attempting login for ${username}...`);
+        const data = await loginUser(formData);
         console.log("Login API success:", data);
 
         if (data.access_token && data.refresh_token) {
@@ -74,37 +75,34 @@ export async function handleLogin(email, password) {
             return profile;
         } else {
             console.error("Login response missing tokens:", data);
-            throw new Error('Invalid email or password.');
+            throw new Error('Invalid username or password.');
         }
     } catch (error) {
         console.error('Login error:', error);
         
         // Extract specific error message from backend response
-        let message = ' ';
+        let message = 'Invalid username or password. Please try again.';
         
         // Check if it's a structured error response from the backend
         if (error && typeof error === 'object') {
-            // Backend returns { detail: "Incorrect email or password" } for auth failures
+            // Backend returns { detail: "Incorrect username or password" } for auth failures
             if (error.detail) {
                 message = error.detail;
             } 
             // Handle validation errors or other structured errors
             else if (error.message && typeof error.message === 'string') {
-                // Don't show generic HTTP error messages, use our specific ones
+                // Show specific error messages but default to user-friendly for generic ones
                 if (!error.message.startsWith('HTTP error!') && 
-                    !error.message.includes('fetch')) {
+                    !error.message.includes('fetch') &&
+                    !error.message.includes('Failed to fetch')) {
                     message = error.message;
                 }
-            }
-            // Handle case where error might have nested error info
-            else if (error.error && typeof error.error === 'string') {
-                message = error.error;
             }
         }
         
         // For 401 specifically, ensure we show a user-friendly message
         if (error.status === 401) {
-            message = 'Incorrect email or password. Please try again.';
+            message = 'Incorrect username or password. Please try again.';
         }
         
         throw new Error(message);
@@ -147,28 +145,21 @@ export function handleLogout() {
 /**
  * Handles the registration process.
  * @param {string} email
- * @param {string} name
+ * @param {string} username
  * @param {string} password
  * @returns {Promise<object>} - Registered user profile if successful.
  * @throws {Error} - If registration fails.
  */
-export async function handleRegister(email, name, password) {
-    // clearErrorMessage(errorElementId); // Removed
-    // clearErrorMessage(successElementId); // Removed
-
+export async function handleRegister(email, username, password) {
     try {
-        console.log(`Attempting registration for ${email}...`);
-        const userProfile = await registerUser(email, name, password);
+        console.log(`Attempting registration for ${username}...`);
+        const userProfile = await registerUser(email, username, password);
         console.log("Registration API success:", userProfile);
-
-        // displaySuccessMessage(successElementId, `Registration successful for ${userProfile.name}! Please check your email for verification (if applicable) and log in.`); // Removed
 
         return userProfile; // Return user profile on success
 
     } catch (error) {
         console.error('Registration failed:', error);
-        // const message = error.message || 'Registration failed. Please try again.'; // Component will handle message
-        // displayErrorMessage(errorElementId, message); // Removed
         throw error; // Re-throw error for component to handle
     }
 }
