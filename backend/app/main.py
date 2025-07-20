@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
@@ -18,30 +17,24 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",  # Customize OpenAPI path
     docs_url=f"{settings.API_V1_STR}/docs",  # Customize Swagger UI path
     redoc_url=f"{settings.API_V1_STR}/redoc",  # Customize ReDoc path
+    token_url=f"{settings.AUTH_STR}/token",  # Customize token URL
 )
 
 # --- Middleware ---
 # Set up CORS (Cross-Origin Resource Sharing)
-origins = [
-    "*"
-    # Add other allowed origins if needed
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"], # Allows all methods
-    allow_headers=["*"], # Allows all headers
-)
+# Set all CORS enabled origins
+if settings.all_cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.all_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # --- Routers ---
 # Resource routers (one or more)
-api_router_v1 = APIRouter()
-
-api_router_v1.include_router(items_router, prefix="/items", tags=["Items"])
-
-app.include_router(api_router_v1, prefix=settings.API_V1_STR, tags=["API v1"])
+app.include_router(items_router, prefix=f"{settings.API_V1_STR}/items", tags=["Items"])
 
 # Authorization router
 app.include_router(auth_router, prefix=settings.AUTH_STR, tags=["Authorization & Profile"])
