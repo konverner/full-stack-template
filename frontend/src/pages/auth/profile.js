@@ -4,6 +4,16 @@ import Footer from '../../components/common/Footer.js';
 import { Box, Container, Typography, Paper, CircularProgress, Alert } from '@mui/material';
 import { getUserProfileData } from '../../api/auth.js';
 
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};
+
 const UserProfilePage = () => {
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -58,10 +68,10 @@ const UserProfilePage = () => {
                         <Typography variant="h6" gutterBottom>Info</Typography>
                         {userProfile ? (
                             <>
-                                <Typography><strong>Name:</strong> {userProfile.name}</Typography>
+                                <Typography><strong>Username:</strong> {userProfile.username}</Typography>
                                 <Typography><strong>Email:</strong> {userProfile.email}</Typography>
                                 <Typography><strong>Role:</strong> {userProfile.role || "User"}</Typography>
-                                <Typography><strong>Joined:</strong> {new Date(userProfile.created_at).toLocaleDateString()}</Typography>
+                                <Typography><strong>Joined:</strong> {formatDate(userProfile.created_at)}</Typography>
                             </>
                         ) : (
                             <Typography>An error occurred while fetching user profile data.</Typography>
