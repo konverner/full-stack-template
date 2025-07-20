@@ -5,8 +5,8 @@
 This is a minimalist full-stack project template for applications with multi-user and multi-item features.
 
 - Items have numerical, boolean, text attributes, as well as image and URL fields.
-- Users have an avatar, name, email, and password.
-- Users can create items and rate items created by other users.
+- Users have an avatar, username, email, and password.
+- Users can perform CRUD operation with their items and view items created by other users.
 - Items are displayed in a table on the `/items` page.
 - Item details can be viewed on the `/items/{itemSlug}` page.
 
@@ -33,6 +33,8 @@ Rename `.env.example` to `.env` and set the variables.
 docker-compose up -d
 ```
 
+Docs are available on `http://localhost/api/v1/docs`
+
 ## Run directly
 
 ### 1. Configure environmnet variables
@@ -53,6 +55,7 @@ Install dependencies: `pip install -r requirements.txt`
 
 Run a server: `python -m app.main`
 
+Docs are available on `http://localhost/api/v1/docs`
 
 ## Credits
 
