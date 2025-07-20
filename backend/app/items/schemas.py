@@ -9,6 +9,7 @@ class ItemBase(BaseModel):
     name: str
     slug: Optional[str] = None
     description: Optional[str] = None
+    available: Optional[bool] = True
     image_url: Optional[str] = None
     website_url: Optional[str] = None
 
@@ -33,6 +34,7 @@ class ItemCreate(ItemBase):
 
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
+    available: Optional[bool] = None  # Make this explicitly optional for updates
 
     class Config:
         extra = "ignore"
@@ -40,7 +42,7 @@ class ItemUpdate(ItemBase):
 class ItemRead(ItemBase):
     id: int
     slug: str
-    available: Optional[bool] = None
+    available: bool = True  # Remove Optional since this should always have a value
     average_rating: Optional[float] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
@@ -50,7 +52,7 @@ class ItemRead(ItemBase):
         from_attributes = True
 
 class ItemReadDetails(ItemRead):
-    available: Optional[bool] = None
+    available: bool = True  # Remove Optional since this should always have a value
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

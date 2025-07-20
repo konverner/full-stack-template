@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
+import { Box, TextField, Button, Typography, Alert, CircularProgress, Checkbox, FormControlLabel } from '@mui/material';
 import { createItem, updateItem } from '../../api/items';
 
 const EditForm = ({ initialValues = {}, itemSlug }) => {
@@ -8,6 +8,7 @@ const EditForm = ({ initialValues = {}, itemSlug }) => {
         name: '',
         slug: '',
         description: '',
+        available: true,
         image_url: '',
         website_url: '',
     });
@@ -24,10 +25,10 @@ const EditForm = ({ initialValues = {}, itemSlug }) => {
     }, [initialValues]);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
+        const { name, value, type, checked } = event.target;
         setItemData(prevState => ({
             ...prevState,
-            [name]: value,
+            [name]: type === 'checkbox' ? checked : value,
         }));
     };
 
@@ -36,11 +37,14 @@ const EditForm = ({ initialValues = {}, itemSlug }) => {
         setLoading(true);
         setError(null);
 
-        // Filter out empty optional fields and 'id'
+        // Filter out empty optional fields and 'id' but keep boolean values
         const dataToSubmit = { ...itemData };
         delete dataToSubmit.id; // Remove id if present
         for (const key in dataToSubmit) {
-            if (dataToSubmit[key] === '') {
+            if (key === 'available') {
+                // Always include available as boolean
+                dataToSubmit[key] = Boolean(dataToSubmit[key]);
+            } else if (dataToSubmit[key] === '') {
                 delete dataToSubmit[key];
             }
         }
@@ -64,7 +68,7 @@ const EditForm = ({ initialValues = {}, itemSlug }) => {
     return (
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-                {itemSlug ? 'Edit Item' : 'Create New Item'}
+                {itemSlug ? 'Edit Item' : 'Create Item'}
             </Typography>
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
             <TextField
@@ -118,16 +122,27 @@ const EditForm = ({ initialValues = {}, itemSlug }) => {
                 value={itemData.website_url}
                 onChange={handleChange}
             />
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={!!itemData.available}
+                        onChange={handleChange}
+                        color="primary"
+                        name="available"
+                        id="available"
+                    />
+                }
+                label="Available"
+                sx={{ mt: 2, mb: 1 }}
+            />
             <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={loading}
+                sx={{ mt: 2, mb: 2 }}
             >
                 {loading ? <CircularProgress size={24} /> : (itemSlug ? 'Save Changes' : 'Save Item')}
             </Button>
         </Box>
     );
 };
-
 export default EditForm;

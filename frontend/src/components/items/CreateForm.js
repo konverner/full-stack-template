@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Box, TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
+import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel } from '@mui/material';
 import { createItem } from '../../api/items';
 
 const CreateForm = () => {
@@ -8,6 +8,7 @@ const CreateForm = () => {
         name: '',
         slug: '',
         description: '',
+        available: true,
         image_url: '',
         website_url: '',
     });
@@ -28,10 +29,13 @@ const CreateForm = () => {
         setLoading(true);
         setError(null);
 
-        // Filter out empty optional fields
+        // Filter out empty optional fields but keep boolean values
         const dataToSubmit = { ...itemData };
         for (const key in dataToSubmit) {
-            if (dataToSubmit[key] === '') {
+            if (key === 'available') {
+                // Always include available as boolean
+                dataToSubmit[key] = Boolean(dataToSubmit[key]);
+            } else if (dataToSubmit[key] === '') {
                 delete dataToSubmit[key];
             }
         }
@@ -50,7 +54,7 @@ const CreateForm = () => {
     return (
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-                Create New Item
+                Create Item
             </Typography>
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
             <TextField
@@ -104,10 +108,23 @@ const CreateForm = () => {
                 value={itemData.website_url}
                 onChange={handleChange}
             />
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={itemData.available}
+                        onChange={(event) => setItemData({ ...itemData, available: event.target.checked })}
+                        color="primary"
+                        name="available"
+                        id="available"
+                    />
+                }
+                label="Available"
+                sx={{ mt: 2, mb: 1 }}
+            />
             <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 2, mb: 2 }}
                 disabled={loading}
             >
                 {loading ? <CircularProgress size={24} /> : 'Create Item'}
