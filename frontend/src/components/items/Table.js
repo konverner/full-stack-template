@@ -185,7 +185,7 @@ const ItemsTable = () => {
                     {/* Owner */}
                     <TableCell align="center">
                         <MuiLink color='secondary' component={RouterLink} to={`/items/${item.slug}`} onClick={(e) => e.stopPropagation()}>
-                        {item.owner.name || 'N/A'}
+                        {item.owner.username || 'N/A'}
                         </MuiLink>
                     </TableCell>
 

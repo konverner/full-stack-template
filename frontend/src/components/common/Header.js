@@ -86,7 +86,7 @@ const Header = () => {
                   className="nav-link"
                   id="nav-add-item-btn"
                 >
-                  Add Item
+                  Create Item
                 </Button>
                 <Button
                   component={RouterLink}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Grid, Paper, Avatar, Link, Chip, Button, Stack } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { deleteItem } from '../../api/items.js';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -20,6 +21,19 @@ const ItemDetails = ({ item, currentUser, onDelete }) => {
     const canEditOrDelete =
         currentUser &&
         (currentUser.is_admin || (item.owner && currentUser.id === item.owner.id));
+
+    const handleDelete = async () => {
+        console.log("Attempting to delete item:", item.id);
+        if (window.confirm('Are you sure you want to delete this item?')) {
+            try {
+                await deleteItem(item.id);
+                window.location.href = '/items';
+            } catch (error) {
+                console.error('Delete failed:', error);
+                alert('Failed to delete item. Please try again.');
+            }
+        }
+    };
 
     console.log("Item Details:", item, "Current User:", currentUser, "Can Edit/Delete:", canEditOrDelete);
 
@@ -82,9 +96,9 @@ const ItemDetails = ({ item, currentUser, onDelete }) => {
                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 500 }}>
                             Details B
                         </Typography>
-                        {item.owner && item.owner.name && (
+                        {item.owner && item.owner.username && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
-                                Created by: <Box component="span" sx={{ fontWeight: 500 }}>{item.owner.name}</Box>
+                                Created by: <Box component="span" sx={{ fontWeight: 500 }}>{item.owner.username}</Box>
                             </Typography>
                         )}
                         {item.created_at && (
@@ -129,7 +143,7 @@ const ItemDetails = ({ item, currentUser, onDelete }) => {
                     <Button
                         variant="outlined"
                         color="error"
-                        onClick={onDelete}
+                        onClick={handleDelete}
                     >
                         Delete
                     </Button>

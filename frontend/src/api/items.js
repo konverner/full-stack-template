@@ -60,6 +60,18 @@ export async function updateItem(itemSlug, itemData) {
     }, true); // Requires authentication
 }
 
+/**
+ * Deletes an item by ID.
+ * @param {number} itemId - The ID of the item to delete.
+ * @returns {Promise<void>}
+ */
+export async function deleteItem(itemId) {
+    console.log("Deleting item with ID:", itemId);
+    return fetchApi(`/items/${itemId}`, {
+        method: 'DELETE',
+    }, true); // Requires authentication
+}
+
 
 /** addLogoutHandler
  * 

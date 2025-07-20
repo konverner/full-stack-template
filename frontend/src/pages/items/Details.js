@@ -102,14 +102,6 @@ const ItemsDetailsPage = () => {
                         </Link>
                         <Typography color="text.primary">{item.name}</Typography>
                     </Breadcrumbs>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => navigate(`/items/${item.slug}/edit`)}
-                        sx={{ ml: 2 }}
-                    >
-                        Edit
-                    </Button>
                 </Box>
                 <ItemDetails
                     item={item}
