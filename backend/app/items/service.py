@@ -118,6 +118,15 @@ class ItemService:
         if not item_data.get('slug'):
             base_slug = slugify(item_data['name'])
             item_data['slug'] = self._ensure_unique_slug(db, base_slug)
+            
+        # Normalize image url
+        if item_data.get('image_url'):
+            # Strip whitespaces
+            item_data['image_url'] = item_data['image_url'].strip()
+            
+            # Remove query parameters if present
+            if '?' in item_data['image_url']:
+                item_data['image_url'] = item_data['image_url'].split('?')[0]
         
         item = item_models.Item(**item_data, owner_id=owner_id)
         db.add(item)
