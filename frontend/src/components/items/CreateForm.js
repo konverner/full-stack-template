@@ -14,6 +14,11 @@ const CreateForm = () => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState({
+        slug: '',
+        image_url: '',
+        website_url: '',
+    });
     const navigate = useNavigate();
 
     const handleChange = (event) => {
@@ -24,13 +29,56 @@ const CreateForm = () => {
         }));
     };
 
+    const trimItemData = (data) => {
+        const trimmed = { ...data };
+        for (const key in trimmed) {
+            if (typeof trimmed[key] === 'string') {
+                trimmed[key] = trimmed[key].trim();
+            }
+        }
+        return trimmed;
+    };
+
+    const validateFields = () => {
+        const trimmedData = trimItemData(itemData);
+        const errors = { slug: '', image_url: '', website_url: '' };
+
+        // Slug: lowercase letters, numbers, hyphens only
+        if (trimmedData.slug && !/^[a-z0-9-]+$/.test(trimmedData.slug)) {
+            errors.slug = 'Slug must contain only lowercase letters, numbers, and hyphens.';
+        }
+
+        // Image URL: must be a valid URL if not empty
+        if (trimmedData.image_url && !/^https?:\/\/.+\..+/.test(trimmedData.image_url)) {
+            errors.image_url = 'Image URL must be a valid URL.';
+        }
+
+        // Website URL: must be a valid URL if not empty
+        if (trimmedData.website_url && !/^https?:\/\/.+\..+/.test(trimmedData.website_url)) {
+            errors.website_url = 'Website URL must be a valid URL.';
+        }
+
+        setFieldErrors(errors);
+
+        // Return true if no errors
+        return !errors.slug && !errors.image_url && !errors.website_url;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setLoading(true);
         setError(null);
 
+        // Trim data before validation and submission
+        const trimmedData = trimItemData(itemData);
+
+        // Validate fields before submitting
+        if (!validateFields()) {
+            return;
+        }
+
+        setLoading(true);
         // Filter out empty optional fields but keep boolean values
-        const dataToSubmit = { ...itemData };
+        const dataToSubmit = { ...trimmedData };
         for (const key in dataToSubmit) {
             if (key === 'available') {
                 // Always include available as boolean
@@ -77,7 +125,8 @@ const CreateForm = () => {
                 name="slug"
                 value={itemData.slug}
                 onChange={handleChange}
-                helperText="Optional. Use lowercase letters, numbers, and hyphens."
+                helperText={fieldErrors.slug || "Optional. Use lowercase letters, numbers, and hyphens."}
+                error={!!fieldErrors.slug}
             />
             <TextField
                 margin="normal"
@@ -88,24 +137,6 @@ const CreateForm = () => {
                 multiline
                 rows={4}
                 value={itemData.description}
-                onChange={handleChange}
-            />
-            <TextField
-                margin="normal"
-                fullWidth
-                name="image_url"
-                label="Image URL"
-                id="image_url"
-                value={itemData.image_url}
-                onChange={handleChange}
-            />
-            <TextField
-                margin="normal"
-                fullWidth
-                name="website_url"
-                label="Website URL"
-                id="website_url"
-                value={itemData.website_url}
                 onChange={handleChange}
             />
             <FormControlLabel
@@ -120,6 +151,28 @@ const CreateForm = () => {
                 }
                 label="Available"
                 sx={{ mt: 2, mb: 1 }}
+            />
+            <TextField
+                margin="normal"
+                fullWidth
+                name="image_url"
+                label="Image URL"
+                id="image_url"
+                value={itemData.image_url}
+                onChange={handleChange}
+                helperText={fieldErrors.image_url}
+                error={!!fieldErrors.image_url}
+            />
+            <TextField
+                margin="normal"
+                fullWidth
+                name="website_url"
+                label="Website URL"
+                id="website_url"
+                value={itemData.website_url}
+                onChange={handleChange}
+                helperText={fieldErrors.website_url}
+                error={!!fieldErrors.website_url}
             />
             <Button
                 type="submit"
