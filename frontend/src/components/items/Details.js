@@ -20,7 +20,7 @@ const ItemDetails = ({ item, currentUser, onDelete }) => {
     // Determine if user is owner or admin
     const canEditOrDelete =
         currentUser &&
-        (currentUser.is_admin || (item.owner && currentUser.id === item.owner.id));
+        (currentUser.is_superuser || (item.owner && currentUser.id === item.owner.id));
 
     const handleDelete = async () => {
         console.log("Attempting to delete item:", item.id);

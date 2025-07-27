@@ -70,7 +70,7 @@ const UserProfilePage = () => {
                             <>
                                 <Typography><strong>Username:</strong> {userProfile.username}</Typography>
                                 <Typography><strong>Email:</strong> {userProfile.email}</Typography>
-                                <Typography><strong>Role:</strong> {userProfile.role || "User"}</Typography>
+                                <Typography><strong>Role:</strong> {userProfile.is_superuser ? "Superuser" : "User"}</Typography>
                                 <Typography><strong>Joined:</strong> {formatDate(userProfile.created_at)}</Typography>
                             </>
                         ) : (
