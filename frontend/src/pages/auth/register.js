@@ -12,12 +12,33 @@ const RegisterPage = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    if (password.length > 0 && password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    return '';
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setPasswordError(validatePassword(newPassword));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
     setSuccessMessage(null);
+    
+    // Client-side validation
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -41,6 +62,12 @@ const RegisterPage = () => {
       else if (errorMessage.toLowerCase().includes('email') && errorMessage.toLowerCase().includes('registered')) {
         setTimeout(() => {
           document.getElementById('email')?.focus();
+        }, 100);
+      }
+      // If it's a password validation error, focus on the password field
+      else if (errorMessage.toLowerCase().includes('password')) {
+        setTimeout(() => {
+          document.getElementById('password')?.focus();
         }, 100);
       }
     } finally {
@@ -100,15 +127,17 @@ const RegisterPage = () => {
               id="password"
               autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               disabled={isSubmitting}
+              error={!!passwordError}
+              helperText={passwordError || 'Password must be at least 8 characters long'}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled={isSubmitting || !username.trim() || !password.trim()}
+              disabled={isSubmitting || !username.trim() || !password.trim() || password.length < 8}
             >
               {isSubmitting ? 'Creating Account...' : 'Sign Up'}
             </Button>
