@@ -48,9 +48,27 @@ export async function registerUser(email, username, password) {
                 // Validation error
                 try {
                     const data = await error.response.json();
-                    const validationErrors = data.detail?.map(err => err.msg).join(', ') || 'Invalid input data';
-                    throw new Error(validationErrors);
-                } catch {
+                    if (data.detail && Array.isArray(data.detail)) {
+                        // Extract validation errors and make them user-friendly
+                        const validationErrors = data.detail.map(err => {
+                            if (err.loc && err.loc.includes('password') && err.type === 'string_too_short') {
+                                return 'Password must be at least 8 characters long';
+                            }
+                            if (err.loc && err.loc.includes('username') && err.type === 'string_too_short') {
+                                return 'Username must be at least 3 characters long';
+                            }
+                            // Handle other validation errors with user-friendly messages
+                            return err.msg || 'Invalid input';
+                        }).join(', ');
+                        throw new Error(validationErrors);
+                    } else if (data.detail) {
+                        throw new Error(data.detail);
+                    }
+                    throw new Error('Invalid input data');
+                } catch (parseError) {
+                    if (parseError instanceof Error && parseError.message !== 'Invalid input data') {
+                        throw parseError;
+                    }
                     throw new Error('Invalid input data');
                 }
             }
