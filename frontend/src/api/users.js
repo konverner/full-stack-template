@@ -1,29 +1,33 @@
-import { fetchAuth } from './api.js';
+import { fetchApi, fetchAuth } from './api.js';
+
+// Helper for extracting error messages
+function extractErrorMessage(error, fallback = 'Operation failed') {
+    if (error?.message) return error.message;
+    if (error?.data?.detail) {
+        if (Array.isArray(error.data.detail)) {
+            return error.data.detail[0]?.msg || fallback;
+        }
+        return error.data.detail;
+    }
+    if (error?.data?.message) return error.data.message;
+    return fallback;
+}
 
 /**
  * Fetches the current user's profile.
- * @returns {Promise<object>} - The user profile object.
+ * @returns {Promise<object>}
  */
 export async function getUserProfile() {
-    return fetchAuth('/me', { method: 'GET' }, true); // Requires authentication
+    return fetchAuth('/me', { method: 'GET' }, true);
 }
 
 /**
  * Registers a new user.
- * @param {string} email
- * @param {string} username
- * @param {string} password
- * @returns {Promise<object>} - The registered user profile object
- * @throws {Error} - Throws error with specific message for validation failures
  */
-export async function registerUser(email, username, password) {
-    const payload = {
-        username,
-        password,
-    };
-    if (email) {
-        payload.email = email;
-    }
+export async function registerUser(username, password, email = null, avatar_url = null) {
+    const payload = { username, password };
+    if (email) payload.email = email;
+    if (avatar_url) payload.avatar_url = avatar_url;
 
     try {
         return await fetchAuth('/register', {
@@ -31,74 +35,274 @@ export async function registerUser(email, username, password) {
             body: JSON.stringify(payload),
         });
     } catch (error) {
-        // Try to extract backend error message from response body
-        let errorMessage = 'Registration failed. Please try again.';
-        if (error.response) {
-            try {
-                const data = await error.response.json();
-                if (data && data.detail) {
-                    errorMessage = data.detail;
-                }
-            } catch {
-                // ignore JSON parse errors
-            }
-            if (error.response.status === 409) {
-                throw new Error(errorMessage);
-            } else if (error.response.status === 422) {
-                // Validation error
-                try {
-                    const data = await error.response.json();
-                    if (data.detail && Array.isArray(data.detail)) {
-                        // Extract validation errors and make them user-friendly
-                        const validationErrors = data.detail.map(err => {
-                            if (err.loc && err.loc.includes('password') && err.type === 'string_too_short') {
-                                return 'Password must be at least 8 characters long';
-                            }
-                            if (err.loc && err.loc.includes('username') && err.type === 'string_too_short') {
-                                return 'Username must be at least 3 characters long';
-                            }
-                            // Handle other validation errors with user-friendly messages
-                            return err.msg || 'Invalid input';
-                        }).join(', ');
-                        throw new Error(validationErrors);
-                    } else if (data.detail) {
-                        throw new Error(data.detail);
-                    }
-                    throw new Error('Invalid input data');
-                } catch (parseError) {
-                    if (parseError instanceof Error && parseError.message !== 'Invalid input data') {
-                        throw parseError;
-                    }
-                    throw new Error('Invalid input data');
-                }
-            }
-        } else if (error.message && error.message.includes('409')) {
-            // fallback for generic fetch errors
-            errorMessage = 'Username or email already exists';
-        }
-        throw new Error(errorMessage);
+        throw new Error(extractErrorMessage(error, 'Registration failed'));
     }
 }
 
 /**
  * Attempts to log in a user by calling the backend endpoint.
- * @param {URLSearchParams} formData - Form data with username, password, etc.
- * @returns {Promise<object>} - The token object { access_token, refresh_token, token_type } from the API.
  */
 export async function loginUser(formData) {
     return fetchAuth('/token', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData,
     });
 }
 
 /**
  * Logs out the current user.
- * @returns {Promise<object>} - Response from the logout endpoint.
  */
 export async function logoutUser() {
     return fetchAuth('/logout', { method: 'POST' }, true);
+}
+
+/**
+ * Lists users with filtering, sorting, and pagination (admin only).
+ */
+export async function listUsers(params = {}) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) searchParams.append(key, value);
+    });
+    const queryString = searchParams.toString();
+    const url = queryString ? `/users/?${queryString}` : '/users/';
+    return fetchApi(url, { method: 'GET' }, false);
+}
+
+/**
+ * Creates a new user (admin only).
+ */
+export async function createUser(userData) {
+    try {
+        return await fetchApi('/users/', {
+            method: 'POST',
+            body: JSON.stringify(userData),
+        }, true);
+    } catch (error) {
+        throw new Error(extractErrorMessage(error, 'User creation failed'));
+    }
+}
+
+/**
+ * Gets a user by username.
+ */
+export async function getUserByUsername(username) {
+    return fetchApi(`/users/${username}`, { method: 'GET' }, false);
+}
+
+/**
+ * Updates a user's profile (admin or self).
+ */
+export async function updateUser(username, updateData) {
+    try {
+        return await fetchApi(`/users/${username}`, {
+            method: 'PUT',
+            body: JSON.stringify(updateData),
+        }, true);
+    } catch (error) {
+        throw new Error(extractErrorMessage(error, 'User update failed'));
+    }
+}
+
+/**
+ * Updates a user's password.
+ */
+export async function updateUserPassword(username, currentPassword, newPassword) {
+    try {
+        return await fetchApi(`/users/${username}/password`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                current_password: currentPassword,
+                new_password: newPassword
+            }),
+        }, true);
+    } catch (error) {
+        throw new Error(extractErrorMessage(error, 'Password update failed'));
+    }
+}
+
+/**
+ * Deletes a user (admin only).
+ */
+export async function deleteUser(username) {
+    try {
+        return await fetchApi(`/users/${username}`, { method: 'DELETE' }, true);
+    } catch (error) {
+        throw new Error(extractErrorMessage(error, 'User deletion failed'));
+    }
+}
+
+/**
+ * Promotes or demotes a user's superuser status (admin only).
+ */
+export async function updateUserSuperuserStatus(username, is_superuser) {
+    try {
+        return await fetchApi(`/users/${username}/superuser`, {
+            method: 'PUT',
+            body: JSON.stringify({ is_superuser }),
+        }, true);
+    } catch (error) {
+        throw new Error(extractErrorMessage(error, 'Failed to update superuser status'));
+    }
+
+/**
+ * Gets a user by username.
+ * @param {string} username - The username to look up
+ * @returns {Promise<object>} - The user object with UserRead schema
+ */
+export async function getUserByUsername(username) {
+    return fetchApi(`/users/${username}`, { method: 'GET' }, false);
+}
+
+/**
+ * Updates a user's profile (admin or self).
+ * @param {string} username - The username of the user to update
+ * @param {object} updateData - Updated user data following UserBase schema
+ * @param {string} [updateData.username] - New username (3-50 characters, optional)
+ * @param {string} [updateData.email] - New email address (optional)
+ * @param {string} [updateData.avatar_url] - New avatar URL (optional)
+ * @returns {Promise<object>} - The updated user object with UserRead schema
+ */
+export async function updateUser(username, updateData) {
+    try {
+        return await fetchApi(`/users/${username}`, {
+            method: 'PUT',
+            body: JSON.stringify(updateData),
+        }, true);
+    } catch (error) {
+        if (error.response) {
+            const status = error.response.status;
+            try {
+                const data = await error.response.json();
+                
+                if (status === 400 || status === 409) {
+                    if (data.detail === 'Username already exists') {
+                        throw new Error('Username already exists');
+                    }
+                    if (data.detail === 'Email already exists') {
+                        throw new Error('Email already exists');
+                    }
+                    throw new Error(data.detail || 'User update failed');
+                }
+                
+                if (status === 403) {
+                    throw new Error('Insufficient permissions to update this user');
+                }
+                
+                if (status === 404) {
+                    throw new Error('User not found');
+                }
+            } catch (parseError) {
+                if (parseError instanceof Error && parseError.message !== 'User update failed') {
+                    throw parseError;
+                }
+            }
+        }
+        throw error;
+    }
+}
+
+/**
+ * Updates a user's password.
+ * @param {string} username - The username of the user
+ * @param {string} currentPassword - Current password
+ * @param {string} newPassword - New password (at least 8 characters)
+ * @returns {Promise<object>} - The updated user object
+ */
+export async function updateUserPassword(username, currentPassword, newPassword) {
+    try {
+        return await fetchApi(`/users/${username}/password`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                current_password: currentPassword,
+                new_password: newPassword
+            }),
+        }, true);
+    } catch (error) {
+        if (error.response && error.response.status === 400) {
+            const data = await error.response.json();
+            if (data.detail === 'Current password is incorrect') {
+                throw new Error('Current password is incorrect');
+            }
+        }
+        throw error;
+    }
+}
+
+/**
+ * Deletes a user (admin only).
+ * @param {string} username - The username of the user to delete
+ * @returns {Promise<void>} - Empty response on success
+ */
+export async function deleteUser(username) {
+    try {
+        return await fetchApi(`/users/${username}`, { method: 'DELETE' }, true);
+    } catch (error) {
+        if (error.response) {
+            const status = error.response.status;
+            try {
+                const data = await error.response.json();
+                
+                if (status === 400) {
+                    if (data.detail === 'Cannot delete your own account') {
+                        throw new Error('Cannot delete your own account');
+                    }
+                    throw new Error(data.detail || 'User deletion failed');
+                }
+                
+                if (status === 403) {
+                    throw new Error('Insufficient permissions to delete users');
+                }
+                
+                if (status === 404) {
+                    throw new Error('User not found');
+                }
+            } catch (parseError) {
+                if (parseError instanceof Error && parseError.message !== 'User deletion failed') {
+                    throw parseError;
+                }
+            }
+        }
+        throw error;
+    }
+}
+
+/**
+ * Promotes or demotes a user's superuser status (admin only).
+ * @param {string} username - The username of the user to modify
+ * @param {boolean} is_superuser - Whether the user should be a superuser
+ * @returns {Promise<object>} - The updated user object with UserRead schema
+ */
+export async function updateUserSuperuserStatus(username, is_superuser) {
+    try {
+        return await fetchApi(`/users/${username}/superuser`, {
+            method: 'PUT',
+            body: JSON.stringify({ is_superuser }),
+        }, true);
+    } catch (error) {
+        if (error.response) {
+            const status = error.response.status;
+            try {
+                const data = await error.response.json();
+                
+                if (status === 400) {
+                    throw new Error(data.detail || 'Failed to update superuser status');
+                }
+                
+                if (status === 403) {
+                    throw new Error('Insufficient permissions to modify superuser status');
+                }
+                
+                if (status === 404) {
+                    throw new Error('User not found');
+                }
+            } catch (parseError) {
+                if (parseError instanceof Error && parseError.message !== 'Failed to update superuser status') {
+                    throw parseError;
+                }
+            }
+        }
+        throw error;
+    }
 }

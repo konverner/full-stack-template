@@ -152,14 +152,27 @@ export function handleLogout() {
  */
 export async function handleRegister(email, username, password) {
     try {
-        console.log(`Attempting registration for ${username}...`);
-        const userProfile = await registerUser(email, username, password);
+        console.log(`Attempting registration for ${username} with email ${email}...`);
+        const userProfile = await registerUser(username, password, email);
         console.log("Registration API success:", userProfile);
-
-        return userProfile; // Return user profile on success
-
+        return userProfile;
     } catch (error) {
         console.error('Registration failed:', error);
-        throw error; // Re-throw error for component to handle
+        
+        // Check for direct validation error message
+        if (error && error.message) {
+            console.log('Error message in handleRegister:', error.message);
+            
+            // Check for specific validation error patterns
+            if (error.message.includes('Username can only contain')) {
+                throw new Error(error.message);
+            }
+            
+            // Pass through any other error message
+            throw new Error(error.message);
+        }
+        
+        // Default error if we couldn't extract a message
+        throw new Error('Registration failed. Please try again.');
     }
 }

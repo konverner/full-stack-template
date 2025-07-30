@@ -1,10 +1,9 @@
-# app/models/user.py
 from sqlalchemy import (
     Column, Integer, String, Boolean
 )
 from sqlalchemy.orm import relationship
 
-from app.models import Base, TimeStampMixin
+from ..models import Base, TimeStampMixin
 
 class User(Base, TimeStampMixin):
     """SQLAlchemy model for users."""

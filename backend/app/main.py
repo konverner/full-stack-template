@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.auth.router import router as auth_router
-from app.items.router import router as items_router
+from .config import settings
+from .auth.router import router as auth_router
+from .items.router import router as items_router
+from .users.router import router as users_router
 
 if settings.ENVIRONMENT == "local":
     LOG_LEVEL = "debug"  # Set log level to debug for local development
@@ -35,6 +36,7 @@ if settings.all_cors_origins:
 # --- Routers ---
 # Resource routers (one or more)
 app.include_router(items_router, prefix=f"{settings.API_V1_STR}/items", tags=["Items"])
+app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["Users"])
 
 # Authorization router
 app.include_router(auth_router, prefix=settings.AUTH_STR, tags=["Authorization & Profile"])

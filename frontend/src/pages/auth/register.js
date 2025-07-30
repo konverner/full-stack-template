@@ -42,6 +42,7 @@ const RegisterPage = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Submitting registration form with username:', username);
       const userProfile = await handleRegister(email, username, password);
       setSuccessMessage(`Registration successful for ${userProfile.username}! Redirecting to login...`);
       setTimeout(() => {
@@ -49,23 +50,22 @@ const RegisterPage = () => {
       }, 2000);
     } catch (err) {
       // Display the specific error message from the backend
-      const errorMessage = err.message || 'Registration failed. Please try again.';
+      console.log('Error in registration UI layer:', err);
+      // Ensure we always get a string error message
+      const errorMessage = err && err.message ? err.message : 'Registration failed. Please try again.';
+      console.log('Setting error message to:', errorMessage);
       setError(errorMessage);
       
-      // If it's a username conflict, focus on the username field
-      if (errorMessage.toLowerCase().includes('username') && errorMessage.toLowerCase().includes('taken')) {
+      // Focus on relevant field based on error type
+      if (errorMessage.toLowerCase().includes('username')) {
         setTimeout(() => {
           document.getElementById('username')?.focus();
         }, 100);
-      }
-      // If it's an email conflict, focus on the email field
-      else if (errorMessage.toLowerCase().includes('email') && errorMessage.toLowerCase().includes('registered')) {
+      } else if (errorMessage.toLowerCase().includes('email')) {
         setTimeout(() => {
           document.getElementById('email')?.focus();
         }, 100);
-      }
-      // If it's a password validation error, focus on the password field
-      else if (errorMessage.toLowerCase().includes('password')) {
+      } else if (errorMessage.toLowerCase().includes('password')) {
         setTimeout(() => {
           document.getElementById('password')?.focus();
         }, 100);

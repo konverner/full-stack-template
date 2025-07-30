@@ -45,7 +45,7 @@ const ItemDetails = ({ item, currentUser, onDelete }) => {
                         <Avatar
                             src={item.image_url || '/assets/images/image-placeholder.png'}
                             alt={`${item.name} Image`}
-                            sx={{ width: 72, height: 72, borderRadius: 2, bgcolor: 'grey.100' }}
+                            sx={{ width: 90, height: 90, borderRadius: 2, bgcolor: 'grey.100' }}
                             variant="rounded"
                         />
                     </Grid>
@@ -98,7 +98,10 @@ const ItemDetails = ({ item, currentUser, onDelete }) => {
                         </Typography>
                         {item.owner && item.owner.username && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
-                                Created by: <Box component="span" sx={{ fontWeight: 500 }}>{item.owner.username}</Box>
+                                Created by:{' '}
+                                <Link href={`/users/${item.owner.username}`} underline="hover">
+                                    <Box component="span" sx={{ fontWeight: 500 }}>{item.owner.username}</Box>
+                                </Link>
                             </Typography>
                         )}
                         {item.created_at && (

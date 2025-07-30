@@ -6,50 +6,49 @@ import {
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
 import { Link as RouterLink, useNavigate } from 'react-router';
-import { fetchItems as fetchItemsAPI } from '../../api/items'; // <-- Use API module
+import { listUsers } from '../../api/users'; // <-- Use users API
 
 const DEFAULT_ROWS_PER_PAGE = 20;
 
 const headCells = [
   { id: 'index', numeric: true, disablePadding: false, label: '#', sortable: false, align: 'center' },
-  { id: 'image', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
-  { id: 'name', numeric: false, disablePadding: false, label: 'Name', sortable: true, align: 'center' },
-  { id: 'available', numeric: false, disablePadding: false, label: 'Available', sortable: true, align: 'center' },
-  { id: 'creator', numeric: true, disablePadding: false, label: 'Creator', sortable: true, align: 'center' },
+  { id: 'avatar', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
+  { id: 'username', numeric: false, disablePadding: false, label: 'Username', sortable: true, align: 'center' },
+  { id: 'email', numeric: false, disablePadding: false, label: 'Email', sortable: true, align: 'center' },
+  { id: 'is_active', numeric: false, disablePadding: false, label: 'Active', sortable: true, align: 'center' },
+  { id: 'is_superuser', numeric: false, disablePadding: false, label: 'Superuser', sortable: true, align: 'center' },
   { id: 'actions', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
 ];
 
-
-const ItemsTable = () => {
-  const [items, setItems] = useState([]);
+const UsersTable = () => {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [order, setOrder] = useState('desc');
-  const [orderBy, setOrderBy] = useState('name');
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('username');
   const [page, setPage] = useState(0); // 0-indexed
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [totalRows, setTotalRows] = useState(0);
   const navigate = useNavigate();
 
-  const fetchItems = useCallback(async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = {
-        field: orderBy,
-        direction: order,
+        sort_field: orderBy,
+        sort_direction: order,
         limit: rowsPerPage,
-        page: page + 1, // API is 1-indexed
+        skip: page * rowsPerPage,
       };
       // Remove undefined or null params
       Object.keys(params).forEach(key => (params[key] == null) && delete params[key]);
-      
-      const data = await fetchItemsAPI(params); // Use imported API function
-      setItems(data.items || []);
-      setTotalRows(data.total || 0);
+      const data = await listUsers(params); // Use imported API function
+      setUsers(data.items || data.users || []);
+      setTotalRows(data.total || data.count || 0);
     } catch (err) {
       setError(err.message);
-      setItems([]);
+      setUsers([]);
       setTotalRows(0);
     } finally {
       setLoading(false);
@@ -57,8 +56,8 @@ const ItemsTable = () => {
   }, [order, orderBy, page, rowsPerPage]);
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -76,12 +75,11 @@ const ItemsTable = () => {
     setPage(0); // Reset to first page on rows per page change
   };
 
-  const handleRowClick = (event, id) => {
-    // Prevent navigation if the click was on a link or button inside the row
+  const handleRowClick = (event, username) => {
     if (event.target.closest('a, button')) {
       return;
     }
-    navigate(`/items/${id}`);
+    navigate(`/users/${username}`);
   };
 
   if (loading) {
@@ -89,13 +87,13 @@ const ItemsTable = () => {
   }
 
   if (error) {
-    return <Typography color="error" sx={{ p: 3 }}>Error loading items: {error}</Typography>;
+    return <Typography color="error" sx={{ p: 3 }}>Error loading users: {error}</Typography>;
   }
 
   return (
     <Paper sx={{ width: '100%', mb: 2 }}>
       <TableContainer>
-        <Table stickyHeader aria-label="items table">
+        <Table stickyHeader aria-label="users table">
           <TableHead>
             <TableRow>
               {headCells.map((headCell) => (
@@ -104,9 +102,9 @@ const ItemsTable = () => {
                   align={headCell.align || (headCell.numeric ? 'right' : 'left')}
                   padding={headCell.disablePadding ? 'none' : 'normal'}
                   sortDirection={orderBy === headCell.id ? order : false}
-                  sx={{ 
+                  sx={{
                     fontWeight: 'bold',
-                    ...(headCell.id === 'image' && { width: '80px' }), // Changed 'cover' to 'image' to match headCell id
+                    ...(headCell.id === 'avatar' && { width: '80px' }),
                     ...(headCell.id === 'index' && { width: '60px' }),
                     ...(headCell.id === 'actions' && { width: '120px' })
                   }}
@@ -127,24 +125,20 @@ const ItemsTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.length === 0 ? (
+            {users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={headCells.length} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                  No items found matching your criteria.
+                  No users found matching your criteria.
                 </TableCell>
               </TableRow>
             ) : (
-              items.map((item, index) => {
+              users.map((user, index) => {
                 const startIndex = page * rowsPerPage;
-                const ratingValue = parseFloat(item.overall_average_rating);
-                const formattedRating = isNaN(ratingValue) ? 'N/A' : ratingValue.toFixed(1);
-                const reviewCount = item.total_review_count?.toLocaleString() ?? 'N/A';
-
                 return (
                   <TableRow
                     hover
-                    key={item.id}
-                    onClick={(event) => handleRowClick(event, item.slug)}
+                    key={user.username}
+                    onClick={(event) => handleRowClick(event, user.username)}
                     sx={{ cursor: 'pointer' }}
                   >
                     {/* Index */}
@@ -152,48 +146,51 @@ const ItemsTable = () => {
                       {startIndex + index + 1}
                     </TableCell>
 
-                    {/* Cover */}
+                    {/* Avatar */}
                     <TableCell align="center">
                       <Avatar
-                        src={item.image_url}
-                        alt={`${item.name || 'Book'} Cover`}
-                        variant="rounded"
-                        sx={{ 
-                          width: 90, 
-                          height: 90, 
+                        src={user.avatar_url}
+                        alt={user.username}
+                        sx={{
+                          width: 48,
+                          height: 48,
                           mx: 'auto',
                           bgcolor: 'grey.200'
                         }}
-                      >
-                      </Avatar>
+                      />
                     </TableCell>
 
-                    {/* Title */}
+                    {/* Username */}
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                        {item.name || 'N/A'}
+                        {user.username}
                       </Typography>
                     </TableCell>
 
-                    {/* Availability */}
+                    {/* Email */}
                     <TableCell align="center">
-                        <Box component="span">
-                        {item.available ? <DoneIcon /> : <CancelIcon />}
-                        </Box>
+                      {user.email || 'N/A'}
                     </TableCell>
 
-                    {/* Owner */}
+                    {/* Active */}
                     <TableCell align="center">
-                        <MuiLink color='secondary' component={RouterLink} to={`/items/${item.slug}`} onClick={(e) => e.stopPropagation()}>
-                        {item.owner.username || 'N/A'}
-                        </MuiLink>
+                      <Box component="span">
+                        {user.is_active ? <DoneIcon color="success" /> : <CancelIcon color="error" />}
+                      </Box>
+                    </TableCell>
+
+                    {/* Superuser */}
+                    <TableCell align="center">
+                      <Box component="span">
+                        {user.is_superuser ? <DoneIcon color="primary" /> : <CancelIcon color="disabled" />}
+                      </Box>
                     </TableCell>
 
                     {/* Actions */}
                     <TableCell align="center">
                       <Button
                         component={RouterLink}
-                        to={`/items/${item.slug}`}
+                        to={`/users/${user.username}`}
                         variant="outlined"
                         size="small"
                         onClick={(e) => e.stopPropagation()}
@@ -224,4 +221,4 @@ const ItemsTable = () => {
   );
 };
 
-export default ItemsTable;
+export default UsersTable;

@@ -5,8 +5,8 @@ import logging
 from slugify import slugify
 
 
-from app.items import models as item_models
-from app.items import schemas as item_schemas
+from . import models as item_models
+from . import schemas as item_schemas
 
 # Get logger
 logger = logging.getLogger(__name__)

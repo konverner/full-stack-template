@@ -14,7 +14,7 @@ const Header = () => {
     setIsAuthenticated(authStatus);
     if (authStatus) {
       const userProfile = getUserProfileData();
-      setIsAdmin(userProfile?.is_admin === true); 
+      setIsAdmin(userProfile?.is_superuser === true); 
     } else {
       setIsAdmin(false);
     }
@@ -60,6 +60,15 @@ const Header = () => {
               style={activeLinkStyle}
             >
               Items
+            </Button>
+            <Button
+              component={NavLink}
+              to="/users"
+              color="inherit"
+              className="nav-link"
+              style={activeLinkStyle}
+            >
+              Users
             </Button>
           </Box>
           <Box component="nav" id="main-nav" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

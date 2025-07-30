@@ -4,18 +4,19 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ..database.core import get_db
-from . import schemas
+from ..users import schemas as user_schemas
 from .service import auth_service
 from . import security
 from ..dependencies import get_current_active_user
-from .models import User
+from ..users.models import User
 from .. import schemas as common_schemas
+from . import schemas
 
 router = APIRouter()
 
-@router.post("/register", response_model=schemas.UserRead, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=user_schemas.UserRead, status_code=status.HTTP_201_CREATED)
 async def register_user(
-    user_in: schemas.UserCreate,
+    user_in: user_schemas.UserCreate,
     db: Session = Depends(get_db)
 ):
     """Register a new user."""
@@ -78,14 +79,14 @@ async def refresh_access_token(
 
 CurrentUser = Annotated[User, Depends(get_current_active_user)]
 
-@router.get("/me", response_model=schemas.UserRead)
+@router.get("/me", response_model=user_schemas.UserRead)
 async def read_users_me(current_user: CurrentUser):
     """Get current logged-in user's profile."""
     return current_user
 
-@router.patch("/me", response_model=schemas.UserRead)
+@router.patch("/me", response_model=user_schemas.UserRead)
 async def update_users_me(
-    user_in: schemas.UserUpdate,
+    user_in: user_schemas.UserUpdate,
     current_user: CurrentUser,
     db: Session = Depends(get_db),
 ):
@@ -94,7 +95,7 @@ async def update_users_me(
 
 @router.put("/password", response_model=common_schemas.Message)
 async def update_users_password(
-    password_in: schemas.UserPasswordUpdate,
+    password_in: user_schemas.UserPasswordUpdate,
     current_user: CurrentUser,
     db: Session = Depends(get_db),
 ):

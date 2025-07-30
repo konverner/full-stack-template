@@ -2,7 +2,7 @@ from pydantic import BaseModel, validator
 from typing import Optional
 import re
 from datetime import datetime
-from app.auth.schemas import UserRead
+from ..users.schemas import UserRead
 
 
 class ItemBase(BaseModel):

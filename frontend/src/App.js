@@ -9,6 +9,10 @@ import ProfilePage from './pages/auth/profile.js';
 import ItemsDetailsPage from './pages/items/Details.js';
 import CreateItemPage from './pages/items/Create.js';
 import EditItemPage from './pages/items/Edit.js';
+import UsersTablePage from './pages/users/Table.js';
+import CreateUserPage from './pages/users/Create.js';
+import EditUserPage from './pages/users/Edit.js';
+import UserDetails from './pages/users/Details.js';
 
 // Basic theme for Material UI
 const theme = createTheme({
@@ -48,6 +52,10 @@ function App() {
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/items/:itemSlug" element={< ItemsDetailsPage />} />
                     <Route path="/items/:itemSlug/edit" element={<EditItemPage />} />
+                    <Route path="/users" element={<UsersTablePage />} />
+                    <Route path="/users/:username" element={<UserDetails />} />
+                    <Route path="/users/create" element={<CreateUserPage />} />
+                    <Route path="/users/:username/edit" element={<EditUserPage />} />
                 </Routes>
             </main>
         </ThemeProvider>

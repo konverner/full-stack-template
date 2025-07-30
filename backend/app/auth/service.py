@@ -3,8 +3,9 @@ from sqlalchemy import select
 from fastapi import HTTPException, status
 from typing import Optional
 
-from .models import User
-from app.auth import schemas, security
+from ..users.models import User
+from . import security
+from ..users import schemas as user_schemas
 
 class AuthService:
 
@@ -24,7 +25,7 @@ class AuthService:
         """Check if a username already exists in the database."""
         return self.get_user_by_username(db, username=username) is not None
 
-    def create_user(self, db: Session, user_in: schemas.UserCreate) -> User:
+    def create_user(self, db: Session, user_in: user_schemas.UserCreate) -> User:
         # Check if username already exists
         if self.username_exists(db, username=user_in.username):
             raise HTTPException(
@@ -58,7 +59,7 @@ class AuthService:
             return None
         return user
 
-    def update_user_profile(self, db: Session, db_user: User, user_in: schemas.UserUpdate) -> User:
+    def update_user_profile(self, db: Session, db_user: User, user_in: user_schemas.UserUpdate) -> User:
         update_data = user_in.model_dump(exclude_unset=True)
 
         if "username" in update_data and update_data["username"] != db_user.username:
@@ -77,7 +78,7 @@ class AuthService:
         db.refresh(db_user)
         return db_user
 
-    def update_user_password(self, db: Session, db_user: User, password_in: schemas.UserPasswordUpdate) -> User:
+    def update_user_password(self, db: Session, db_user: User, password_in: user_schemas.UserPasswordUpdate) -> User:
         if not security.verify_password(password_in.current_password, db_user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 

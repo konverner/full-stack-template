@@ -1,0 +1,208 @@
+import React from 'react';
+import { Box, Typography, Grid, Paper, Avatar, Link, Button, Stack, Divider } from '@mui/material';
+import DoneIcon from '@mui/icons-material/Done';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { deleteUser } from '../../api/users.js';
+import { useNavigate } from 'react-router';
+
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};
+
+const UserDetails = ({ user, currentUser }) => {
+    const navigate = useNavigate();
+
+    if (!user) return null;
+
+    // Allow edit/delete if current user is superuser or is the user themselves
+    const canEditOrDelete =
+        currentUser &&
+        (currentUser.is_superuser || currentUser.username === user.username);
+
+    const handleDelete = async () => {
+        if (window.confirm(`Are you sure you want to delete user "${user.username}"?`)) {
+            try {
+                await deleteUser(user.username);
+                navigate('/users');
+            } catch (error) {
+                console.error('Delete failed:', error);
+                alert(`Failed to delete user: ${error.message}`);
+            }
+        }
+    };
+
+    return (
+        <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, sm: 3 } }}>
+            {/* Header Section */}
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <Avatar
+                        src={user.avatar_url}
+                        alt={user.username}
+                        sx={{
+                            width: { xs: 64, sm: 80 },
+                            height: { xs: 64, sm: 80 },
+                            bgcolor: 'grey.200'
+                        }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography 
+                            variant="h4" 
+                            component="h1"
+                            sx={{ 
+                                fontWeight: 600, 
+                                fontSize: { xs: '1.75rem', sm: '2.125rem' },
+                                mb: 0.5,
+                                wordBreak: 'break-word'
+                            }}
+                        >
+                            {user.username}
+                        </Typography>
+                        {user.email && (
+                            <Link 
+                                href={`mailto:${user.email}`} 
+                                underline="hover" 
+                                sx={{ 
+                                    color: 'text.secondary',
+                                    fontSize: '1rem',
+                                    wordBreak: 'break-word'
+                                }}
+                            >
+                                {user.email}
+                            </Link>
+                        )}
+                    </Box>
+                </Box>
+            </Paper>
+
+            {/* Content Grid */}
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+                <Grid item xs={12} md={6}>
+                    <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
+                        <Typography 
+                            variant="h6" 
+                            component="h2"
+                            gutterBottom 
+                            sx={{ fontWeight: 600, mb: 2 }}
+                        >
+                            Account Status
+                        </Typography>
+                        <Stack spacing={2}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    Active
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    {user.is_active ? (
+                                        <>
+                                            <DoneIcon color="success" fontSize="small" />
+                                            <Typography variant="body2" color="success.main">Yes</Typography>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CancelIcon color="error" fontSize="small" />
+                                            <Typography variant="body2" color="error.main">No</Typography>
+                                        </>
+                                    )}
+                                </Box>
+                            </Box>
+                            <Divider />
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    Superuser
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    {user.is_superuser ? (
+                                        <>
+                                            <DoneIcon color="primary" fontSize="small" />
+                                            <Typography variant="body2" color="primary.main">Yes</Typography>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CancelIcon color="disabled" fontSize="small" />
+                                            <Typography variant="body2" color="text.disabled">No</Typography>
+                                        </>
+                                    )}
+                                </Box>
+                            </Box>
+                        </Stack>
+                    </Paper>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
+                        <Typography 
+                            variant="h6" 
+                            component="h2"
+                            gutterBottom 
+                            sx={{ fontWeight: 600, mb: 2 }}
+                        >
+                            Account Information
+                        </Typography>
+                        <Stack spacing={2}>
+                            <Box>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                                    Created
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    {formatDate(user.created_at)}
+                                </Typography>
+                            </Box>
+                            <Divider />
+                            <Box>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                                    Last Updated
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    {formatDate(user.updated_at)}
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </Paper>
+                </Grid>
+            </Grid>
+
+            {/* Action Buttons */}
+            {canEditOrDelete && (
+                <Paper elevation={1} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                    <Stack 
+                        direction={{ xs: 'column', sm: 'row' }} 
+                        spacing={2}
+                        sx={{ alignItems: { xs: 'stretch', sm: 'center' } }}
+                    >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            href={`/users/${user.username}/edit`}
+                            sx={{ minWidth: 100 }}
+                        >
+                            Edit User
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={handleDelete}
+                            disabled={currentUser && currentUser.username === user.username}
+                            sx={{ minWidth: 100 }}
+                        >
+                            Delete User
+                        </Button>
+                        {currentUser && currentUser.username === user.username && (
+                            <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                You cannot delete your own account
+                            </Typography>
+                        )}
+                    </Stack>
+                </Paper>
+            )}
+        </Box>
+    );
+};
+
+export default UserDetails;

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError
 
-from app.auth.models import User
+from .users.models import User
 from .config import settings
 from .database.core import get_db
 from .auth.security import decode_token

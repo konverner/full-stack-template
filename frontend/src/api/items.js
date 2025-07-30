@@ -1,6 +1,6 @@
 // API Interaction Logic
-import { getAccessToken } from './auth.js'; // Import the auth function
-import { fetchApi } from './api.js'; // Import the fetchApi function
+import { getAccessToken } from './auth.js';
+import { fetchApi } from './api.js';
 
 
 // --- Specific API Functions ---
@@ -21,7 +21,7 @@ export async function getItemDetails(itemSlug) {
  */
 export async function adminListUsers(params = { skip: 0, limit: 50 }) {
     const query = new URLSearchParams(params).toString();
-    return fetchApi(`/admin/users/?${query}`, { method: 'GET' }, true); // Requires admin auth
+    return fetchApi(`/admin/users/?${query}`, { method: 'GET' }, true);
 }
 
 

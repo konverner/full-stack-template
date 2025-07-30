@@ -45,9 +45,7 @@ export async function fetchApi(endpoint, options = {}, requiresAuth = false) {
             } catch (e) {
                 errorData = { message: `HTTP error! status: ${response.status}` };
             }
-            // Enhance error message if possible
-            const errorMessage = errorData?.detail?.[0]?.msg || errorData?.message || `HTTP error! status: ${response.status}`;
-            throw new Error(errorMessage);
+            throw buildError(response, errorData);
         }
 
         // Handle cases with no content (e.g., 204 No Content)
@@ -107,16 +105,7 @@ export async function fetchAuth(endpoint, options = {}, requiresAuth = false) {
             } catch (e) {
                 errorData = { message: `HTTP error! status: ${response.status}` };
             }
-            // Enhance error message if possible
-            const errorMessage =
-                errorData?.detail?.[0]?.msg ||
-                errorData?.detail ||
-                errorData?.message ||
-                `HTTP error! status: ${response.status}`;
-            const error = new Error(errorMessage);
-            error.response = response;
-            error.data = errorData;
-            throw error;
+            throw buildError(response, errorData);
         }
 
         // Handle cases with no content (e.g., 204 No Content)
@@ -130,4 +119,20 @@ export async function fetchAuth(endpoint, options = {}, requiresAuth = false) {
         console.error('API Fetch Error:', error);
         throw error;
     }
+}
+
+function parseErrorResponse(response, errorData) {
+    // Try to extract the most specific error message
+    if (errorData?.detail?.[0]?.msg) return errorData.detail[0].msg;
+    if (errorData?.detail) return errorData.detail;
+    if (errorData?.message) return errorData.message;
+    return `HTTP error! status: ${response.status}`;
+}
+
+function buildError(response, errorData) {
+    const errorMessage = parseErrorResponse(response, errorData);
+    const error = new Error(errorMessage);
+    error.response = response;
+    error.data = errorData;
+    return error;
 }
