@@ -47,6 +47,7 @@ class UserBase(BaseModel):
     email: Optional[EmailStr] = Field(None, description="User's email address (optional)")
     avatar_url: Optional[str] = Field(None, description="URL to the user's avatar image")
     is_active: bool = Field(True, description="Indicates if the user account is active")
+    is_superuser: bool = Field(False, description="Indicates if the user has superuser privileges")
 
     @validator('username')
     def validate_username_field(cls, v):
@@ -67,14 +68,10 @@ class UserRead(UserBase):
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = Field(None, min_length=1, max_length=64, description="New username following Google Workspace guidelines")
     avatar_url: Optional[str] = Field(None, description="New URL to the user's avatar image")
-
-    @validator('username')
-    def validate_username_field(cls, v):
-        if v is not None:
-            return validate_username(v)
-        return v
+    email: Optional[EmailStr] = Field(None, description="New email address for the user (optional)")
+    is_active: Optional[bool] = Field(None, description="Indicates if the user account is active (optional)")
+    is_superuser: Optional[bool] = Field(None, description="Indicates if the user has superuser privileges (optional)")
 
 
 class UserPasswordUpdate(BaseModel):

@@ -1,0 +1,218 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel } from '@mui/material';
+import { ItemsService } from '../../client/services/ItemsService';
+import { ItemCreate } from '../../client';
+import { getAccessToken } from '../../utils/auth';
+
+interface ItemData {
+    name: string;
+    slug: string;
+    description: string;
+    available: boolean;
+    image_url: string;
+    website_url: string;
+}
+
+interface FieldErrors {
+    slug: string;
+    image_url: string;
+    website_url: string;
+}
+
+const CreateForm: React.FC = () => {
+    const [itemData, setItemData] = useState<ItemData>({
+        name: '',
+        slug: '',
+        description: '',
+        available: true,
+        image_url: '',
+        website_url: '',
+    });
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+        slug: '',
+        image_url: '',
+        website_url: '',
+    });
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Set the authentication token for API calls
+        const initializeAuth = async () => {
+            const token = getAccessToken();
+            if (token) {
+                const { OpenAPI } = await import('../../client');
+                OpenAPI.TOKEN = token;
+            }
+        };
+        initializeAuth();
+    }, []);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const { name, value } = event.target;
+        setItemData(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
+
+    const trimItemData = (data: ItemData): ItemData => {
+        const trimmed: any = { ...data };
+        (Object.keys(trimmed) as (keyof ItemData)[]).forEach(key => {
+            if (typeof trimmed[key] === 'string') {
+                (trimmed[key] as string) = (trimmed[key] as string).trim();
+            }
+        });
+        return trimmed;
+    };
+
+    const validateFields = (): boolean => {
+        const trimmedData = trimItemData(itemData);
+        const errors = { slug: '', image_url: '', website_url: '' };
+
+        // Slug: lowercase letters, numbers, hyphens only
+        if (trimmedData.slug && !/^[a-z0-9-]+$/.test(trimmedData.slug)) {
+            errors.slug = 'Slug must contain only lowercase letters, numbers, and hyphens.';
+        }
+
+        // Image URL: must be a valid URL if not empty
+        if (trimmedData.image_url && !/^https?:\/\/.+\..+/.test(trimmedData.image_url)) {
+            errors.image_url = 'Image URL must be a valid URL.';
+        }
+
+        // Website URL: must be a valid URL if not empty
+        if (trimmedData.website_url && !/^https?:\/\/.+\..+/.test(trimmedData.website_url)) {
+            errors.website_url = 'Website URL must be a valid URL.';
+        }
+
+        setFieldErrors(errors);
+
+        // Return true if no errors
+        return !errors.slug && !errors.image_url && !errors.website_url;
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        event.preventDefault();
+        setError(null);
+
+        // Trim data before validation and submission
+        const trimmedData = trimItemData(itemData);
+
+        // Validate fields before submitting
+        if (!validateFields()) {
+            return;
+        }
+
+        setLoading(true);
+        // Filter out empty optional fields but keep boolean values
+        const dataToSubmit: ItemCreate = { ...trimmedData, name: trimmedData.name || '' };
+        (Object.keys(dataToSubmit) as (keyof ItemData)[]).forEach(key => {
+            if (key === 'available') {
+                // Always include available as boolean
+                dataToSubmit[key] = Boolean(dataToSubmit[key]);
+            } else if (dataToSubmit[key] === '') {
+                delete dataToSubmit[key];
+            }
+        });
+
+        try {
+            const newItem: any = await ItemsService.createItemApiV1ItemsPost({ requestBody: dataToSubmit });
+            navigate(`/items/${newItem.slug}`);
+        } catch (err: any) {
+            setError(err.message || 'An error occurred while creating the item.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Create Item
+            </Typography>
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label="Item Name"
+                name="name"
+                autoComplete="name"
+                autoFocus
+                value={itemData.name}
+                onChange={handleChange}
+            />
+            <TextField
+                margin="normal"
+                fullWidth
+                id="slug"
+                label="Slug (URL-friendly name)"
+                name="slug"
+                value={itemData.slug}
+                onChange={handleChange}
+                helperText={fieldErrors.slug || "Optional. Use lowercase letters, numbers, and hyphens."}
+                error={!!fieldErrors.slug}
+            />
+            <TextField
+                margin="normal"
+                fullWidth
+                name="description"
+                label="Description"
+                id="description"
+                multiline
+                rows={4}
+                value={itemData.description}
+                onChange={handleChange}
+            />
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={itemData.available}
+                        onChange={(event) => setItemData({ ...itemData, available: event.target.checked })}
+                        color="primary"
+                        name="available"
+                        id="available"
+                    />
+                }
+                label="Available"
+                sx={{ mt: 2, mb: 1 }}
+            />
+            <TextField
+                margin="normal"
+                fullWidth
+                name="image_url"
+                label="Image URL"
+                id="image_url"
+                value={itemData.image_url}
+                onChange={handleChange}
+                helperText={fieldErrors.image_url}
+                error={!!fieldErrors.image_url}
+            />
+            <TextField
+                margin="normal"
+                fullWidth
+                name="website_url"
+                label="Website URL"
+                id="website_url"
+                value={itemData.website_url}
+                onChange={handleChange}
+                helperText={fieldErrors.website_url}
+                error={!!fieldErrors.website_url}
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                sx={{ mt: 2, mb: 2 }}
+                disabled={loading}
+            >
+                {loading ? <CircularProgress size={24} /> : 'Create Item'}
+            </Button>
+        </Box>
+    );
+};
+
+export default CreateForm;

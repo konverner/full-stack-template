@@ -1,26 +1,30 @@
 {
-  "name": "learn-react",
+  "name": "full-stack-project",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
-    "@ark-ui/react": "^5.11.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "@mui/system": "^7.1.0",
+    "@tanstack/react-query": "^5.28.14",
+    "@tanstack/react-query-devtools": "^5.74.9",
+    "axios": "1.9.0",
     "next-themes": "^0.4.6",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^5.0.0",
+    "react-hook-form": "7.49.3",
     "react-icons": "^5.5.0",
-    "react-router": "^7.6.1",
-    "react-scripts": "^5.0.1"
+    "react-router-dom": "^6.25.1"
   },
   "scripts": {
-    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate-client": "openapi-ts --input http://localhost:8080/api/v1/openapi.json --output ./src/client --client axios"
   },
   "browserslist": {
     "production": [
@@ -35,6 +39,12 @@
     ]
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.27.2"
+    "@hey-api/openapi-ts": "^0.57.0",
+    "@types/node": "^22.15.3",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react-swc": "^3.9.0",
+    "typescript": "^5.2.2",
+    "vite": "^6.3.4"
   }
 }
