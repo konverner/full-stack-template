@@ -6,7 +6,6 @@ from pydantic import (
     AnyUrl,
     BeforeValidator,
     EmailStr,
-    HttpUrl,
     PostgresDsn,
     computed_field,
     model_validator,
@@ -70,7 +69,6 @@ class Settings(BaseSettings):
             port=self.PG_PORT,
             path=self.PG_DB,
         )
-
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"
     FIRST_SUPERUSER_USERNAME: str

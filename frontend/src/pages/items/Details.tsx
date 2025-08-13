@@ -54,7 +54,7 @@ const ItemsDetailsPage: React.FC = () => {
     useEffect(() => {
         const fetchItemDetails = async (): Promise<void> => {
             if (!itemSlug) return;
-            
+
             try {
                 setLoading(true);
                 setError(null);
@@ -115,7 +115,7 @@ const ItemsDetailsPage: React.FC = () => {
         );
     }
 
-    
+
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -135,7 +135,7 @@ const ItemsDetailsPage: React.FC = () => {
                 <ItemDetails
                     item={item}
                     currentUser={currentUser}
-                    
+
                 />
             </Container>
             <Footer />

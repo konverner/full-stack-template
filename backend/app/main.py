@@ -39,7 +39,9 @@ app.include_router(items_router, prefix=f"{settings.API_V1_STR}/items", tags=["I
 app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["Users"])
 
 # Authorization router
-app.include_router(auth_router, prefix=settings.AUTH_STR, tags=["Authorization & Profile"])
+app.include_router(
+    auth_router, prefix=settings.AUTH_STR, tags=["Authorization & Profile"]
+)
 
 
 # --- Root Endpoint ---
@@ -52,10 +54,11 @@ async def read_root():
         "message": f"Welcome to the {settings.PROJECT_NAME} API",
         "version": settings.PROJECT_VERSION,
         "docs_url": f"{settings.API_V1_STR}/docs",
-        "redoc_url": f"{settings.API_V1_STR}/redoc"
-        }
- 
-# --- Health Check Endpoint ---   
+        "redoc_url": f"{settings.API_V1_STR}/redoc",
+    }
+
+
+# --- Health Check Endpoint ---
 @app.head("/health", tags=["Health Check"])
 async def head_root():
     """
@@ -68,6 +71,7 @@ async def head_root():
 if __name__ == "__main__":
     import uvicorn
     from app.database.core import init_db
+
     # Initialize the database connection
     init_db()
     # Run the app with Uvicorn if this file is executed directly

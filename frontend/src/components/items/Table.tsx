@@ -63,8 +63,8 @@ const ItemsTable: React.FC = () => {
       };
       // Remove undefined or null params
       Object.keys(params).forEach(key => (params[key] == null) && delete params[key]);
-      
-      const data: ItemsResponse = await ItemsService.listItemsApiV1ItemsGet({ 
+
+      const data: ItemsResponse = await ItemsService.listItemsApiV1ItemsGet({
         sortField: orderBy,
         sortDirection: order,
         limit: rowsPerPage,
@@ -128,7 +128,7 @@ const ItemsTable: React.FC = () => {
                   align={headCell.align || (headCell.numeric ? 'right' : 'left')}
                   padding={headCell.disablePadding ? 'none' : 'normal'}
                   sortDirection={orderBy === headCell.id ? order : false}
-                  sx={{ 
+                  sx={{
                     fontWeight: 'bold',
                     ...(headCell.id === 'image' && { width: '80px' }), // Changed 'cover' to 'image' to match headCell id
                     ...(headCell.id === 'index' && { width: '60px' }),
@@ -160,7 +160,7 @@ const ItemsTable: React.FC = () => {
             ) : (
               items.map((item, index) => {
                 const startIndex = page * rowsPerPage;
-                
+
 
                 return (
                   <TableRow
@@ -180,9 +180,9 @@ const ItemsTable: React.FC = () => {
                         src={item.image_url || undefined}
                         alt={`${item.name || 'Book'} Cover`}
                         variant="rounded"
-                        sx={{ 
-                          width: 90, 
-                          height: 90, 
+                        sx={{
+                          width: 90,
+                          height: 90,
                           mx: 'auto',
                           bgcolor: 'grey.200'
                         }}

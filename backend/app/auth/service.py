@@ -7,8 +7,8 @@ from ..users.models import User
 from . import security
 from ..users import schemas as user_schemas
 
-class AuthService:
 
+class AuthService:
     def get_user_by_email(self, db: Session, email: str) -> Optional[User]:
         result = db.execute(select(User).filter(User.email == email))
         return result.scalar_one_or_none()
@@ -30,14 +30,14 @@ class AuthService:
         if self.username_exists(db, username=user_in.username):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Username '{user_in.username}' is already taken. Please choose a different username."
+                detail=f"Username '{user_in.username}' is already taken. Please choose a different username.",
             )
-        
+
         # Check if email already exists (if provided)
         if user_in.email and self.get_user_by_email(db, email=user_in.email):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Email '{user_in.email}' is already registered. Please use a different email address."
+                detail=f"Email '{user_in.email}' is already registered. Please use a different email address.",
             )
 
         hashed_password = security.get_password_hash(user_in.password)
@@ -53,21 +53,27 @@ class AuthService:
         db.refresh(db_user)
         return db_user
 
-    def authenticate_user(self, db: Session, username: str, password: str) -> Optional[User]:
+    def authenticate_user(
+        self, db: Session, username: str, password: str
+    ) -> Optional[User]:
         user = self.get_user_by_username(db, username=username)
         if not user or not security.verify_password(password, user.password_hash):
             return None
         return user
 
-    def update_user_profile(self, db: Session, db_user: User, user_in: user_schemas.UserUpdate) -> User:
+    def update_user_profile(
+        self, db: Session, db_user: User, user_in: user_schemas.UserUpdate
+    ) -> User:
         update_data = user_in.model_dump(exclude_unset=True)
 
         if "username" in update_data and update_data["username"] != db_user.username:
-            existing_user = self.get_user_by_username(db, username=update_data["username"])
+            existing_user = self.get_user_by_username(
+                db, username=update_data["username"]
+            )
             if existing_user and existing_user.id != db_user.id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Username already taken"
+                    detail="Username already taken",
                 )
             db_user.username = update_data["username"]
 
@@ -78,15 +84,20 @@ class AuthService:
         db.refresh(db_user)
         return db_user
 
-    def update_user_password(self, db: Session, db_user: User, password_in: user_schemas.UserPasswordUpdate) -> User:
-        if not security.verify_password(password_in.current_password, db_user.password_hash):
+    def update_user_password(
+        self, db: Session, db_user: User, password_in: user_schemas.UserPasswordUpdate
+    ) -> User:
+        if not security.verify_password(
+            password_in.current_password, db_user.password_hash
+        ):
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Incorrect current password"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Incorrect current password",
             )
 
         db_user.password_hash = security.get_password_hash(password_in.new_password)
         db.commit()
         return db_user
+
 
 auth_service = AuthService()

@@ -13,24 +13,28 @@ class ItemBase(BaseModel):
     image_url: Optional[str] = None
     website_url: Optional[str] = None
 
-    @validator('slug')
+    @validator("slug")
     def validate_slug(cls, v):
         if v is not None:
             # Check if slug matches URL-friendly pattern
-            if not re.match(r'^[a-z0-9]+(?:-[a-z0-9]+)*$', v):
-                raise ValueError('Slug must contain only lowercase letters, numbers, and hyphens. Cannot start or end with hyphens.')
+            if not re.match(r"^[a-z0-9]+(?:-[a-z0-9]+)*$", v):
+                raise ValueError(
+                    "Slug must contain only lowercase letters, numbers, and hyphens. Cannot start or end with hyphens."
+                )
             # Check length
             if len(v) > 255:
-                raise ValueError('Slug cannot exceed 255 characters')
+                raise ValueError("Slug cannot exceed 255 characters")
             if len(v) < 1:
-                raise ValueError('Slug cannot be empty')
+                raise ValueError("Slug cannot be empty")
         return v
 
     class Config:
         extra = "ignore"
 
+
 class ItemCreate(ItemBase):
     pass
+
 
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
@@ -38,6 +42,7 @@ class ItemUpdate(ItemBase):
 
     class Config:
         extra = "ignore"
+
 
 class ItemRead(ItemBase):
     id: int
@@ -51,29 +56,29 @@ class ItemRead(ItemBase):
     class Config:
         from_attributes = True
 
+
 class ItemReadDetails(ItemRead):
     available: bool = True  # Remove Optional since this should always have a value
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+
 # --- Filtering and Sorting ---
+
 
 class ItemFilter(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     owner_id: Optional[int] = None
 
+
 class ItemSort(BaseModel):
     field: str
     direction: str  # 'asc' or 'desc'
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "field": "name",
-                "direction": "asc"
-            }
-        }
+        json_schema_extra = {"example": {"field": "name", "direction": "asc"}}
+
 
 class ItemListResponse(BaseModel):
     items: list[ItemRead]
@@ -90,9 +95,9 @@ class ItemListResponse(BaseModel):
                         "description": "This is an example item.",
                         "image_url": "https://example.com/logo.png",
                         "website_url": "https://example.com",
-                        "owner_id": 1
+                        "owner_id": 1,
                     }
                 ],
-                "total": 1
+                "total": 1,
             }
         }

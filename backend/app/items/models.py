@@ -1,17 +1,17 @@
-from sqlalchemy import (
-    Boolean, Column, Integer, String, Text, ForeignKey
-)
+from sqlalchemy import Boolean, Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
 
 # Import Base from the central location
 from ..models import Base, TimeStampMixin
+
 
 class Item(Base, TimeStampMixin):
     """
     Generic base model for rankable items (Exchanges, Books, etc.).
     Uses joined table inheritance.
     """
-    __tablename__ = 'items'
+
+    __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)
 
@@ -26,8 +26,4 @@ class Item(Base, TimeStampMixin):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # relationship fields
-    owner = relationship(
-        "User", 
-        back_populates="items",
-        foreign_keys=[owner_id]
-    )
+    owner = relationship("User", back_populates="items", foreign_keys=[owner_id])

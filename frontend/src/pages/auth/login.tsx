@@ -16,19 +16,19 @@ const LoginPage = () => {
     event.preventDefault();
     setError(null);
     setLoading(true);
-    
+
     try {
       // Send as form data to match OAuth2PasswordRequestForm
       const requestBody = {
         username: username.trim(),
         password: password
       };
-      
+
       const response = await AuthorizationProfileService.loginForAccessTokenAuthTokenPost({ requestBody });
-      
+
       // Save tokens first
       saveTokens(response.access_token, response.refresh_token);
-      
+
       const userProfile = await AuthorizationProfileService.readUsersMeAuthMeGet();
       saveUserProfile(userProfile);
       window.location.href = '/';

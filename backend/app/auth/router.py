@@ -14,18 +14,22 @@ from . import schemas
 
 router = APIRouter()
 
-@router.post("/register", response_model=user_schemas.UserRead, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/register",
+    response_model=user_schemas.UserRead,
+    status_code=status.HTTP_201_CREATED,
+)
 async def register_user(
-    user_in: user_schemas.UserCreate,
-    db: Session = Depends(get_db)
+    user_in: user_schemas.UserCreate, db: Session = Depends(get_db)
 ):
     """Register a new user."""
     return auth_service.create_user(db=db, user_in=user_in)
 
+
 @router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(
-    db: Session = Depends(get_db),
-    form_data: OAuth2PasswordRequestForm = Depends()
+    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     """Authenticate user and return access and refresh tokens."""
     user = auth_service.authenticate_user(
@@ -43,10 +47,10 @@ async def login_for_access_token(
 
     return schemas.Token(access_token=access_token, refresh_token=refresh_token)
 
+
 @router.post("/refresh", response_model=schemas.Token)
 async def refresh_access_token(
-    refresh_request: schemas.RefreshTokenRequest,
-    db: Session = Depends(get_db)
+    refresh_request: schemas.RefreshTokenRequest, db: Session = Depends(get_db)
 ):
     """Get a new access token using a refresh token."""
     credentials_exception = HTTPException(
@@ -54,7 +58,7 @@ async def refresh_access_token(
         detail="Could not validate refresh token",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     payload = security.decode_token(refresh_request.refresh_token)
     if payload is None or payload.get("type") != "refresh":
         raise credentials_exception
@@ -62,7 +66,7 @@ async def refresh_access_token(
     user_id_str = payload.get("sub")
     if user_id_str is None:
         raise credentials_exception
-    
+
     try:
         user_id = int(user_id_str)
     except ValueError:
@@ -77,12 +81,15 @@ async def refresh_access_token(
 
     return schemas.Token(access_token=new_access_token, refresh_token=new_refresh_token)
 
+
 CurrentUser = Annotated[User, Depends(get_current_active_user)]
+
 
 @router.get("/me", response_model=user_schemas.UserRead)
 async def read_users_me(current_user: CurrentUser):
     """Get current logged-in user's profile."""
     return current_user
+
 
 @router.patch("/me", response_model=user_schemas.UserRead)
 async def update_users_me(
@@ -91,7 +98,10 @@ async def update_users_me(
     db: Session = Depends(get_db),
 ):
     """Update current logged-in user's profile."""
-    return auth_service.update_user_profile(db=db, db_user=current_user, user_in=user_in)
+    return auth_service.update_user_profile(
+        db=db, db_user=current_user, user_in=user_in
+    )
+
 
 @router.put("/password", response_model=common_schemas.Message)
 async def update_users_password(
@@ -100,5 +110,7 @@ async def update_users_password(
     db: Session = Depends(get_db),
 ):
     """Update current logged-in user's password."""
-    auth_service.update_user_password(db=db, db_user=current_user, password_in=password_in)
+    auth_service.update_user_password(
+        db=db, db_user=current_user, password_in=password_in
+    )
     return common_schemas.Message(message="Password updated successfully")

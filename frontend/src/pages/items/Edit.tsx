@@ -16,7 +16,7 @@ const EditItemPage: React.FC = () => {
     useEffect(() => {
         const fetchItem = async (): Promise<void> => {
             if (!itemSlug) return;
-            
+
             try {
                 setLoading(true);
                 setError(null);

@@ -65,11 +65,11 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                         }}
                     />
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography 
-                            variant="h4" 
+                        <Typography
+                            variant="h4"
                             component="h1"
-                            sx={{ 
-                                fontWeight: 600, 
+                            sx={{
+                                fontWeight: 600,
                                 fontSize: { xs: '1.75rem', sm: '2.125rem' },
                                 mb: 0.5,
                                 wordBreak: 'break-word'
@@ -78,10 +78,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                             {user.username}
                         </Typography>
                         {user.email && (
-                            <Link 
-                                href={`mailto:${user.email}`} 
-                                underline="hover" 
-                                sx={{ 
+                            <Link
+                                href={`mailto:${user.email}`}
+                                underline="hover"
+                                sx={{
                                     color: 'text.secondary',
                                     fontSize: '1rem',
                                     wordBreak: 'break-word'
@@ -98,10 +98,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
             <Grid container spacing={3} sx={{ mb: 3 }}>
                 <Grid size={12}>
                     <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
-                        <Typography 
-                            variant="h6" 
+                        <Typography
+                            variant="h6"
                             component="h2"
-                            gutterBottom 
+                            gutterBottom
                             sx={{ fontWeight: 600, mb: 2 }}
                         >
                             Account Status
@@ -150,10 +150,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
 
                 <Grid size={12}>
                     <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
-                        <Typography 
-                            variant="h6" 
+                        <Typography
+                            variant="h6"
                             component="h2"
-                            gutterBottom 
+                            gutterBottom
                             sx={{ fontWeight: 600, mb: 2 }}
                         >
                             Account Information
@@ -184,8 +184,8 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
             {/* Action Buttons */}
             {canEditOrDelete && (
                 <Paper elevation={1} sx={{ p: 2, bgcolor: 'grey.50' }}>
-                    <Stack 
-                        direction={{ xs: 'column', sm: 'row' }} 
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
                         spacing={2}
                         sx={{ alignItems: { xs: 'stretch', sm: 'center' } }}
                     >

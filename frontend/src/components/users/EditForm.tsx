@@ -100,9 +100,9 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, username }) => 
     }
 
     try {
-      const updatedUser = await UsersService.updateUserByUsernameApiV1UsersUsernamePut({ 
-        username, 
-        requestBody: dataToSubmit 
+      const updatedUser = await UsersService.updateUserByUsernameApiV1UsersUsernamePut({
+        username,
+        requestBody: dataToSubmit
       });
       navigate(`/users/${updatedUser.username}`);
     } catch (err: any) {

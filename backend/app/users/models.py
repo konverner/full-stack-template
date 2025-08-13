@@ -1,13 +1,13 @@
-from sqlalchemy import (
-    Column, Integer, String, Boolean
-)
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 
 from ..models import Base, TimeStampMixin
 
+
 class User(Base, TimeStampMixin):
     """SQLAlchemy model for users."""
-    __tablename__ = 'users'
+
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     username = Column(String(100), nullable=False, unique=True, index=True)

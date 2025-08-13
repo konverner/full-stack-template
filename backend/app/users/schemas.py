@@ -10,77 +10,112 @@ def validate_username(username: str) -> str:
     """
     if not username:
         raise ValueError("Username cannot be empty")
-    
+
     # Convert to lowercase
     username = username.lower()
-    
+
     # Check length (max 64 characters)
     if len(username) > 64:
         raise ValueError("Username cannot exceed 64 characters")
-    
+
     # Check for reserved words
-    reserved_words = ['abuse', 'postmaster']
+    reserved_words = ["abuse", "postmaster"]
     if username in reserved_words:
         raise ValueError(f"Username '{username}' is a reserved word and cannot be used")
-    
+
     # Check allowed characters: letters, numbers, dashes, underscores, apostrophes, periods
     if not re.match(r"^[a-z0-9\-_'.]+$", username):
-        raise ValueError("Username can only contain letters (a-z), numbers (0-9), dashes (-), underscores (_), and periods (.)")
-    
+        raise ValueError(
+            "Username can only contain letters (a-z), numbers (0-9), dashes (-), underscores (_), and periods (.)"
+        )
+
     # Check for consecutive periods
-    if '..' in username:
+    if ".." in username:
         raise ValueError("Username cannot contain consecutive periods")
-    
+
     # Check first character (cannot be a period)
-    if username.startswith('.'):
+    if username.startswith("."):
         raise ValueError("Username cannot start with a period")
-    
-    # Check last character (cannot be a period)  
-    if username.endswith('.'):
+
+    # Check last character (cannot be a period)
+    if username.endswith("."):
         raise ValueError("Username cannot end with a period")
-    
+
     return username
 
 
 class UserBase(BaseModel):
-    username: str = Field(..., min_length=1, max_length=64, description="Unique username following Google Workspace guidelines")
-    email: Optional[EmailStr] = Field(None, description="User's email address (optional)")
-    avatar_url: Optional[str] = Field(None, description="URL to the user's avatar image")
+    username: str = Field(
+        ...,
+        min_length=1,
+        max_length=64,
+        description="Unique username following Google Workspace guidelines",
+    )
+    email: Optional[EmailStr] = Field(
+        None, description="User's email address (optional)"
+    )
+    avatar_url: Optional[str] = Field(
+        None, description="URL to the user's avatar image"
+    )
     is_active: bool = Field(True, description="Indicates if the user account is active")
-    is_superuser: bool = Field(False, description="Indicates if the user has superuser privileges")
+    is_superuser: bool = Field(
+        False, description="Indicates if the user has superuser privileges"
+    )
 
-    @validator('username')
+    @validator("username")
     def validate_username_field(cls, v):
         return validate_username(v)
 
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=8, description="Password for the user account, at least 8 characters")
+    password: str = Field(
+        ...,
+        min_length=8,
+        description="Password for the user account, at least 8 characters",
+    )
 
 
 class UserRead(UserBase):
     id: int = Field(..., description="Unique identifier for the user")
-    is_superuser: bool = Field(..., description="Indicates if the user has superuser privileges")
-    created_at: datetime = Field(..., description="Timestamp when the user account was created")
+    is_superuser: bool = Field(
+        ..., description="Indicates if the user has superuser privileges"
+    )
+    created_at: datetime = Field(
+        ..., description="Timestamp when the user account was created"
+    )
 
     class Config:
         from_attributes = True
 
 
 class UserUpdate(BaseModel):
-    avatar_url: Optional[str] = Field(None, description="New URL to the user's avatar image")
-    email: Optional[EmailStr] = Field(None, description="New email address for the user (optional)")
-    is_active: Optional[bool] = Field(None, description="Indicates if the user account is active (optional)")
-    is_superuser: Optional[bool] = Field(None, description="Indicates if the user has superuser privileges (optional)")
+    avatar_url: Optional[str] = Field(
+        None, description="New URL to the user's avatar image"
+    )
+    email: Optional[EmailStr] = Field(
+        None, description="New email address for the user (optional)"
+    )
+    is_active: Optional[bool] = Field(
+        None, description="Indicates if the user account is active (optional)"
+    )
+    is_superuser: Optional[bool] = Field(
+        None, description="Indicates if the user has superuser privileges (optional)"
+    )
 
 
 class UserPasswordUpdate(BaseModel):
     current_password: str = Field(..., description="Current password of the user")
-    new_password: str = Field(..., min_length=8, description="New password for the user account, at least 8 characters")
+    new_password: str = Field(
+        ...,
+        min_length=8,
+        description="New password for the user account, at least 8 characters",
+    )
 
 
 class UserFilter(BaseModel):
-    username: Optional[str] = Field(None, description="Filter by username (partial match)")
+    username: Optional[str] = Field(
+        None, description="Filter by username (partial match)"
+    )
     email: Optional[str] = Field(None, description="Filter by email (partial match)")
     is_active: Optional[bool] = Field(None, description="Filter by active status")
 

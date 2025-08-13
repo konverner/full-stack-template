@@ -32,28 +32,28 @@ const RegisterPage = () => {
     event.preventDefault();
     setError(null);
     setSuccessMessage(null);
-    
+
     // Client-side validation
     if (password.length < 8) {
       setError('Password must be at least 8 characters long');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       console.log('Submitting registration form with username:', username);
-      
+
       // Only include email in request body if it has a value
       const requestBody: { username: string; password: string; email?: string } = {
         username,
         password
       };
-      
+
       if (email.trim()) {
         requestBody.email = email.trim();
       }
-      
+
       const userProfile = await AuthorizationProfileService.registerUserAuthRegisterPost({ requestBody });
       setSuccessMessage(`Registration successful for ${userProfile.username}! Redirecting to login...`);
       setTimeout(() => {
@@ -67,7 +67,7 @@ const RegisterPage = () => {
       const errorMessage = apiError.body?.detail || apiError.message || 'Registration failed. Please try again.';
       console.log('Setting error message to:', errorMessage);
       setError(errorMessage);
-      
+
       // Focus on relevant field based on error type
       if (errorMessage.toLowerCase().includes('username')) {
         setTimeout(() => {

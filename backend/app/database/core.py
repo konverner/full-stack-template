@@ -1,5 +1,4 @@
 import logging
-import dotenv
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -20,11 +19,9 @@ engine = create_engine(DATABASE_URL, pool_pre_ping=True, echo=False)
 
 # Create sessionmaker
 SessionFactory = sessionmaker(
-    bind=engine,
-    autocommit=False,
-    autoflush=False,
-    class_=Session
+    bind=engine, autocommit=False, autoflush=False, class_=Session
 )
+
 
 # Dependency to get DB session
 def get_db() -> Generator[Session, None, None]:
@@ -37,37 +34,44 @@ def get_db() -> Generator[Session, None, None]:
     finally:
         session.close()
 
+
 # Init database schema via Base.metadata.create_all
 def init_db() -> None:
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("Database initialized successfully.")
-        
+
         # Create the first superuser if it doesn't exist
         db_gen = get_db()
         db = next(db_gen)
         try:
             auth_service = AuthService()
-            if not auth_service.get_user_by_username(db, settings.FIRST_SUPERUSER_USERNAME):
+            if not auth_service.get_user_by_username(
+                db, settings.FIRST_SUPERUSER_USERNAME
+            ):
                 auth_service.create_user(
                     db=db,
                     user_in=schemas.UserCreate(
                         username=settings.FIRST_SUPERUSER_USERNAME,
                         password=settings.FIRST_SUPERUSER_PASSWORD,
                         is_superuser=True,
-                        avatar_url=None
-                    )
+                        avatar_url=None,
+                    ),
                 )
-                logger.info(f"First superuser created with username: {settings.FIRST_SUPERUSER_USERNAME}")
+                logger.info(
+                    f"First superuser created with username: {settings.FIRST_SUPERUSER_USERNAME}"
+                )
             else:
-                logger.info(f"Superuser with username {settings.FIRST_SUPERUSER_USERNAME} already exists.")
+                logger.info(
+                    f"Superuser with username {settings.FIRST_SUPERUSER_USERNAME} already exists."
+                )
         except Exception as user_creation_error:
             logger.error(f"Error creating superuser: {user_creation_error}")
         finally:
             try:
                 db_gen.close()
-            except:
-                pass
+            except Exception as e:
+                logger.error(f"Error closing database session: {e}")
     except Exception as e:
         logger.error(f"Error initializing database: {e}")
         raise
