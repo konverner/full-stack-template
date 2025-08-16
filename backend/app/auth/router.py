@@ -36,9 +36,17 @@ async def login_for_access_token(
         db, username=form_data.username, password=form_data.password
     )
     if not user:
+        # 401 assumes both failed authentication and authorization in one go
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user is inactive",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

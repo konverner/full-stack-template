@@ -33,7 +33,7 @@ const LoginPage = () => {
       saveUserProfile(userProfile);
       window.location.href = '/';
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your username and password.');
+      setError(err.detail || 'Login failed. Please check your username and password.');
       console.error('Login error:', err);
     } finally {
       setLoading(false);
