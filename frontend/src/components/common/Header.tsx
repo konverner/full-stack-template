@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Box, Link as MuiLink, Container } from '@mui/material';
 import Button from '@mui/material/Button';
-import { Link as RouterLink, NavLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { isLoggedIn, getUserProfileData, clearAuthData } from '../../utils/auth';
 
 interface UserProfile {
@@ -15,6 +15,7 @@ const Header: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const authStatus: boolean = isLoggedIn();
@@ -32,12 +33,16 @@ const Header: React.FC = () => {
     clearAuthData();
     setIsAuthenticated(false);
     setIsAdmin(false);
+    setUserProfile(null);
     navigate('/login');
   };
 
   const activeLinkStyle = ({ isActive }: { isActive: boolean }) => ({
     fontWeight: isActive ? 'bold' : 'normal',
   });
+
+  const isItemsActive = location.pathname.startsWith('/items');
+  const isUsersActive = location.pathname.startsWith('/users');
 
   return (
     <AppBar position="static" className="main-header">
@@ -60,34 +65,24 @@ const Header: React.FC = () => {
             </Typography>
           </MuiLink>
           <Box component="nav" className="site-nav" sx={{ display: 'flex', gap: 2, flexGrow: 1, justifyContent: 'left', ml: 2 }}>
-            <NavLink
+            <Button
+              color="inherit"
+              className="nav-link"
+              component={RouterLink}
               to="/items"
-              style={({ isActive }) => activeLinkStyle({ isActive })}
+              sx={{ fontWeight: isItemsActive ? 'bold' : 'normal' }}
             >
-              {({ isActive }) => (
-                <Button
-                  color="inherit"
-                  className="nav-link"
-                  sx={activeLinkStyle({ isActive })}
-                >
-                  Items
-                </Button>
-              )}
-            </NavLink>
-            <NavLink
+              Items
+            </Button>
+            <Button
+              color="inherit"
+              className="nav-link"
+              component={RouterLink}
               to="/users"
-              style={({ isActive }) => activeLinkStyle({ isActive })}
+              sx={{ fontWeight: isUsersActive ? 'bold' : 'normal' }}
             >
-              {({ isActive }) => (
-                <Button
-                  color="inherit"
-                  className="nav-link"
-                  sx={activeLinkStyle({ isActive })}
-                >
-                  Users
-                </Button>
-              )}
-            </NavLink>
+              Users
+            </Button>
           </Box>
           <Box component="nav" id="main-nav" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {!isAuthenticated ? (
@@ -124,17 +119,6 @@ const Header: React.FC = () => {
                 >
                   My Profile
                 </Button>
-                {isAdmin && (
-                  <Button
-                    component={RouterLink}
-                    to="/admin"
-                    color="inherit"
-                    className="nav-link"
-                    id="nav-admin-link"
-                  >
-                    Admin Panel
-                  </Button>
-                )}
                 <Button
                   variant="contained"
                   color="secondary"

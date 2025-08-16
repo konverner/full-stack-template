@@ -210,20 +210,6 @@ const ItemsTable: React.FC = () => {
                         {item.owner?.username || 'N/A'}
                         </MuiLink>
                     </TableCell>
-
-                    {/* Actions */}
-                    <TableCell align="center">
-                      <Button
-                        component={RouterLink}
-                        to={`/items/${item.slug}`}
-                        variant="outlined"
-                        size="small"
-                        onClick={(e) => e.stopPropagation()}
-                        sx={{ minWidth: 'auto', px: 2 }}
-                      >
-                        Details
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 );
               })
