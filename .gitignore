@@ -6,5 +6,5 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
-
+.ruff_cache/
 .env
