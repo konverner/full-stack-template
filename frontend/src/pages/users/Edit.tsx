@@ -4,8 +4,8 @@ import { Box, Container, Typography, Breadcrumbs, Link, CircularProgress, Alert 
 import EditForm from '../../components/users/EditForm';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import { UsersService } from '../../client';
-import { UserRead } from '../../client/models/UserRead';
+import { UsersService } from '@/client';
+import { UserRead } from '@/client';
 
 const EditUserPage = () => {
     const { username } = useParams();

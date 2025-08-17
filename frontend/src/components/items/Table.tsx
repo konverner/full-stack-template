@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Button, Link as MuiLink, Avatar
+  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Link as MuiLink, Avatar
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { ItemsService } from '../../client/services/ItemsService';
-import { ItemRead } from '../../client';
-
-
-
+import { ItemsService } from '@/client';
+import { ItemRead } from '@/client';
 
 
 interface ItemsResponse {
@@ -35,9 +32,9 @@ const headCells: HeadCell[] = [
   { id: 'index', numeric: true, disablePadding: false, label: '#', sortable: false, align: 'center' },
   { id: 'image', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
   { id: 'name', numeric: false, disablePadding: false, label: 'Name', sortable: true, align: 'center' },
+  { id: 'rating', numeric: false, disablePadding: false, label: 'Rating', sortable: true, align: 'center' },
   { id: 'available', numeric: false, disablePadding: false, label: 'Available', sortable: true, align: 'center' },
   { id: 'creator', numeric: true, disablePadding: false, label: 'Creator', sortable: true, align: 'center' },
-  { id: 'actions', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
 ];
 
 const ItemsTable: React.FC = () => {
@@ -55,15 +52,6 @@ const ItemsTable: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const params: any = {
-        field: orderBy,
-        direction: order,
-        limit: rowsPerPage,
-        page: page + 1, // API is 1-indexed
-      };
-      // Remove undefined or null params
-      Object.keys(params).forEach(key => (params[key] == null) && delete params[key]);
-
       const data: ItemsResponse = await ItemsService.listItemsApiV1ItemsGet({
         sortField: orderBy,
         sortDirection: order,
@@ -131,8 +119,7 @@ const ItemsTable: React.FC = () => {
                   sx={{
                     fontWeight: 'bold',
                     ...(headCell.id === 'image' && { width: '80px' }), // Changed 'cover' to 'image' to match headCell id
-                    ...(headCell.id === 'index' && { width: '60px' }),
-                    ...(headCell.id === 'actions' && { width: '120px' })
+                    ...(headCell.id === 'index' && { width: '60px' })
                   }}
                 >
                   {headCell.sortable ? (
@@ -161,7 +148,6 @@ const ItemsTable: React.FC = () => {
               items.map((item, index) => {
                 const startIndex = page * rowsPerPage;
 
-
                 return (
                   <TableRow
                     hover
@@ -174,11 +160,11 @@ const ItemsTable: React.FC = () => {
                       {startIndex + index + 1}
                     </TableCell>
 
-                    {/* Cover */}
+                    {/* Image */}
                     <TableCell align="center">
                       <Avatar
                         src={item.image_url || undefined}
-                        alt={`${item.name || 'Book'} Cover`}
+                        alt={item.name || 'Item'}
                         variant="rounded"
                         sx={{
                           width: 90,
@@ -186,29 +172,40 @@ const ItemsTable: React.FC = () => {
                           mx: 'auto',
                           bgcolor: 'grey.200'
                         }}
-                      >
-                      </Avatar>
+                      />
                     </TableCell>
 
-                    {/* Title */}
-                    <TableCell>
+                    {/* Name */}
+                    <TableCell align="center">
                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                         {item.name || 'N/A'}
                       </Typography>
                     </TableCell>
 
-                    {/* Availability */}
+                    {/* Rating */}
                     <TableCell align="center">
-                        <Box component="span">
-                        {item.available ? <DoneIcon /> : <CancelIcon />}
-                        </Box>
+                      <Box component="span">
+                        {(item.rating ?? 0)} / 5
+                      </Box>
                     </TableCell>
 
-                    {/* Owner */}
+                    {/* Available */}
                     <TableCell align="center">
-                        <MuiLink color='secondary' component={RouterLink} to={`/items/${item.slug}`} onClick={(e) => e.stopPropagation()}>
+                      <Box component="span">
+                        {item.available ? <DoneIcon /> : <CancelIcon />}
+                      </Box>
+                    </TableCell>
+
+                    {/* Creator */}
+                    <TableCell align="center">
+                      <MuiLink
+                        color="secondary"
+                        component={RouterLink}
+                        to={`/items/${item.slug}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {item.owner?.username || 'N/A'}
-                        </MuiLink>
+                      </MuiLink>
                     </TableCell>
                   </TableRow>
                 );

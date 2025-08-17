@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { Container, Typography, CircularProgress, Link, Alert, Box, Breadcrumbs } from '@mui/material';
 import UserDetails from '../../components/users/Details';
-import { UsersService } from '../../client';
+import { UsersService } from '@/client';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { getUserProfileData } from '../../utils/auth';
-import { UserRead } from '../../client';
+import { UserRead } from '@/client';
 
 const UserDetailsPage = () => {
     const { username } = useParams();

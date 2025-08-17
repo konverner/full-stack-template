@@ -9,6 +9,7 @@ class ItemBase(BaseModel):
     name: str
     slug: Optional[str] = None
     description: Optional[str] = None
+    rating: Optional[float] = None
     available: Optional[bool] = True
     image_url: Optional[str] = None
     website_url: Optional[str] = None
@@ -48,7 +49,6 @@ class ItemRead(ItemBase):
     id: int
     slug: str
     available: bool = True  # Remove Optional since this should always have a value
-    average_rating: Optional[float] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     owner: Optional[UserRead] = None
@@ -92,7 +92,9 @@ class ItemListResponse(BaseModel):
                     {
                         "id": 1,
                         "name": "Example Item",
+                        "slug": "example-item",
                         "description": "This is an example item.",
+                        "rating": 5,
                         "image_url": "https://example.com/logo.png",
                         "website_url": "https://example.com",
                         "owner_id": 1,

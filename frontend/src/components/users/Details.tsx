@@ -2,9 +2,9 @@
 import { Box, Typography, Paper, Avatar, Link, Button, Stack, Divider, Grid } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { UsersService } from '../../client/services/UsersService';
+import { UsersService } from '@/client';
 import { useNavigate } from 'react-router-dom';
-import { UserRead } from '@/client/models/UserRead';
+import { UserRead } from '@/client';
 
 
 
@@ -114,13 +114,11 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     {user.is_active ? (
                                         <>
-                                            <DoneIcon color="success" fontSize="small" />
-                                            <Typography variant="body2" color="success.main">Yes</Typography>
+                                            <DoneIcon color="primary" fontSize="small" />
                                         </>
                                     ) : (
                                         <>
-                                            <CancelIcon color="error" fontSize="small" />
-                                            <Typography variant="body2" color="error.main">No</Typography>
+                                            <CancelIcon color="primary" fontSize="small" />
                                         </>
                                     )}
                                 </Box>
@@ -134,12 +132,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                                     {user.is_superuser ? (
                                         <>
                                             <DoneIcon color="primary" fontSize="small" />
-                                            <Typography variant="body2" color="primary.main">Yes</Typography>
                                         </>
                                     ) : (
                                         <>
                                             <CancelIcon color="disabled" fontSize="small" />
-                                            <Typography variant="body2" color="text.disabled">No</Typography>
                                         </>
                                     )}
                                 </Box>
@@ -167,7 +163,6 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                                     {formatDate(user.created_at)}
                                 </Typography>
                             </Box>
-                            <Divider />
                             {/* <Box>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                     Last Updated

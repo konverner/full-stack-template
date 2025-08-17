@@ -4,8 +4,8 @@ import { Box, Container, Typography, Breadcrumbs, Link, CircularProgress, Alert 
 import EditForm from '../../components/items/EditForm';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import { ItemsService } from '../../client/services/ItemsService';
-import { ItemRead } from '../../client/models/ItemRead';
+import { ItemsService } from '@/client';
+import { ItemRead } from '@/client';
 
 const EditItemPage: React.FC = () => {
     const { itemSlug } = useParams<{ itemSlug: string }>();

@@ -6,7 +6,7 @@ import {
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { UsersService, UserRead, UserListResponse } from '../../client';
+import { UsersService, UserRead, UserListResponse } from '@/client';
 
 const DEFAULT_ROWS_PER_PAGE = 20;
 

@@ -1,8 +1,7 @@
-
-import { Box, Typography, Grid, Paper, Avatar, Link, Chip, Button, Stack } from '@mui/material';
+import { Box, Typography, Grid, Paper, Avatar, Link, Chip, Button, Stack, Rating } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { ItemsService } from '../../client/services/ItemsService';
+import { ItemsService } from '@/client';
 
 interface Owner {
     id: number;
@@ -21,6 +20,7 @@ interface Item {
     created_at?: string | null;
     updated_at?: string | null;
     tags?: string[] | null;
+    rating?: number | null;
 }
 
 interface CurrentUser {
@@ -119,6 +119,17 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                                     Availability:
                                 </Typography>
                                 {item.available ? <DoneIcon color="success" fontSize="small" /> : <CancelIcon color="error" fontSize="small" />}
+                            </Box>
+                        )}
+                        {item.rating !== undefined && item.rating !== null && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <Typography variant="body2" sx={{ mr: 1 }}>
+                                    Rating:
+                                </Typography>
+                                <Rating value={item.rating} precision={0.5} readOnly size="small" />
+                                <Typography variant="body2" sx={{ ml: 1 }}>
+                                    {item.rating.toFixed(1)}/5
+                                </Typography>
                             </Box>
                         )}
                     </Paper>

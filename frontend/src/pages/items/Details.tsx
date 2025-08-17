@@ -4,7 +4,7 @@ import { Container, Typography, CircularProgress, Link, Alert, Box, Breadcrumbs 
 import ItemDetails from '../../components/items/Details';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import { ItemsService } from '../../client';
+import { ItemsService } from '@/client';
 
 interface Owner {
     id: number;
