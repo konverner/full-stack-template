@@ -2,14 +2,14 @@ import { useState } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
-import { AuthorizationProfileService } from '../../client';
+import { AuthorizationProfileService } from '@/client';
 import { saveTokens, saveUserProfile } from '../../utils/auth';
 
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -19,12 +19,13 @@ const LoginPage = () => {
 
     try {
       // Send as form data to match OAuth2PasswordRequestForm
-      const requestBody = {
-        username: username.trim(),
-        password: password
-      };
-
-      const response = await AuthorizationProfileService.loginForAccessTokenAuthTokenPost({ requestBody });
+      const response = await AuthorizationProfileService.loginForAccessTokenAuthTokenPost({
+        formData: {
+          username: username.trim(),
+          password: password,
+          // grant_type, scope, client_id, client_secret are optional
+        },
+      });
 
       // Save tokens first
       saveTokens(response.access_token, response.refresh_token);
@@ -33,7 +34,7 @@ const LoginPage = () => {
       saveUserProfile(userProfile);
       window.location.href = '/';
     } catch (err: any) {
-      setError(err.detail || 'Login failed. Please check your username and password.');
+      setError(err?.detail || 'Login failed. Please check your username and password.');
       console.error('Login error:', err);
     } finally {
       setLoading(false);

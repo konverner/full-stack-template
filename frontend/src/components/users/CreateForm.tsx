@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel } from '@mui/material';
-import { UsersService } from '../../client/services/UsersService';
+import { UsersService } from '@/client';
 
 interface UserData {
   username: string;

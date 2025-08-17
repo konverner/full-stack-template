@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
-import { AuthorizationProfileService } from '../../client';
+import { AuthorizationProfileService } from '@/client';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {

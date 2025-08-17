@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel } from '@mui/material';
-import { ItemsService } from '../../client/services/ItemsService';
-import { ItemCreate } from '../../client';
+import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel, Rating } from '@mui/material';
+import { ItemsService } from '@/client';
+import { ItemCreate } from '@/client';
 import { getAccessToken } from '../../utils/auth';
 
 interface ItemData {
@@ -12,6 +12,7 @@ interface ItemData {
     available: boolean;
     image_url: string;
     website_url: string;
+    rating: number | null;
 }
 
 interface FieldErrors {
@@ -28,6 +29,7 @@ const CreateForm: React.FC = () => {
         available: true,
         image_url: '',
         website_url: '',
+        rating: null,
     });
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -43,7 +45,7 @@ const CreateForm: React.FC = () => {
         const initializeAuth = async () => {
             const token = getAccessToken();
             if (token) {
-                const { OpenAPI } = await import('../../client');
+                const { OpenAPI } = await import('@/client');
                 OpenAPI.TOKEN = token;
             }
         };
@@ -56,6 +58,10 @@ const CreateForm: React.FC = () => {
             ...prevState,
             [name]: value,
         }));
+    };
+
+    const handleRatingChange = (_: any, value: number | null): void => {
+        setItemData(prev => ({ ...prev, rating: value }));
     };
 
     const trimItemData = (data: ItemData): ItemData => {
@@ -110,10 +116,9 @@ const CreateForm: React.FC = () => {
         const dataToSubmit: ItemCreate = { ...trimmedData, name: trimmedData.name || '' };
         (Object.keys(dataToSubmit) as (keyof ItemData)[]).forEach(key => {
             if (key === 'available') {
-                // Always include available as boolean
                 dataToSubmit[key] = Boolean(dataToSubmit[key]);
-            } else if (dataToSubmit[key] === '') {
-                delete dataToSubmit[key];
+            } else if (dataToSubmit[key] === '' || dataToSubmit[key] === null) {
+                delete (dataToSubmit as any)[key];
             }
         });
 
@@ -203,6 +208,22 @@ const CreateForm: React.FC = () => {
                 helperText={fieldErrors.website_url}
                 error={!!fieldErrors.website_url}
             />
+
+            <Box sx={{ mt: 2, mb: 1 }}>
+                <Typography variant="subtitle1" sx={{ mb: 0.5 }}>Rating</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Rating
+                        name="rating"
+                        precision={0.5}
+                        value={itemData.rating}
+                        onChange={handleRatingChange}
+                    />
+                    <Typography variant="body2" sx={{ ml: 1 }}>
+                        {(itemData.rating ?? 0).toFixed(1)}/5
+                    </Typography>
+                </Box>
+            </Box>
+
             <Button
                 type="submit"
                 variant="contained"
