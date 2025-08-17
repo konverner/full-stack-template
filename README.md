@@ -19,6 +19,7 @@ This is a minimalist full-stack project template for applications with multi-use
 
 🚀 **React** for the frontend
   - **Material UI** for frontend components
+  - **OpenAPI-TS** for client generation
   - **Nginx** for serving the frontend and reverse proxy
 
 ## Run in docker
