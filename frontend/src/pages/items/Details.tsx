@@ -5,6 +5,7 @@ import ItemDetails from '../../components/items/Details';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { ItemsService } from '@/client';
+import { getUserProfileData } from '../../utils/auth';
 
 interface Owner {
     id: number;
@@ -39,16 +40,11 @@ const ItemsDetailsPage: React.FC = () => {
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Use localStorage to get the current user data
-    const getStoredUser = (): User | null => {
-        const user = localStorage.getItem('userProfile');
-        return user ? JSON.parse(user) : null;
-    };
-    const [currentUser, setCurrentUser] = useState<User | null>(getStoredUser());
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
 
     useEffect(() => {
-        setCurrentUser(getStoredUser());
+        const user = getUserProfileData();
+        setCurrentUser(user as User | null);
     }, []);
 
     useEffect(() => {

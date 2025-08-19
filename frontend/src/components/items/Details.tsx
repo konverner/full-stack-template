@@ -68,8 +68,6 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
         }
     };
 
-    console.log("Item Details:", item, "Current User:", currentUser, "Can Edit/Delete:", canEditOrDelete);
-
     return (
         <Box>
             <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 }, mt: 2 }}>
@@ -179,7 +177,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
 
             {/* Buttons at the bottom */}
             {canEditOrDelete && (
-                <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+                <Stack direction="row" spacing={2} sx={{ mt: 4, mb: 4 }}>
                     <Button
                         variant="outlined"
                         color="primary"

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel, Rating } from '@mui/material';
 import { ItemsService } from '@/client';
 import { ItemCreate } from '@/client';
-import { getAccessToken } from '../../utils/auth';
 
 interface ItemData {
     name: string;
@@ -39,18 +38,6 @@ const CreateForm: React.FC = () => {
         website_url: '',
     });
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Set the authentication token for API calls
-        const initializeAuth = async () => {
-            const token = getAccessToken();
-            if (token) {
-                const { OpenAPI } = await import('@/client');
-                OpenAPI.TOKEN = token;
-            }
-        };
-        initializeAuth();
-    }, []);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
