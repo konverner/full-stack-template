@@ -7,7 +7,7 @@ from typing import Generator
 from ..models import Base
 from ..config import settings
 from ..auth.service import AuthService
-from ..auth import schemas
+from ..users import schemas as users_schemas
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def init_db() -> None:
             ):
                 auth_service.create_user(
                     db=db,
-                    user_in=schemas.UserCreate(
+                    user_in=users_schemas.UserCreate(
                         username=settings.FIRST_SUPERUSER_USERNAME,
                         password=settings.FIRST_SUPERUSER_PASSWORD,
                         is_superuser=True,
