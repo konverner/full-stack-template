@@ -73,9 +73,6 @@ class UserCreate(UserBase):
         min_length=8,
         description="Password for the user account, at least 8 characters",
     )
-    is_superuser: Optional[bool] = Field(
-        ..., description="Indicates if the user has superuser privileges"
-    )
 
 
 class UserRead(UserBase):
