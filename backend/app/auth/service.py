@@ -46,7 +46,7 @@ class AuthService:
             email=user_in.email,
             avatar_url=user_in.avatar_url,
             password_hash=hashed_password,
-            is_superuser=False,
+            is_superuser=user_in.is_superuser
         )
         db.add(db_user)
         db.commit()
