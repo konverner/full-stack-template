@@ -26,7 +26,6 @@ const headCells: HeadCell[] = [
   { id: 'email', numeric: false, disablePadding: false, label: 'Email', sortable: true, align: 'center' },
   { id: 'is_active', numeric: false, disablePadding: false, label: 'Active', sortable: true, align: 'center' },
   { id: 'is_superuser', numeric: false, disablePadding: false, label: 'Superuser', sortable: true, align: 'center' },
-  { id: 'actions', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
 ];
 
 type SortDirection = 'asc' | 'desc';
@@ -190,7 +189,7 @@ const UsersTable: React.FC = () => {
                     {/* Active */}
                     <TableCell align="center">
                       <Box component="span">
-                        {user.is_active ? <DoneIcon color="success" /> : <CancelIcon color="error" />}
+                        {user.is_active ? <DoneIcon color="primary" /> : <CancelIcon color="error" />}
                       </Box>
                     </TableCell>
 
@@ -201,19 +200,6 @@ const UsersTable: React.FC = () => {
                       </Box>
                     </TableCell>
 
-                    {/* Actions */}
-                    <TableCell align="center">
-                      <Button
-                        component={RouterLink}
-                        to={`/users/${user.username}`}
-                        variant="outlined"
-                        size="small"
-                        onClick={(e) => e.stopPropagation()}
-                        sx={{ minWidth: 'auto', px: 2 }}
-                      >
-                        Details
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 );
               })

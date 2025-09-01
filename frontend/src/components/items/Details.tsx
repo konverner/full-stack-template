@@ -106,7 +106,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                         {item.website_url && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
                                 Website:{' '}
-                                <Link href={item.website_url} target="_blank" rel="noopener noreferrer" underline="hover">
+                                <Link href={item.website_url} target="_blank" rel="noopener noreferrer" color="primary" underline="hover">
                                     {item.website_url}
                                 </Link>
                             </Typography>
@@ -116,7 +116,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                                 <Typography variant="body2" sx={{ mr: 1 }}>
                                     Availability:
                                 </Typography>
-                                {item.available ? <DoneIcon color="success" fontSize="small" /> : <CancelIcon color="error" fontSize="small" />}
+                                {item.available ? <DoneIcon color="primary" fontSize="small" /> : <CancelIcon color="error" fontSize="small" />}
                             </Box>
                         )}
                         {item.rating !== undefined && item.rating !== null && (
@@ -141,7 +141,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                         {item.owner && item.owner.username && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
                                 Created by:{' '}
-                                <Link href={`/users/${item.owner.username}`} underline="hover">
+                                <Link href={`/users/${item.owner.username}`} underline="hover" color="primary">
                                     <Box component="span" sx={{ fontWeight: 500 }}>{item.owner.username}</Box>
                                 </Link>
                             </Typography>

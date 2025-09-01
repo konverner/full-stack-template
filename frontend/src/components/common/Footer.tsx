@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
 
   return (
     <Box
-      bgcolor="primary.main"
+      bgcolor="background.default"
       component="footer"
       className="main-footer"
       sx={{

@@ -45,8 +45,8 @@ const Header: React.FC = () => {
   const isUsersActive = location.pathname.startsWith('/users');
 
   return (
-    <AppBar position="static" className="main-header">
-      <Container maxWidth="lg">
+    <AppBar position="static" className="main-header" color="default">
+      <Container maxWidth="md">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <MuiLink
             component={RouterLink}
@@ -94,7 +94,6 @@ const Header: React.FC = () => {
                   color="secondary"
                   size="small"
                   id="nav-login-btn"
-                  sx={{ color: 'white' }}
                 >
                   Sign In
                 </Button>

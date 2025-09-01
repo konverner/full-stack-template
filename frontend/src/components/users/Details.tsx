@@ -123,7 +123,6 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                                     )}
                                 </Box>
                             </Box>
-                            <Divider />
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
                                     Superuser
@@ -178,7 +177,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
 
             {/* Action Buttons */}
             {canEditOrDelete && (
-                <Paper elevation={1} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                <Paper elevation={1} sx={{ p: 2}}>
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={2}

@@ -192,16 +192,16 @@ const ItemsTable: React.FC = () => {
                     {/* Available */}
                     <TableCell align="center">
                       <Box component="span">
-                        {item.available ? <DoneIcon /> : <CancelIcon />}
+                        {item.available ? <DoneIcon color="primary"/> : <CancelIcon />}
                       </Box>
                     </TableCell>
 
                     {/* Creator */}
                     <TableCell align="center">
                       <MuiLink
-                        color="secondary"
+                        color="text.secondary"
                         component={RouterLink}
-                        to={`/items/${item.slug}`}
+                        to={`/users/${item.owner?.username}`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.owner?.username || 'N/A'}

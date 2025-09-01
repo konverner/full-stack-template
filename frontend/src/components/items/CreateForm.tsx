@@ -165,7 +165,7 @@ const CreateForm: React.FC = () => {
                     <Checkbox
                         checked={itemData.available}
                         onChange={(event) => setItemData({ ...itemData, available: event.target.checked })}
-                        color="primary"
+                        color="secondary"
                         name="available"
                         id="available"
                     />
@@ -205,9 +205,6 @@ const CreateForm: React.FC = () => {
                         value={itemData.rating}
                         onChange={handleRatingChange}
                     />
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                        {(itemData.rating ?? 0).toFixed(1)}/5
-                    </Typography>
                 </Box>
             </Box>
 
