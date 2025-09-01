@@ -13,6 +13,7 @@ import UsersTablePage from './pages/users/Table.tsx';
 import CreateUserPage from './pages/users/Create.tsx';
 import EditUserPage from './pages/users/Edit.tsx';
 import UserDetails from './pages/users/Details.tsx';
+import ContactPage from './pages/contact.tsx';
 
 // Light theme
 const lightTheme = createTheme({
@@ -58,6 +59,7 @@ function App() {
                     <Route path="/users/:username" element={<UserDetails />} />
                     <Route path="/users/create" element={<CreateUserPage />} />
                     <Route path="/users/:username/edit" element={<EditUserPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
                 </Routes>
             </main>
         </ThemeProvider>

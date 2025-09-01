@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
     { to: '/terms', text: 'Terms of Service' },
     { to: '/about', text: 'About Us' },
     { to: '/faq', text: 'FAQ' },
-    { to: '/contacts', text: 'Contacts' },
+    { to: '/contact', text: 'Contact' },
   ];
 
   return (
