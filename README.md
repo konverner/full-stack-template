@@ -18,7 +18,7 @@ This is a minimalist full-stack project template for applications with multi-use
   - **PostgreSQL** as the database
 
 🚀 **React** for the frontend
-  - **Material UI** for frontend components
+  - **Material UI** for frontend UI components with light/dark themes support
   - **OpenAPI-TS** for client generation
   - **Nginx** for serving the frontend and reverse proxy
 
