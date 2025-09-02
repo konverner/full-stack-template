@@ -224,9 +224,6 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemSlug }) => 
                                 value={itemData.rating}
                                 onChange={(_, value) => setItemData(prev => ({ ...prev, rating: value }))}
                             />
-                            <Typography variant="body2" sx={{ ml: 1 }}>
-                                {(itemData.rating ?? 0).toFixed(1)}/5
-                            </Typography>
                         </Box>
                     </Box>
 

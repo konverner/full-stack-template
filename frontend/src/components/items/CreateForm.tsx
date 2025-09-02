@@ -165,7 +165,7 @@ const CreateForm: React.FC = () => {
                     <Checkbox
                         checked={itemData.available}
                         onChange={(event) => setItemData({ ...itemData, available: event.target.checked })}
-                        color="secondary"
+                        color="primary"
                         name="available"
                         id="available"
                     />

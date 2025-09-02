@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Link as MuiLink, Avatar
+  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Link as MuiLink, Avatar,
+  useMediaQuery, useTheme
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
@@ -47,6 +48,14 @@ const ItemsTable: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_ROWS_PER_PAGE);
   const [totalRows, setTotalRows] = useState<number>(0);
   const navigate = useNavigate();
+  
+  // We do not display index and image on small screens
+  const theme = useTheme();
+  const isSmDown = useMediaQuery(theme.breakpoints.down('sm'));
+  const visibleHeadCells = useMemo<HeadCell[]>(
+    () => headCells.filter((h) => !(isSmDown && (h.id === 'index' || h.id === 'image' || h.id === 'creator'))),
+    [isSmDown]
+  );
 
   const fetchItems = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -110,7 +119,7 @@ const ItemsTable: React.FC = () => {
         <Table stickyHeader aria-label="items table">
           <TableHead>
             <TableRow>
-              {headCells.map((headCell) => (
+              {visibleHeadCells.map((headCell) => (
                 <TableCell
                   key={headCell.id}
                   align={headCell.align || (headCell.numeric ? 'right' : 'left')}
@@ -118,7 +127,7 @@ const ItemsTable: React.FC = () => {
                   sortDirection={orderBy === headCell.id ? order : false}
                   sx={{
                     fontWeight: 'bold',
-                    ...(headCell.id === 'image' && { width: '80px' }), // Changed 'cover' to 'image' to match headCell id
+                    ...(headCell.id === 'image' && { width: '80px' }),
                     ...(headCell.id === 'index' && { width: '60px' })
                   }}
                 >
@@ -140,7 +149,7 @@ const ItemsTable: React.FC = () => {
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={headCells.length} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                <TableCell colSpan={visibleHeadCells.length} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                   No items found matching your criteria.
                 </TableCell>
               </TableRow>
@@ -156,24 +165,28 @@ const ItemsTable: React.FC = () => {
                     sx={{ cursor: 'pointer' }}
                   >
                     {/* Index */}
-                    <TableCell align="center">
-                      {startIndex + index + 1}
-                    </TableCell>
+                    {!isSmDown && (
+                      <TableCell align="center">
+                        {startIndex + index + 1}
+                      </TableCell>
+                    )}
 
                     {/* Image */}
-                    <TableCell align="center">
-                      <Avatar
-                        src={item.image_url || undefined}
-                        alt={item.name || 'Item'}
-                        variant="rounded"
-                        sx={{
-                          width: 90,
-                          height: 90,
-                          mx: 'auto',
-                          bgcolor: 'grey.200'
-                        }}
-                      />
-                    </TableCell>
+                    {!isSmDown && (
+                      <TableCell align="center">
+                        <Avatar
+                          src={item.image_url || undefined}
+                          alt={item.name || 'Item'}
+                          variant="rounded"
+                          sx={{
+                            width: 90,
+                            height: 90,
+                            mx: 'auto',
+                            bgcolor: 'grey.200'
+                          }}
+                        />
+                      </TableCell>
+                    )}
 
                     {/* Name */}
                     <TableCell align="center">
@@ -192,21 +205,24 @@ const ItemsTable: React.FC = () => {
                     {/* Available */}
                     <TableCell align="center">
                       <Box component="span">
-                        {item.available ? <DoneIcon color="primary"/> : <CancelIcon />}
+                        {item.available ? <DoneIcon color="primary" /> : <CancelIcon />}
                       </Box>
                     </TableCell>
 
                     {/* Creator */}
-                    <TableCell align="center">
-                      <MuiLink
-                        color="text.secondary"
-                        component={RouterLink}
-                        to={`/users/${item.owner?.username}`}
-                        onClick={(e) => e.stopPropagation()}
+                    {!isSmDown && (
+                      <TableCell align="center">
+                        <MuiLink
+                          color="text.secondary"
+                          component={RouterLink}
+                          to={`/users/${item.owner?.username}`}
+                          onClick={(e) => e.stopPropagation()}
                       >
                         {item.owner?.username || 'N/A'}
                       </MuiLink>
                     </TableCell>
+                    )
+                  }
                   </TableRow>
                 );
               })

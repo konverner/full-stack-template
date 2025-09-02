@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Avatar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Button
+  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Button,
+  useTheme, useMediaQuery
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
@@ -40,6 +41,13 @@ const UsersTable: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_ROWS_PER_PAGE);
   const [totalRows, setTotalRows] = useState<number>(0);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const HIDDEN_FIELDS_SM = useMemo(
+    () => new Set(['index', 'avatar', 'active', 'is_active', 'superuser', 'is_superuser']),
+    []
+  );
 
   const fetchUsers = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -96,6 +104,12 @@ const UsersTable: React.FC = () => {
     navigate(`/users/${username}`);
   };
 
+  const responsiveHeadCells = useMemo(() => {
+    return isSmallScreen
+      ? headCells.filter(headCell => !HIDDEN_FIELDS_SM.has(headCell.id))
+      : headCells;
+  }, [isSmallScreen, HIDDEN_FIELDS_SM]);
+
   if (loading) {
     return <Box display="flex" justifyContent="center" alignItems="center" sx={{ p: 3 }}><CircularProgress /></Box>;
   }
@@ -110,7 +124,7 @@ const UsersTable: React.FC = () => {
         <Table stickyHeader aria-label="users table">
           <TableHead>
             <TableRow>
-              {headCells.map((headCell) => (
+              {responsiveHeadCells.map((headCell) => (
                 <TableCell
                   key={headCell.id}
                   align={headCell.align}
@@ -141,7 +155,7 @@ const UsersTable: React.FC = () => {
           <TableBody>
             {users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={headCells.length} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                <TableCell colSpan={responsiveHeadCells.length} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                   No users found matching your criteria.
                 </TableCell>
               </TableRow>
@@ -156,23 +170,27 @@ const UsersTable: React.FC = () => {
                     sx={{ cursor: 'pointer' }}
                   >
                     {/* Index */}
-                    <TableCell align="center">
-                      {startIndex + index + 1}
-                    </TableCell>
+                    {!isSmallScreen && (
+                      <TableCell align="center">
+                        {startIndex + index + 1}
+                      </TableCell>
+                    )}
 
                     {/* Avatar */}
-                    <TableCell align="center">
-                      <Avatar
-                        src={user.avatar_url || undefined}
-                        alt={user.username}
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          mx: 'auto',
-                          bgcolor: 'grey.200'
-                        }}
-                      />
-                    </TableCell>
+                    {!isSmallScreen && (
+                      <TableCell align="center">
+                        <Avatar
+                          src={user.avatar_url || undefined}
+                          alt={user.username}
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            mx: 'auto',
+                            bgcolor: 'grey.200'
+                          }}
+                        />
+                      </TableCell>
+                    )}
 
                     {/* Username */}
                     <TableCell>
@@ -187,18 +205,22 @@ const UsersTable: React.FC = () => {
                     </TableCell>
 
                     {/* Active */}
-                    <TableCell align="center">
-                      <Box component="span">
-                        {user.is_active ? <DoneIcon color="primary" /> : <CancelIcon color="error" />}
-                      </Box>
-                    </TableCell>
+                    {!isSmallScreen && (
+                      <TableCell align="center">
+                        <Box component="span">
+                          {user.is_active ? <DoneIcon color="primary" /> : <CancelIcon color="error" />}
+                        </Box>
+                      </TableCell>
+                    )}
 
                     {/* Superuser */}
-                    <TableCell align="center">
-                      <Box component="span">
-                        {user.is_superuser ? <DoneIcon color="primary" /> : <CancelIcon color="disabled" />}
-                      </Box>
-                    </TableCell>
+                    {!isSmallScreen && (
+                      <TableCell align="center">
+                        <Box component="span">
+                          {user.is_superuser ? <DoneIcon color="primary" /> : <CancelIcon color="disabled" />}
+                        </Box>
+                      </TableCell>
+                    )}
 
                   </TableRow>
                 );
