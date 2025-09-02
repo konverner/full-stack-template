@@ -1,19 +1,22 @@
 import { Routes, Route } from 'react-router-dom';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import IndexPage from './pages/index.tsx';
-import ItemsTablePage from './pages/items/Table.tsx';
-import LoginPage from './pages/auth/login.tsx';
-import RegisterPage from './pages/auth/register.tsx';
-import ProfilePage from './pages/auth/profile.tsx';
-import ItemsDetailsPage from './pages/items/Details.tsx';
-import CreateItemPage from './pages/items/Create.tsx';
-import EditItemPage from './pages/items/Edit.tsx';
-import UsersTablePage from './pages/users/Table.tsx';
-import CreateUserPage from './pages/users/Create.tsx';
-import EditUserPage from './pages/users/Edit.tsx';
-import UserDetails from './pages/users/Details.tsx';
-import ContactPage from './pages/contact.tsx';
+import { CssBaseline, ThemeProvider, createTheme, useMediaQuery } from '@mui/material';
+import IndexPage from './pages';
+import ItemsTablePage from './pages/items/Table';
+import LoginPage from './pages/auth/login';
+import RegisterPage from './pages/auth/register';
+import ProfilePage from './pages/auth/profile';
+import ItemsDetailsPage from './pages/items/Details';
+import CreateItemPage from './pages/items/Create';
+import EditItemPage from './pages/items/Edit';
+import UsersTablePage from './pages/users/Table';
+import CreateUserPage from './pages/users/Create';
+import EditUserPage from './pages/users/Edit';
+import UserDetails from './pages/users/Details';
+import ContactPage from './pages/contact';
+import PrivacyPage from './pages/privacy';
+import FaqPage from './pages/faq';
+import TermsOfServicePage from './pages/terms';
+import AboutPage from './pages/about';
 
 // Light theme
 const lightTheme = createTheme({
@@ -60,6 +63,10 @@ function App() {
                     <Route path="/users/create" element={<CreateUserPage />} />
                     <Route path="/users/:username/edit" element={<EditUserPage />} />
                     <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/faq" element={<FaqPage />} />
+                    <Route path="/terms" element={<TermsOfServicePage />} />
+                    <Route path="/about" element={<AboutPage />} />
                 </Routes>
             </main>
         </ThemeProvider>

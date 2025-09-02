@@ -4,7 +4,7 @@ import Footer from '../components/common/Footer';
 import { Container, Box, Breadcrumbs, Link, Typography } from '@mui/material';
 
 
-const ContactPage = () => {
+const FaqPage = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
@@ -13,11 +13,11 @@ const ContactPage = () => {
             <Link href="/" sx={{ display: 'flex', alignItems: 'center' }} color="inherit">
                 Home
             </Link>
-            <Typography color="text.primary">Contact</Typography>
+            <Typography color="text.primary">FAQ</Typography>
         </Breadcrumbs>
         <Box sx={{ textAlign: 'left', mt: 8 }}>
-          <h1>Contact</h1>
-          <p>You can contact us at contact@example.com</p>
+          <h1>FAQ</h1>
+          <p>If you have any questions, feel free to reach out!</p>
         </Box>
       </Container>
       <Footer />
@@ -25,4 +25,4 @@ const ContactPage = () => {
   );
 };
 
-export default ContactPage;
+export default FaqPage;
