@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from jose import JWTError
 
 from .users.models import User
@@ -26,7 +26,7 @@ class TokenPayload(BaseModel):
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -66,7 +66,7 @@ async def get_current_user(
 
 async def get_optional_current_active_user(
     token: Optional[str] = Depends(oauth2_scheme_optional),  # Use the optional scheme
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ) -> Optional[User]:
     if not token:
         return None  # No token provided
