@@ -4,14 +4,26 @@ import { Box, Container, Typography, Breadcrumbs, Link, CircularProgress, Alert 
 import EditForm from '../../components/users/EditForm';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import { UsersService } from '@/client';
-import { UserRead } from '@/client';
+import { UsersService, UserRead } from '@/client';
+import { getUserProfileData } from '../../utils/auth';
 
 const EditUserPage = () => {
     const { username } = useParams();
     const [initialValues, setInitialValues] = useState<UserRead | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const getStoredUser = (): { username: string; is_superuser: boolean } | null => {
+        const data = getUserProfileData();
+        if (data && typeof data.username === 'string' && typeof data.is_superuser === 'boolean') {
+            return {
+                username: data.username,
+                is_superuser: data.is_superuser,
+            };
+        }
+        return null;
+    };
+    const [currentUser] = useState(getStoredUser());
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -73,6 +85,7 @@ const EditUserPage = () => {
                         avatar_url: initialValues.avatar_url ?? undefined,
                     }}
                     username={username as string}
+                    currentUser={currentUser}
                 />
             </Container>
             <Footer />

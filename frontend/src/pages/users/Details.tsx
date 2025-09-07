@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { Container, Typography, CircularProgress, Link, Alert, Box, Breadcrumbs } from '@mui/material';
 import UserDetails from '../../components/users/Details';
@@ -26,29 +26,29 @@ const UserDetailsPage = () => {
     };
     const [currentUser] = useState(getStoredUser());
 
-    useEffect(() => {
-        const fetchUserDetails = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await UsersService.getUserByUsernameApiV1UsersUsernameGet({ username: username as string });
-                setUser(data);
-            } catch (err) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError('Failed to fetch user details.');
-                }
-                console.error("Error fetching user details:", err);
-            } finally {
-                setLoading(false);
+    const fetchUserDetails = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await UsersService.getUserByUsernameApiV1UsersUsernameGet({ username: username as string });
+            setUser(data);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Failed to fetch user details.');
             }
-        };
+            console.error("Error fetching user details:", err);
+        } finally {
+            setLoading(false);
+        }
+    }, [username]);
 
+    useEffect(() => {
         if (typeof username === 'string') {
             fetchUserDetails();
         }
-    }, [username]);
+    }, [username, fetchUserDetails]);
 
     if (loading) {
         return (
@@ -87,7 +87,7 @@ const UserDetailsPage = () => {
                     </Link>
                     <Typography color="text.primary">{user.username}</Typography>
                 </Breadcrumbs>
-                <UserDetails user={user} currentUser={currentUser} />
+                <UserDetails user={user} currentUser={currentUser} refetchUser={fetchUserDetails} />
             </Container>
             <Footer />
         </Box>

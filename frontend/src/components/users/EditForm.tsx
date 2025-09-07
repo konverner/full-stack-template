@@ -11,6 +11,11 @@ interface UserData {
   is_superuser: boolean;
 }
 
+interface CurrentUser {
+  username: string;
+  is_superuser: boolean;
+}
+
 interface FieldErrors {
   username: string;
   email: string;
@@ -20,9 +25,10 @@ interface FieldErrors {
 interface EditFormProps {
   initialValues?: Partial<UserData>;
   username: string;
+  currentUser: CurrentUser | null;
 }
 
-const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, username }) => {
+const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, username, currentUser }) => {
   const [userData, setUserData] = useState<UserData>({
     username: '',
     email: '',
@@ -40,6 +46,8 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, username }) => 
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('EditForm currentUser:', currentUser);
+    console.log('EditForm username:', username);
     setUserData(prev => ({
       ...prev,
       ...initialValues,
@@ -92,10 +100,17 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, username }) => 
     }
     setLoading(true);
 
-    const dataToSubmit = { ...trimUserData(userData) };
+    const dataToSubmit: any = { ...trimUserData(userData) };
+
+    // Only superusers can change these fields
+    if (!currentUser?.is_superuser) {
+      delete dataToSubmit.is_active;
+      delete dataToSubmit.is_superuser;
+    }
+
     for (const key in dataToSubmit) {
-      if ((dataToSubmit as any)[key] === '') {
-        delete (dataToSubmit as any)[key];
+      if (dataToSubmit[key] === '' && key !== 'email' && key !== 'avatar_url') {
+        delete dataToSubmit[key];
       }
     }
 
@@ -158,7 +173,7 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, username }) => 
             helperText={fieldErrors.avatar_url}
           />
 
-          {userData.is_superuser && (
+          {currentUser?.is_superuser && currentUser.username !== username && (
             <Stack direction="row" spacing={2}>
               <FormControlLabel
                 control={

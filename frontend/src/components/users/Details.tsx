@@ -1,5 +1,4 @@
-
-import { Box, Typography, Paper, Avatar, Link, Button, Stack, Divider, Grid } from '@mui/material';
+import { Box, Typography, Paper, Avatar, Link, Button, Stack, Grid } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { UsersService } from '@/client';
@@ -16,6 +15,7 @@ interface CurrentUser {
 interface UserDetailsProps {
     user: UserRead | null;
     currentUser: CurrentUser | null;
+    refetchUser: () => void;
 }
 
 const formatDate = (dateString?: string | null): string => {
@@ -28,7 +28,7 @@ const formatDate = (dateString?: string | null): string => {
     });
 };
 
-const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
+const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser, refetchUser }) => {
     const navigate = useNavigate();
 
     if (!user) return null;
@@ -181,7 +181,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={2}
-                        sx={{ alignItems: { xs: 'stretch', sm: 'center' } }}
+                        sx={{ alignItems: { xs: 'stretch', sm: 'center' }, flexWrap: 'wrap', gap: 1 }}
                     >
                         <Button
                             variant="contained"
