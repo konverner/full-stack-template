@@ -62,7 +62,7 @@ const Header: React.FC = () => {
           >
             <Box
               component="img"
-              src="../../assets/images/logo.png"
+              src="/assets/images/logo.png"
               alt="Full-stack Template Logo"
               sx={{ height: 40, mr: 1 }}
             />
