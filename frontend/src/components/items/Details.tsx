@@ -76,7 +76,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                         <Avatar
                             src={item.image_url || '/assets/images/image-placeholder.png'}
                             alt={`${item.name} Image`}
-                            sx={{ width: 90, height: 90, borderRadius: 2, bgcolor: 'grey.100' }}
+                            sx={{ width: 90, height: 90, borderRadius: 2, bgcolor: 'grey.100', boxShadow: 1 }}
                             variant="rounded"
                         />
                     </Grid>
@@ -101,13 +101,13 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                 <Grid size={12} >
                     <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, height: '100%' }}>
                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 500 }}>
-                            Details A
+                            Content Details
                         </Typography>
                         {item.website_url && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
                                 Website:{' '}
                                 <Link href={item.website_url} target="_blank" rel="noopener noreferrer" color="primary" underline="hover">
-                                    {item.website_url}
+                                    {item.website_url.length > 40 ? `${item.website_url.substring(0, 40)}...` : item.website_url}
                                 </Link>
                             </Typography>
                         )}
@@ -136,7 +136,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                 <Grid size={12}>
                     <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, height: '100%' }}>
                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 500 }}>
-                            Details B
+                            Meta Details
                         </Typography>
                         {item.owner && item.owner.username && (
                             <Typography variant="body2" sx={{ mb: 1.5 }}>
