@@ -97,7 +97,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                 </Box>
             )}
 
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ mt: item.description ? 0 : 4 }}>
                 <Grid size={12} >
                     <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, height: '100%' }}>
                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 500 }}>
