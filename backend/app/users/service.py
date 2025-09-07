@@ -94,7 +94,7 @@ class UserService:
     def update_user(
         self, db: Session, user: User, user_in: user_schemas.UserUpdate
     ) -> User:
-        update_data = user_in.dict(exclude_unset=True)
+        update_data = user_in.model_dump(exclude_unset=True)
 
         # Additional validation for username if it's being updated
         if "username" in update_data and update_data["username"] is not None:

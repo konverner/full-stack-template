@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator, ConfigDict
 from typing import Optional
 import re
 from datetime import datetime
@@ -14,7 +14,7 @@ class ItemBase(BaseModel):
     image_url: Optional[str] = None
     website_url: Optional[str] = None
 
-    @validator("slug")
+    @field_validator("slug")
     def validate_slug(cls, v):
         if v is not None:
             # Check if slug matches URL-friendly pattern
@@ -29,20 +29,18 @@ class ItemBase(BaseModel):
                 raise ValueError("Slug cannot be empty")
         return v
 
-    class Config:
-        extra = "ignore"
+    model_config = ConfigDict(extra="ignore")
 
 
 class ItemCreate(ItemBase):
-    pass
+    model_config = ConfigDict(extra="ignore")
 
 
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
     available: Optional[bool] = None  # Make this explicitly optional for updates
 
-    class Config:
-        extra = "ignore"
+    model_config = ConfigDict(extra="ignore")
 
 
 class ItemRead(ItemBase):
@@ -53,8 +51,7 @@ class ItemRead(ItemBase):
     updated_at: Optional[datetime] = None
     owner: Optional[UserRead] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ItemReadDetails(ItemRead):
@@ -76,17 +73,16 @@ class ItemSort(BaseModel):
     field: str
     direction: str  # 'asc' or 'desc'
 
-    class Config:
-        json_schema_extra = {"example": {"field": "name", "direction": "asc"}}
+    model_config = ConfigDict(json_schema_extra={"example": {"field": "name", "direction": "asc"}})
 
 
 class ItemListResponse(BaseModel):
     items: list[ItemRead]
     total: int
 
-    class Config:
-        from_attributes = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "items": [
                     {
@@ -103,3 +99,4 @@ class ItemListResponse(BaseModel):
                 "total": 1,
             }
         }
+    )

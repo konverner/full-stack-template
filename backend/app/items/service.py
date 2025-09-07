@@ -131,7 +131,7 @@ class ItemService:
         owner_id: Optional[int] = None,
     ) -> item_models.Item:
         """Create a new item."""
-        item_data = item_in.dict()
+        item_data = item_in.model_dump()
 
         # Generate slug if not provided
         if not item_data.get("slug"):
@@ -157,12 +157,12 @@ class ItemService:
         self, db: Session, item: item_models.Item, item_in: item_schemas.ItemUpdate
     ) -> item_models.Item:
         """Update an existing item."""
-        update_data = item_in.dict(exclude_unset=True)
+        update_data = item_in.model_dump(exclude_unset=True)
 
         # Handle slug generation/update
         if "name" in update_data and "slug" not in update_data:
             # Name changed but no slug provided - regenerate from name
-            base_slug = self._generate_slug(update_data["name"])
+            base_slug = slugify(update_data["name"])
             update_data["slug"] = self._ensure_unique_slug(db, base_slug, item.id)
         elif "slug" in update_data:
             # Slug provided - ensure it's unique

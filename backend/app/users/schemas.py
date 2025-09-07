@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 import re
@@ -62,7 +62,7 @@ class UserBase(BaseModel):
         False, description="Indicates if the user has superuser privileges"
     )
 
-    @validator("username")
+    @field_validator("username")
     def validate_username_field(cls, v):
         return validate_username(v)
 
@@ -84,8 +84,7 @@ class UserRead(UserBase):
         ..., description="Timestamp when the user account was created"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserUpdate(BaseModel):
