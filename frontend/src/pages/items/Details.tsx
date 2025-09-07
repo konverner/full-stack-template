@@ -119,10 +119,10 @@ const ItemsDetailsPage: React.FC = () => {
             <Container maxWidth="md" >
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 2 }}>
-                        <Link component="button" onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center' }} color="inherit">
+                        <Link underline="hover" component="button" onClick={() => navigate('/')} sx={{ display: 'flex', alignItems: 'center' }} color="inherit">
                             Home
                         </Link>
-                        <Link component="button" onClick={() => navigate('/items')} sx={{ display: 'flex', alignItems: 'center' }} color="inherit">
+                        <Link underline="hover" component="button" onClick={() => navigate('/items')} sx={{ display: 'flex', alignItems: 'center' }} color="inherit">
                             Items
                         </Link>
                         <Typography color="text.primary">{item.name}</Typography>

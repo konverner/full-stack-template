@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import { Container, Typography, Box, TextField, Button, Alert } from '@mui/material';
+import { Container, Typography, Box, TextField, Button, Alert, Link } from '@mui/material';
 import { AuthorizationProfileService } from '@/client';
 import { saveTokens, saveUserProfile } from '../../utils/auth';
 
@@ -98,7 +98,7 @@ const LoginPage = () => {
             </Button>
           </Box>
           <Typography variant="body2" color="text.secondary" align="center">
-              No account? <a href="/register">Sign Up</a>
+              No account? <Link href="/register" color="primary">Sign Up</Link>
           </Typography>
         </Box>
       </Container>
