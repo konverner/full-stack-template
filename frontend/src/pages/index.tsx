@@ -1,7 +1,6 @@
-
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
-import { Container, Box } from '@mui/material';
+import { Container, Box, Link } from '@mui/material';
 
 
 const IndexPage = () => {
@@ -12,7 +11,7 @@ const IndexPage = () => {
         <Box sx={{ textAlign: 'center', mt: 8 }}>
           <h1>Welcome to the Full Stack Template</h1>
           <p>This is a basic template for a full stack application using React and Material UI.</p>
-          <p>GitHub Repo: <a href="https://github.com/konverner/full-stack-template" color='primary' target="_blank" rel="noopener noreferrer">https://github.com/konverner/full-stack-template</a></p>
+          <p>GitHub Repo: <Link href="https://github.com/konverner/full-stack-template" color="primary" target="_blank" rel="noopener noreferrer">https://github.com/konverner/full-stack-template</Link></p>
         </Box>
       </Container>
       <Footer />
