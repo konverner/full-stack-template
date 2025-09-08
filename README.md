@@ -10,6 +10,8 @@ This is a minimalist full-stack project template for applications with multi-use
 - Items are displayed in a table on the `/items` page.
 - Item details can be viewed on the `/items/{itemSlug}` page.
 
+You can test a demo here: http://full-stack-template.duckdns.org/
+
 ## Technology Stack
 
 ⚡ **FastAPI** for the Python backend API
