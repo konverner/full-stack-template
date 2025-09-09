@@ -175,7 +175,7 @@ const ItemsTable: React.FC = () => {
                     {!isSmDown && (
                       <TableCell align="center">
                         <Avatar
-                          src={item.image_url || undefined}
+                          src={item.image_url || '/assets/images/image-placeholder.png'}
                           alt={item.name || 'Item'}
                           variant="rounded"
                           sx={{
