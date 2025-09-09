@@ -1,0 +1,109 @@
+# Full-Stack Template - Backend
+
+## Overview
+
+This backend provides a modular FastAPI application skeleton featuring user management, authentication (JWT / OAuth2 password flow), and CRUD operations for items.
+
+## Structure
+
+High-level layout:
+
+```
+├── app
+│   ├── auth/               # Authentication & authorization layer
+│   │   ├── router.py       # /auth endpoints (token issuance, current user)
+│   │   ├── schemas.py      # Pydantic models for auth requests/responses
+│   │   ├── security.py     # Token creation/verification, password hashing utilities
+│   │   └── service.py      # Auth business logic (validate user, create tokens)
+│   ├── config.py           # Settings object (Pydantic BaseSettings -> env vars)
+│   ├── database/
+│   │   └── core.py         # Engine/session creation & session dependency
+│   ├── dependencies.py     # Cross-cutting FastAPI dependencies (get_db, get_current_user, etc.)
+│   ├── items/
+│   │   ├── models.py       # SQLAlchemy Item model(s)
+│   │   ├── router.py       # /items endpoints
+│   │   ├── schemas.py      # Pydantic item schemas
+│   │   └── service.py      # Item business logic
+│   ├── main.py             # FastAPI app factory / include routers / middleware
+│   ├── models.py           # Shared or base models (if any)
+│   ├── schemas.py          # Shared or base schemas (if any)
+│   └── users/
+│       ├── models.py       # SQLAlchemy User model
+│       ├── router.py       # /users endpoints (register, list, profile)
+│       ├── schemas.py      # User schemas
+│       └── service.py      # User domain logic
+├── Dockerfile              # Backend image build
+├── pyproject.toml          # Project metadata (editable install) + tooling (if configured)
+├── requirements.txt        # Pinned runtime deps
+└── tests
+    ├── conftest.py         # Shared pytest fixtures (test client, db session override)
+    ├── test_database.py    # DB layer tests
+    ├── test_items.py       # Item feature tests
+    └── test_users.py       # User feature tests
+```
+
+### Request Lifecycle (Typical Authenticated Endpoint)
+
+1. Client sends HTTP request with Authorization: Bearer <JWT>
+2. FastAPI router function is matched (/items/...)
+3. Dependencies resolve (e.g., DB session, current user from token)
+4. Router delegates to service layer for business logic
+5. Service interacts with SQLAlchemy models via session
+6. Domain objects converted to Pydantic response schema
+7. Response serialized to JSON (OpenAPI-compliant)
+
+### Layering & Responsibilities
+
+- Router: HTTP shape only (validation via schemas, status codes)
+- Service: Business rules, orchestration, error raising
+- Model: Persistence mapping (SQLAlchemy ORM)
+- Schema: External contract (input/output validation/serialization)
+- Security: Token & password utilities (hashing, JWT encode/decode)
+- Dependencies: Composable building blocks for routers
+
+## Configuration
+
+Configuration is centralized in `config.py` using Pydantic BaseSettings. Environment variables (see root `.env.example`) are loaded automatically.
+
+Add new settings by extending the Settings class and referencing them via dependency injection or direct import of the singleton instance.
+
+
+## Development Workflow
+
+1. Environment: set virtual environment + install deps.
+    ```
+    python -m venv venv
+    source venv/bin/activate
+    pip install -e .
+    ```
+2. Branch: create feature branch (e.g. feature/items-filtering).
+3. Implement:
+   - models.py (data models)
+   - schemas.py (http schemas)
+   - service.py (business logic)
+   - router.py (endpoints)
+   - tests/test_<feature>.py (unit tests)
+4. Run unit tests:
+   ```
+   python -m pytest -q
+   ```
+5. Regenerate frontend client if schemas changed:
+   ```
+   sudo bash ./scripts/generate-client.sh
+   ```
+
+
+## Error Handling
+
+Raise `HTTPException` in router for explicit HTTP semantics. Prefer custom exception classes in service layer then translate to HTTP errors in router if domain-specific.
+
+## Code Style & Conventions
+
+- Keep router functions thin (< ~15 LOC ideally)
+- Service functions: single responsibility
+- Name Pydantic models with suffixes: <Entity>Create / <Entity>Update / <Entity>Read
+- Prefer UTC timestamps
+
+## Migration
+
+TODO
