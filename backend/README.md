@@ -92,10 +92,11 @@ Alembic is configured to use the same database URI as the FastAPI application, d
    - service.py (business logic)
    - router.py (endpoints)
    - tests/test_<feature>.py (unit tests)
-4. Generate migration:
+4. Generate a migration file:
    ```
-   alembic revision --autogenerate -m "Add items filtering feature"
+   alembic revision -m "Add items filtering feature"
    ```
+5. Implement upgrade and downgrade functions in the migration file (`alembic/versions/`)
 5. Run unit tests:
    ```
    python -m pytest -q
