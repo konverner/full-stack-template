@@ -73,7 +73,9 @@ class ItemSort(BaseModel):
     field: str
     direction: str  # 'asc' or 'desc'
 
-    model_config = ConfigDict(json_schema_extra={"example": {"field": "name", "direction": "asc"}})
+    model_config = ConfigDict(
+        json_schema_extra={"example": {"field": "name", "direction": "asc"}}
+    )
 
 
 class ItemListResponse(BaseModel):
@@ -98,5 +100,5 @@ class ItemListResponse(BaseModel):
                 ],
                 "total": 1,
             }
-        }
+        },
     )

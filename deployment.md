@@ -38,6 +38,7 @@ You can set several variables, like:
 | PG_PASSWORD              | The Postgres password.                                                                                         | postgrespassword               |
 | PG_USER                  | The Postgres user, you can leave the default.                                                                  | postgres                       |
 | PG_DB                    | The database name to use for this application. Default is `app`.                                               | app                            |
+| SEED_MOCK_DATA           | Whether to seed the database with mock data.                                                                    | true                           |
 
 
 Deploy with Docker Compose
@@ -45,7 +46,7 @@ Deploy with Docker Compose
 With the environment variables in place, you can deploy with Docker Compose:
 
 ```
-docker compose -f docker-compose.yml up -d
+docker-compose up -d
 ```
 
 You can use flag `--no-build` to avoid building images from local files and force Docker to pull images from remote repository.
