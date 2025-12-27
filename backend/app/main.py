@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -69,10 +70,5 @@ async def head_root():
 
 
 if __name__ == "__main__":
-    import uvicorn
-    from app.database.core import init_db
-
-    # Initialize the database connection
-    init_db()
     # Run the app with Uvicorn if this file is executed directly
     uvicorn.run(app, host=settings.HOST, port=settings.PORT, log_level=LOG_LEVEL)

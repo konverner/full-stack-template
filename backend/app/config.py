@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     PG_USER: str
     PG_PASSWORD: str = ""
     PG_DB: str = ""
+    SEED_MOCK_DATA: bool = False
 
     @computed_field  # type: ignore[prop-decorator]
     @property

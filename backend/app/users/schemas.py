@@ -57,7 +57,9 @@ class UserBase(BaseModel):
     avatar_url: Optional[str] = Field(
         None, description="URL to the user's avatar image"
     )
-    is_active: Optional[bool] = Field(True, description="Indicates if the user account is active")
+    is_active: Optional[bool] = Field(
+        True, description="Indicates if the user account is active"
+    )
     is_superuser: Optional[bool] = Field(
         False, description="Indicates if the user has superuser privileges"
     )
