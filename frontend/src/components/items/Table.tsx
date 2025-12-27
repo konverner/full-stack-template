@@ -6,10 +6,10 @@ import {
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
+import DescriptionIcon from '@mui/icons-material/Description'; // <-- Added import
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { ItemsService } from '@/client';
 import { ItemRead } from '@/client';
-
 
 interface ItemsResponse {
   items: ItemRead[];
@@ -174,17 +174,34 @@ const ItemsTable: React.FC = () => {
                     {/* Image */}
                     {!isSmDown && (
                       <TableCell align="center">
-                        <Avatar
-                          src={item.image_url || '/assets/images/image-placeholder.png'}
-                          alt={item.name || 'Item'}
-                          variant="rounded"
-                          sx={{
-                            width: 90,
-                            height: 90,
-                            mx: 'auto',
-                            bgcolor: 'grey.200'
-                          }}
-                        />
+                        {item.image_url ? (
+                          <Avatar
+                            src={item.image_url}
+                            alt={item.name || 'Item'}
+                            variant="rounded"
+                            sx={{
+                              width: 90,
+                              height: 90,
+                              mx: 'auto',
+                              bgcolor: 'grey.200'
+                            }}
+                          />
+                        ) : (
+                          <Avatar
+                            variant="rounded"
+                            sx={{
+                              width: 90,
+                              height: 90,
+                              mx: 'auto',
+                              bgcolor: 'grey.200',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            <DescriptionIcon sx={{ fontSize: 40, color: 'grey.500' }} />
+                          </Avatar>
+                        )}
                       </TableCell>
                     )}
 
@@ -239,7 +256,7 @@ const ItemsTable: React.FC = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="Rows on the page:"
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} / ${count !== -1 ? count : `больше чем ${to}`}`}
+        labelDisplayedRows={({ from, to, count }) => `${from}-${to} / ${count !== -1 ? count : `more then ${to}`}`}
       />
     </Paper>
   );
