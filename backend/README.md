@@ -79,32 +79,48 @@ Alembic is configured to use the same database URI as the FastAPI application, d
 
 ## Development Workflow
 
-1. Environment: set virtual environment + install deps.
+1. Backend environment: set virtual environment + install deps (from /backend).
     ```
     python -m venv venv
     source venv/bin/activate
     pip install --no-cache-dir -r requirements.txt
     ```
-2. Branch: create feature branch (e.g. feature/items-filtering).
-3. Implement:
+2. Frontend environment: install all npm deps (from /frontend):
+   ```
+   npm install
+   ```
+3. Branch: create feature branch (e.g. feature/items-filtering).
+4. On backend, implement:
    - models.py (data models)
    - schemas.py (http schemas)
    - service.py (business logic)
    - router.py (endpoints)
    - tests/test_<feature>.py (unit tests)
-4. Generate a migration file:
+5. Generate a migration file:
    ```
    alembic revision -m "Add items filtering feature"
    ```
-5. Implement upgrade and downgrade functions in the migration file (`alembic/versions/`)
-5. Run unit tests:
+6. Implement upgrade and downgrade functions in the migration file (`alembic/versions/`) . For example
+   ```python
+   def upgrade() -> None:
+        op.add_column('users', sa.Column('full_name', sa.String(length=255), nullable=True))
+    
+    def downgrade() -> None:
+        op.drop_column('users', 'full_name')
+    ```
+7. Run unit tests:
    ```
    python -m pytest -q
    ```
-6. Regenerate frontend client if schemas changed:
+8. Regenerate frontend client if schemas changed:
    ```
    sudo bash ./scripts/generate-client.sh
    ```
+9. Now you can rebuild docker images and re-run the application:
+   ```
+   docker-compose up --build
+   ```
+   restart service will set, seed (if neede) database and run migrations from `/alembic/versions`
 
 
 ## Database Migrations and Seeding
