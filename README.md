@@ -49,9 +49,9 @@ Rename `.env.example` to `.env` and set the variables.
 
 Install node modules: `npm install`
 
-Run development server: `npm start`
+Run development server: `npm run dev`
 
-Build: `npm build`
+Build: `npm run build`
 
 ### 3. Backend
 
@@ -59,7 +59,7 @@ Install dependencies: `pip install -r requirements.txt`
 
 Run a server: `python -m app.main`
 
-Docs are available on `http://localhost/api/v1/docs`
+The page is served on `http://localhost` . API docs are available on `http://localhost/api/v1/docs`
 
 ## Credits
 
