@@ -86,12 +86,6 @@ services:
     depends_on:
       - backend
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
     networks:
       - frontend_net
     logging:
