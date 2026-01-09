@@ -21,8 +21,9 @@ if [ -f .env ]; then
 fi
 
 # Configuration
-PROJECT_GITHUB_NAME="${PROJECT_GITHUB_NAME:-36pool}"
-TAG="${TAG:-$(git rev-parse --short HEAD)}"
+PROJECT_SLUG="${PROJECT_SLUG:-full-stack-template}"
+PROJECT_VERSION="${PROJECT_VERSION:-0.1.0}"
+TAG="${TAG:-$PROJECT_VERSION}"
 
 # Validate required image variables
 if [ -z "${DOCKER_IMAGE_BACKEND:-}" ] || [ -z "${DOCKER_IMAGE_FRONTEND:-}" ]; then
