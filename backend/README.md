@@ -151,7 +151,7 @@ If the containers are already running:
 
 - **Seed data manually**:
   ```bash
-  docker-compose exec backend python -m app.seed
+  docker-compose exec backend python -m app.database.seed
   ```
 
 ### Local Development (without Docker)
@@ -162,7 +162,7 @@ If the containers are already running:
    ```
 2. Seed data:
    ```bash
-   python -m app.seed
+   python -m app.database.seed
    ```
 
 
