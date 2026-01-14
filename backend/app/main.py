@@ -8,7 +8,7 @@ from .auth.router import router as auth_router
 from .items.router import router as items_router
 from .users.router import router as users_router
 
-if settings.ENVIRONMENT == "local":
+if settings.ENVIRONMENT == "dev":
     LOG_LEVEL = "debug"  # Set log level to debug for local development
 else:
     LOG_LEVEL = "info"

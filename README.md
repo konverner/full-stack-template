@@ -55,6 +55,8 @@ Build: `npm run build`
 
 ### 3. Backend
 
+Go to `backend` folder: `cd backend`
+
 Install dependencies: `pip install -r requirements.txt`
 
 Run a server: `python -m app.main`
