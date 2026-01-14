@@ -81,7 +81,7 @@ class Settings(BaseSettings):
                 f'The value of {var_name} is "changethis", '
                 "for security, please change it, at least for deployments."
             )
-            if self.ENVIRONMENT == "local":
+            if self.ENVIRONMENT == "dev":
                 warnings.warn(message, stacklevel=1)
             else:
                 raise ValueError(message)
