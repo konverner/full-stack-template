@@ -23,6 +23,7 @@ High-level layout:
 │   │   └── service.py      # Auth business logic (validate user, create tokens)
 │   ├── config.py           # Settings object (Pydantic BaseSettings -> env vars)
 │   ├── database/
+│   │   ├── seed.py         # Database seeding logic (create initial data)
 │   │   └── core.py         # Engine/session creation & session dependency
 │   ├── dependencies.py     # Cross-cutting FastAPI dependencies (get_db, get_current_user, etc.)
 │   ├── items/

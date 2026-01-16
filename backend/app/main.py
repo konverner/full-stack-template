@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
+from .database.core import init_db
 from .auth.router import router as auth_router
 from .items.router import router as items_router
 from .users.router import router as users_router
@@ -70,5 +71,6 @@ async def head_root():
 
 
 if __name__ == "__main__":
+    
     # Run the app with Uvicorn if this file is executed directly
     uvicorn.run(app, host=settings.HOST, port=settings.PORT, log_level=LOG_LEVEL)
