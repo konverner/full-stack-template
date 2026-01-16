@@ -12,13 +12,19 @@ NC='\033[0m' # No Color
 # Trap errors and print a message
 trap 'echo -e "${RED}Error on line ${LINENO}: ${BASH_COMMAND} (exit code: $?)${NC}"' ERR
 
-# Load environment variables from .env and export them
-if [ -f .env ]; then
+# Load environment variables from .env or specified file
+ENV_FILE="${1:-.env}"
+if [ -f "$ENV_FILE" ]; then
+    echo -e "${YELLOW}Loading environment variables from ${ENV_FILE}${NC}"
     set -o allexport
     # shellcheck disable=SC1090
-    source .env
+    source "$ENV_FILE"
     set +o allexport
+elif [ "$ENV_FILE" != ".env" ]; then
+    echo -e "${RED}Error: Environment file '$ENV_FILE' not found.${NC}"
+    exit 1
 fi
+
 
 # Configuration
 PROJECT_SLUG="${PROJECT_SLUG:-full-stack-template}"

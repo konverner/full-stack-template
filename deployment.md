@@ -40,6 +40,7 @@ You can set several variables, like:
 | PG_DB                    | The database name to use for this application. Default is `full_stack_template_db`.                                               | full_stack_template_db                            |
 | SEED_MOCK_DATA           | Whether to seed the database with mock data.                                                                    | true                           |
 
+The best practice is to have `.env` file for each environment, for example `.env.dev`, `.env.test` and `.env.prod`.
 
 Deploy with Docker Compose
 
@@ -64,11 +65,19 @@ The script performs the following steps:
 5. **Update**: Navigate to the `DEPLOY_PATH` on the server, stops existing containers, pulls the new images using `DOCKER_IMAGE_BACKEND`, `DOCKER_IMAGE_FRONTEND`, and starts the services in detached mode.
 6. **Verify**: Waits for 30 seconds and attempts to open the deployment URL in your local browser.
 
-To run it, ensure your `.env` file has the deployment credentials and Docker image names configured, then execute:
+To run it, ensure your `.env` file has the deployment credentials and Docker image names configured.  You can pass path to .env file, for example if you have separate environments: `.env.test` and `.env.prod`:
 
 ```bash
-bash scripts/build-push-deploy.sh
+source scripts/build-push-deploy.sh .env.prod
 ```
+
+or
+
+```bash
+source scripts/build-push-deploy.sh
+```
+
+by default, the script is looking for `.env`
 
 ## Continuous Deployment (CD)
 
