@@ -67,7 +67,10 @@ async def head_root():
     Root endpoint providing health check via HEAD request.
     This endpoint can be used to check if the API is up and running.
     """
-    return {"message": "OK"}
+    return {
+        "status": "OK",
+        "version": settings.PROJECT_VERSION
+    }
 
 
 if __name__ == "__main__":
