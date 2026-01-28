@@ -37,7 +37,7 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     FRONTEND_HOST: str = "http://localhost:80"
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["dev", "test", "prod"] = "dev"
 
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     PG_USER: str
     PG_PASSWORD: str = ""
     PG_DB: str = ""
+    SEED_MOCK_DATA: bool = False
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -80,7 +81,7 @@ class Settings(BaseSettings):
                 f'The value of {var_name} is "changethis", '
                 "for security, please change it, at least for deployments."
             )
-            if self.ENVIRONMENT == "local":
+            if self.ENVIRONMENT == "dev":
                 warnings.warn(message, stacklevel=1)
             else:
                 raise ValueError(message)

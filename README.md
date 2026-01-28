@@ -16,6 +16,7 @@ You can test a demo here: http://full-stack-template.duckdns.org/
 
 ⚡ **FastAPI** for the Python backend API
   - **SQLAlchemy** for database interactions (ORM)
+  - **Alembic** for database migrations
   - **Pydantic** for data validation and settings management
   - **PostgreSQL** as the database
 
@@ -44,21 +45,23 @@ Docs are available on `http://localhost/api/v1/docs`
 
 Rename `.env.example` to `.env` and set the variables.
 
-### 2. Frontend:
+### 2. Frontend
 
 Install node modules: `npm install`
 
-Run development server: `npm start`
+Run development server: `npm run dev`
 
-Build: `npm build`
+Build: `npm run build`
 
 ### 3. Backend
+
+Go to `backend` folder: `cd backend`
 
 Install dependencies: `pip install -r requirements.txt`
 
 Run a server: `python -m app.main`
 
-Docs are available on `http://localhost/api/v1/docs`
+The page is served on `http://localhost` . API docs are available on `http://localhost/api/v1/docs`
 
 ## Credits
 

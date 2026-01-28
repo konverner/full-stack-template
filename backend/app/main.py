@@ -1,12 +1,14 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
+from .database.core import init_db
 from .auth.router import router as auth_router
 from .items.router import router as items_router
 from .users.router import router as users_router
 
-if settings.ENVIRONMENT == "local":
+if settings.ENVIRONMENT == "dev":
     LOG_LEVEL = "debug"  # Set log level to debug for local development
 else:
     LOG_LEVEL = "info"
@@ -65,14 +67,13 @@ async def head_root():
     Root endpoint providing health check via HEAD request.
     This endpoint can be used to check if the API is up and running.
     """
-    return {"message": "OK"}
+    return {
+        "status": "OK",
+        "version": settings.PROJECT_VERSION
+    }
 
 
 if __name__ == "__main__":
-    import uvicorn
-    from app.database.core import init_db
-
-    # Initialize the database connection
-    init_db()
+    
     # Run the app with Uvicorn if this file is executed directly
     uvicorn.run(app, host=settings.HOST, port=settings.PORT, log_level=LOG_LEVEL)

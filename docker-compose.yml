@@ -13,17 +13,23 @@ services:
       POSTGRES_DB: ${PG_DB}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
+    networks:
+      - backend_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG:-latest}'
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
     env_file:
       - ./.env
     environment:
@@ -31,18 +37,66 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      prestart:
+        condition: service_completed_successfully
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - backend_net
+      - frontend_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  prestart:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG:-latest}'
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_URL: postgresql://${PG_USER}:${PG_PASSWORD}@db:5432/${PG_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["/app/scripts/prestart.sh"]
+    networks:
+      - backend_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
 
   frontend:
-    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG:-latest}'
+    ports:
+      - "80:80"
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "80:80"
     depends_on:
       - backend
     restart: always
+    networks:
+      - frontend_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  backend_net:
+  frontend_net:
 
 volumes:
   postgres_data:

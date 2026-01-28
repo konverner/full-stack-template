@@ -48,7 +48,7 @@ const ItemsTable: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_ROWS_PER_PAGE);
   const [totalRows, setTotalRows] = useState<number>(0);
   const navigate = useNavigate();
-  
+
   // We do not display index and image on small screens
   const theme = useTheme();
   const isSmDown = useMediaQuery(theme.breakpoints.down('sm'));
