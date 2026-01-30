@@ -8,3 +8,6 @@ blob-report/
 playwright/.cache/
 .ruff_cache/
 .env
+.env.prod
+.env.dev
+.env.test
