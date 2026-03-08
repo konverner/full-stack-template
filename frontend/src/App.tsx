@@ -17,9 +17,7 @@ import PrivacyPage from './pages/privacy';
 import FaqPage from './pages/faq';
 import TermsOfServicePage from './pages/terms';
 import AboutPage from './pages/about';
-import { frFR } from '@mui/material/locale';
-
-const muiLocale = frFR;
+import { enUS } from '@mui/material/locale';
 
 const createAppTheme = (mode: 'light' | 'dark') => createTheme({
     palette: mode === 'dark'
@@ -38,7 +36,7 @@ const createAppTheme = (mode: 'light' | 'dark') => createTheme({
             text: { primary: '#242424', secondary: '#a0a0a0' },
             mode,
         },
-}, muiLocale);
+}, enUS);
 
 const lightTheme = createAppTheme('light');
 const darkTheme = createAppTheme('dark');

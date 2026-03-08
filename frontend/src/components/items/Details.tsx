@@ -2,6 +2,7 @@ import { Box, Typography, Grid, Paper, Avatar, Link, Chip, Button, Stack, Rating
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { ItemsService } from '@/client';
+import { formatDate } from '@/utils/locale.ts';
 
 interface Owner {
     id: number;
@@ -33,16 +34,6 @@ interface ItemDetailsProps {
     currentUser: CurrentUser | null;
     onDelete?: () => void;
 }
-
-const formatDate = (dateString: string | undefined | null): string => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-};
 
 const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }) => {
     if (!item) return null;

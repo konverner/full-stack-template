@@ -4,8 +4,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { UsersService } from '@/client';
 import { useNavigate } from 'react-router-dom';
 import { UserRead } from '@/client';
-
-
+import { formatDate } from '@/utils/locale.ts';
 
 interface CurrentUser {
     username: string;
@@ -18,17 +17,7 @@ interface UserDetailsProps {
     refetchUser: () => void;
 }
 
-const formatDate = (dateString?: string | null): string => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-};
-
-const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser, refetchUser }) => {
+const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
     const navigate = useNavigate();
 
     if (!user) return null;
@@ -159,7 +148,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser, refetchUse
                                     Created
                                 </Typography>
                                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    {formatDate(user.created_at)}
+                                    {formatDate(user.created_at, { fallback: 'N/A' })}
                                 </Typography>
                             </Box>
                             {/* <Box>
