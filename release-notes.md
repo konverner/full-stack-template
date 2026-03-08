@@ -3,7 +3,7 @@
 ## Features
 
 - add locale support for frontend
-
+- add a script for database seeding with mock data
 
 # 0.2.0
 
