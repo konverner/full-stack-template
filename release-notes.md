@@ -1,3 +1,10 @@
+# 0.3.0
+
+## Features
+
+- add locale support for frontend
+
+
 # 0.2.0
 
 ## Features
