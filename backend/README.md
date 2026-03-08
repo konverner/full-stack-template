@@ -23,7 +23,7 @@ High-level layout:
 │   │   └── service.py      # Auth business logic (validate user, create tokens)
 │   ├── config.py           # Settings object (Pydantic BaseSettings -> env vars)
 │   ├── database/
-│   │   ├── seed.py         # Database seeding logic (create initial data)
+│   │   ├── seed.py         # Database seeding logic (create initial data, mock data)
 │   │   └── core.py         # Engine/session creation & session dependency
 │   ├── dependencies.py     # Cross-cutting FastAPI dependencies (get_db, get_current_user, etc.)
 │   ├── items/
@@ -105,7 +105,7 @@ Alembic is configured to use the same database URI as the FastAPI application, d
    ```python
    def upgrade() -> None:
         op.add_column('users', sa.Column('full_name', sa.String(length=255), nullable=True))
-    
+
     def downgrade() -> None:
         op.drop_column('users', 'full_name')
     ```
@@ -127,6 +127,8 @@ Alembic is configured to use the same database URI as the FastAPI application, d
 ## Database Migrations and Seeding
 
 The project uses Alembic for database migrations and a custom seeding script for initial data.
+
+Mock data generation is implemented using the Faker library, the images for item objects are generated with https://picsum.photos/ service, the user avatars are generated with dicebear.com service.
 
 ### Automatic Initialization
 
