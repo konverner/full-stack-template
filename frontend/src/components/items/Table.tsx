@@ -255,8 +255,6 @@ const ItemsTable: React.FC = () => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Rows on the page:"
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} / ${count !== -1 ? count : `more then ${to}`}`}
       />
     </Paper>
   );
