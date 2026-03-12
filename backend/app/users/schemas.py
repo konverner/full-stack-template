@@ -119,6 +119,12 @@ class UserFilter(BaseModel):
     )
     email: Optional[str] = Field(None, description="Filter by email (partial match)")
     is_active: Optional[bool] = Field(None, description="Filter by active status")
+    created_at_from: Optional[datetime] = Field(
+        None, description="Filter users created on or after this datetime"
+    )
+    created_at_to: Optional[datetime] = Field(
+        None, description="Filter users created on or before this datetime"
+    )
 
 
 class UserSort(BaseModel):
