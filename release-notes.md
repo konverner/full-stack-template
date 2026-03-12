@@ -4,6 +4,7 @@
 
 - add locale support for frontend
 - add a script for database seeding with mock data
+- use GET for health check endpoint instead of HEAD
 
 # 0.2.0
 
