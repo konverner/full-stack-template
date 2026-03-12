@@ -40,7 +40,7 @@ class ItemCreate(ItemBase):
 
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
-    available: Optional[bool] = None  # Make this explicitly optional for updates
+    available: Optional[bool] = None
 
     model_config = ConfigDict(extra="ignore")
 
