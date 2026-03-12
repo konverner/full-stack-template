@@ -5,6 +5,7 @@
 - add locale support for frontend
 - add a script for database seeding with mock data
 - use GET for health check endpoint instead of HEAD
+- set explicit pool limits and fail fast instead of letting requests pile up
 
 ## Fixes
 
