@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=user_schemas.UserListResponse)
-async def list_users(
+def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     username: str = Query(None),
@@ -45,7 +45,7 @@ async def list_users(
 @router.post(
     "/", response_model=user_schemas.UserRead, status_code=status.HTTP_201_CREATED
 )
-async def create_user(
+def create_user(
     user_in: user_schemas.UserCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -70,7 +70,7 @@ async def create_user(
 
 
 @router.get("/{username}", response_model=user_schemas.UserRead)
-async def get_user_by_username(username: str, db: Session = Depends(get_db)):
+def get_user_by_username(username: str, db: Session = Depends(get_db)):
     """
     Get a specific user by username.
     """
@@ -90,7 +90,7 @@ async def get_user_by_username(username: str, db: Session = Depends(get_db)):
 
 
 @router.put("/{username}", response_model=user_schemas.UserRead)
-async def update_user_by_username(
+def update_user_by_username(
     username: str,
     user_in: user_schemas.UserUpdate,
     db: Session = Depends(get_db),
@@ -116,7 +116,7 @@ async def update_user_by_username(
 
 
 @router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user_by_username(
+def delete_user_by_username(
     username: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),

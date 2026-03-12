@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=item_schemas.ItemListResponse)
-async def list_items(
+def list_items(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     name: str = Query(None),
@@ -43,7 +43,7 @@ async def list_items(
 @router.post(
     "/", response_model=item_schemas.ItemRead, status_code=status.HTTP_201_CREATED
 )
-async def create_item(
+def create_item(
     item_in: item_schemas.ItemCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -57,7 +57,7 @@ async def create_item(
 
 
 @router.get("/{item_slug}", response_model=item_schemas.ItemRead)
-async def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
+def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
     """
     Get a specific item by its slug.
     """
@@ -72,7 +72,7 @@ async def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
 
 
 @router.put("/{item_slug}", response_model=item_schemas.ItemRead)
-async def update_item_by_slug(
+def update_item_by_slug(
     item_slug: str,
     item_in: item_schemas.ItemUpdate,
     db: Session = Depends(get_db),
@@ -98,7 +98,7 @@ async def update_item_by_slug(
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_item(
+def delete_item(
     item_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),

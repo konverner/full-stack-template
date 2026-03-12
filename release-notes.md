@@ -6,6 +6,10 @@
 - add a script for database seeding with mock data
 - use GET for health check endpoint instead of HEAD
 
+## Fixes
+
+- convert DB routes to sync handlers to match a sync version of SQLAlchemy
+
 # 0.2.0
 
 ## Features
