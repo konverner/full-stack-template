@@ -96,9 +96,9 @@ fi
 
 sshpass -p "${DEPLOY_PASS}" ssh -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_HOST} << EOF
     cd ${DEPLOY_PATH}
-    docker-compose down
-    docker-compose pull
-    docker-compose up -d
+    docker compose down
+    docker compose pull
+    docker compose up -d --no-build
 EOF
 
 if [ $? -eq 0 ]; then
