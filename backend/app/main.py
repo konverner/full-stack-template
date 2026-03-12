@@ -60,10 +60,10 @@ async def read_root():
 
 
 # --- Health Check Endpoint ---
-@app.head("/health", tags=["Health Check"])
-async def head_root():
+@app.get("/health", tags=["Health Check"])
+async def get_health():
     """
-    Root endpoint providing health check via HEAD request.
+    Root endpoint providing health check via GET request.
     This endpoint can be used to check if the API is up and running.
     """
     return {"status": "OK", "version": settings.PROJECT_VERSION}
