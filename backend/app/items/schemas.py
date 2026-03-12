@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator, ConfigDict
 from typing import Optional
 import re
-from datetime import datetime
+from datetime import datetime, date
 from ..users.schemas import UserRead
 
 
@@ -67,6 +67,8 @@ class ItemFilter(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     owner_id: Optional[int] = None
+    created_from: Optional[date] = None
+    created_to: Optional[date] = None
 
 
 class ItemSort(BaseModel):

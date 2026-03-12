@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, asc, desc
 from typing import Optional, List
+from datetime import timedelta
 import logging
 from slugify import slugify
 
@@ -79,6 +80,10 @@ class ItemService:
                 )
             if filters.owner_id is not None:
                 query = query.where(item_models.Item.owner_id == filters.owner_id)
+            if filters.created_from is not None:
+                query = query.where(item_models.Item.created_at >= filters.created_from)
+            if filters.created_to is not None:
+                query = query.where(item_models.Item.created_at < filters.created_to + timedelta(days=1))
 
         # Sorting
         if sort:
@@ -107,6 +112,14 @@ class ItemService:
             if filters.owner_id is not None:
                 total_query = total_query.where(
                     item_models.Item.owner_id == filters.owner_id
+                )
+            if filters.created_from is not None:
+                total_query = total_query.where(
+                    item_models.Item.created_at >= filters.created_from
+                )
+            if filters.created_to is not None:
+                total_query = total_query.where(
+                    item_models.Item.created_at < filters.created_to + timedelta(days=1)
                 )
         total_result = db.execute(total_query)
         total = len(total_result.scalars().all())

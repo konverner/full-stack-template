@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from datetime import date, timedelta
 
 from app.items.service import item_service
 from app.items.schemas import ItemCreate, ItemUpdate, ItemFilter
@@ -43,6 +44,22 @@ def test_list_items(db_session: Session, test_user: User):
     response = item_service.list_items(db_session, filters=item_filter)
     assert response.total >= 1
     assert response.items[0].name == "Item 1"
+
+
+def test_list_items_filter_by_created_date(db_session: Session, test_user: User):
+    item_service.create_item(
+        db_session, item_in=ItemCreate(name="Dated Item"), owner_id=test_user.id
+    )
+
+    today = date.today()
+    item_filter = ItemFilter(created_from=today, created_to=today)
+    response = item_service.list_items(db_session, filters=item_filter)
+    assert response.total >= 1
+
+    future_date = today + timedelta(days=10)
+    item_filter = ItemFilter(created_from=future_date, created_to=future_date)
+    response = item_service.list_items(db_session, filters=item_filter)
+    assert response.total == 0
 
 
 def test_update_item(db_session: Session, test_user: User):

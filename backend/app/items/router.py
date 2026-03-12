@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload
 
@@ -18,6 +20,8 @@ def list_items(
     name: str = Query(None),
     description: str = Query(None),
     owner_id: int = Query(None),
+    created_from: date = Query(None),
+    created_to: date = Query(None),
     sort_field: str = Query("id"),
     sort_direction: str = Query("asc"),
     db: Session = Depends(get_db),
@@ -26,7 +30,8 @@ def list_items(
     List items with filtering, sorting, and pagination.
     """
     filters = item_schemas.ItemFilter(
-        name=name, description=description, owner_id=owner_id
+        name=name, description=description, owner_id=owner_id,
+        created_from=created_from, created_to=created_to,
     )
     sort = item_schemas.ItemSort(field=sort_field, direction=sort_direction)
     items = item_service.list_items(
