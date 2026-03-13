@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -59,6 +61,33 @@ def test_list_users(db_session: Session):
     response = user_service.list_users(db_session, filters=user_filter)
     assert response.total >= 1
     assert response.users[0].username == "listuser1"
+
+
+def test_list_users_filter_by_created_at(db_session: Session):
+    before_create = datetime.now(timezone.utc)
+    user_service.create_user(
+        db_session,
+        UserCreate(username="dateuser1", email="date1@user.com", password="password"),
+    )
+    after_create = datetime.now(timezone.utc)
+
+    # Filter with created_at_from before creation -> should include the user
+    user_filter = UserFilter(created_at_from=before_create)
+    response = user_service.list_users(db_session, filters=user_filter)
+    usernames = [u.username for u in response.users]
+    assert "dateuser1" in usernames
+
+    # Filter with created_at_to after creation -> should include the user
+    user_filter = UserFilter(created_at_to=after_create)
+    response = user_service.list_users(db_session, filters=user_filter)
+    usernames = [u.username for u in response.users]
+    assert "dateuser1" in usernames
+
+    # Filter with created_at_from in the future -> should not include the user
+    user_filter = UserFilter(created_at_from=after_create + timedelta(hours=1))
+    response = user_service.list_users(db_session, filters=user_filter)
+    usernames = [u.username for u in response.users]
+    assert "dateuser1" not in usernames
 
 
 def test_update_user(db_session: Session):

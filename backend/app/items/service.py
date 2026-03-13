@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, asc, desc
 from typing import Optional, List
+from datetime import timedelta
 import logging
 from slugify import slugify
 
@@ -8,7 +9,6 @@ from slugify import slugify
 from . import models as item_models
 from . import schemas as item_schemas
 
-# Get logger
 logger = logging.getLogger(__name__)
 
 
@@ -79,8 +79,11 @@ class ItemService:
                 )
             if filters.owner_id is not None:
                 query = query.where(item_models.Item.owner_id == filters.owner_id)
+            if filters.created_from is not None:
+                query = query.where(item_models.Item.created_at >= filters.created_from)
+            if filters.created_to is not None:
+                query = query.where(item_models.Item.created_at < filters.created_to + timedelta(days=1))
 
-        # Sorting
         if sort:
             sort_field = getattr(item_models.Item, sort.field, None)
             if sort_field is not None:
@@ -93,7 +96,6 @@ class ItemService:
 
         query = query.options(*(options or []))
 
-        # Count total
         total_query = select(item_models.Item.id)
         if filters:
             if filters.name is not None:
@@ -108,10 +110,17 @@ class ItemService:
                 total_query = total_query.where(
                     item_models.Item.owner_id == filters.owner_id
                 )
+            if filters.created_from is not None:
+                total_query = total_query.where(
+                    item_models.Item.created_at >= filters.created_from
+                )
+            if filters.created_to is not None:
+                total_query = total_query.where(
+                    item_models.Item.created_at < filters.created_to + timedelta(days=1)
+                )
         total_result = db.execute(total_query)
         total = len(total_result.scalars().all())
 
-        # Pagination
         query = query.offset(skip).limit(limit)
         result = db.execute(query)
         items = result.scalars().all()
@@ -140,10 +149,7 @@ class ItemService:
 
         # Normalize image url
         if item_data.get("image_url"):
-            # Strip whitespaces
             item_data["image_url"] = item_data["image_url"].strip()
-
-            # Remove query parameters if present
             if "?" in item_data["image_url"]:
                 item_data["image_url"] = item_data["image_url"].split("?")[0]
 
