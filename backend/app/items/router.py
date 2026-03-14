@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload
 
@@ -12,12 +14,14 @@ router = APIRouter()
 
 
 @router.get("/", response_model=item_schemas.ItemListResponse)
-async def list_items(
+def list_items(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     name: str = Query(None),
     description: str = Query(None),
     owner_id: int = Query(None),
+    created_from: date = Query(None),
+    created_to: date = Query(None),
     sort_field: str = Query("id"),
     sort_direction: str = Query("asc"),
     db: Session = Depends(get_db),
@@ -26,7 +30,8 @@ async def list_items(
     List items with filtering, sorting, and pagination.
     """
     filters = item_schemas.ItemFilter(
-        name=name, description=description, owner_id=owner_id
+        name=name, description=description, owner_id=owner_id,
+        created_from=created_from, created_to=created_to,
     )
     sort = item_schemas.ItemSort(field=sort_field, direction=sort_direction)
     items = item_service.list_items(
@@ -43,7 +48,7 @@ async def list_items(
 @router.post(
     "/", response_model=item_schemas.ItemRead, status_code=status.HTTP_201_CREATED
 )
-async def create_item(
+def create_item(
     item_in: item_schemas.ItemCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -57,7 +62,7 @@ async def create_item(
 
 
 @router.get("/{item_slug}", response_model=item_schemas.ItemRead)
-async def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
+def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
     """
     Get a specific item by its slug.
     """
@@ -72,7 +77,7 @@ async def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
 
 
 @router.put("/{item_slug}", response_model=item_schemas.ItemRead)
-async def update_item_by_slug(
+def update_item_by_slug(
     item_slug: str,
     item_in: item_schemas.ItemUpdate,
     db: Session = Depends(get_db),
@@ -98,7 +103,7 @@ async def update_item_by_slug(
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_item(
+def delete_item(
     item_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),

@@ -13,6 +13,7 @@ Before deploy:
 - Have a remote server ready and available.
 - Configure the DNS records of your domain to point to the IP of the server you just created.
 - Install and configure Docker on the remote server (Docker Engine, not Docker Desktop).
+- Copy docker-compose.yml and .env files to remove server in deployment directory (`DEPLOY_PATH`)
 
 ## Deploy
 

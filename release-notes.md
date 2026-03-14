@@ -1,3 +1,17 @@
+# 0.3.0
+
+## Features
+
+- add locale support for frontend
+- add a script for database seeding with mock data
+- use GET for health check endpoint instead of HEAD
+- set explicit pool limits and fail fast instead of letting requests pile up
+- add datetime fields for filtering items and users by creation date
+
+## Fixes
+
+- convert DB routes to sync handlers to match a sync version of SQLAlchemy
+
 # 0.2.0
 
 ## Features

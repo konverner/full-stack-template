@@ -36,6 +36,10 @@ class UserService:
                 query = query.filter(User.email.ilike(f"%{filters.email}%"))
             if filters.is_active is not None:
                 query = query.filter(User.is_active == filters.is_active)
+            if filters.created_at_from is not None:
+                query = query.filter(User.created_at >= filters.created_at_from)
+            if filters.created_at_to is not None:
+                query = query.filter(User.created_at <= filters.created_at_to)
 
         # Apply sorting
         if sort:

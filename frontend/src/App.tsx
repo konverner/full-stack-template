@@ -17,29 +17,29 @@ import PrivacyPage from './pages/privacy';
 import FaqPage from './pages/faq';
 import TermsOfServicePage from './pages/terms';
 import AboutPage from './pages/about';
+import { enUS } from '@mui/material/locale';
 
-// Light theme
-const lightTheme = createTheme({
-    palette: {
-        primary: { main: '#272727' },
-        secondary: { main: '#56c4be' },
-        background: { default: '#f5f5f5', paper: '#ffffff' },
-        text: { primary: '#242424', secondary: '#a0a0a0' },
-        mode: 'light',
-    },
-});
+const createAppTheme = (mode: 'light' | 'dark') => createTheme({
+    palette: mode === 'dark'
+        ? {
+            primary: { main: '#56c4be' },
+            secondary: { main: '#272727' },
+            background: { default: '#1f1f1f', paper: '#272727' },
+            text: { primary: '#e6e6e6', secondary: '#bebebe' },
+            success: { main: '#6dca70' },
+            mode,
+        }
+        : {
+            primary: { main: '#272727' },
+            secondary: { main: '#56c4be' },
+            background: { default: '#f5f5f5', paper: '#ffffff' },
+            text: { primary: '#242424', secondary: '#a0a0a0' },
+            mode,
+        },
+}, enUS);
 
-// Dark theme
-const darkTheme = createTheme({
-    palette: {
-        primary: { main: '#56c4be' },
-        secondary: { main: '#272727' },
-        background: { default: '#1f1f1f', paper: '#272727' },
-        text: { primary: '#e6e6e6', secondary: '#bebebe' },
-        success: { main: '#6dca70' },
-        mode: 'dark',
-    },
-});
+const lightTheme = createAppTheme('light');
+const darkTheme = createAppTheme('dark');
 
 function App() {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');

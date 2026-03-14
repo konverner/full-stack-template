@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .database.core import init_db
 from .auth.router import router as auth_router
 from .items.router import router as items_router
 from .users.router import router as users_router
@@ -61,19 +60,15 @@ async def read_root():
 
 
 # --- Health Check Endpoint ---
-@app.head("/health", tags=["Health Check"])
-async def head_root():
+@app.get("/health", tags=["Health Check"])
+async def get_health():
     """
-    Root endpoint providing health check via HEAD request.
+    Root endpoint providing health check via GET request.
     This endpoint can be used to check if the API is up and running.
     """
-    return {
-        "status": "OK",
-        "version": settings.PROJECT_VERSION
-    }
+    return {"status": "OK", "version": settings.PROJECT_VERSION}
 
 
 if __name__ == "__main__":
-    
     # Run the app with Uvicorn if this file is executed directly
     uvicorn.run(app, host=settings.HOST, port=settings.PORT, log_level=LOG_LEVEL)

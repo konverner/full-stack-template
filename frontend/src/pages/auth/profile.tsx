@@ -3,16 +3,7 @@ import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { Box, Container, Typography, Paper, CircularProgress, Alert } from '@mui/material';
 import { AuthorizationProfileService, UserRead } from '@/client/index.ts';
-
-const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-};
+import { formatDate } from '@/utils/locale.ts';
 
 const UserProfilePage = () => {
     const [userProfile, setUserProfile] = useState<UserRead | null>(null);

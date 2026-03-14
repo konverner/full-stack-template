@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Avatar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Button,
+  TableSortLabel, TablePagination, CircularProgress, Typography, Box,
   useTheme, useMediaQuery
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UsersService, UserRead, UserListResponse } from '@/client';
 
 const DEFAULT_ROWS_PER_PAGE = 20;
@@ -237,8 +237,6 @@ const UsersTable: React.FC = () => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Rows on the page:"
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} / ${count !== -1 ? count : `больше чем ${to}`}`}
       />
     </Paper>
   );

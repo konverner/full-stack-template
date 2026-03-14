@@ -79,6 +79,17 @@ And start the live server with the following npm script:
 npm run dev
 ```
 
+### Setting locale
+
+The frontend uses Material UI, which provides built-in support for localization. To set the locale for the frontend, you can import the desired locale from Material UI and pass it to the `createTheme` function in [App.tsx](./src/App.tsx).
+
+To learn more: https://mui.com/material-ui/guides/localization/
+
+
+### Setting text content for static pages
+
+Put text content for static pages (e.g., about, contact, faq) in the corresponding page component in the `pages` directory. For example, the content for the "About" page should be placed in [pages/about.tsx](./src/pages/about.tsx).
+
 ### Creating a new feature
 
 It is recommended to respect the existing pattern:

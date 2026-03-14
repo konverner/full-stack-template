@@ -20,7 +20,7 @@ router = APIRouter()
     response_model=user_schemas.UserRead,
     status_code=status.HTTP_201_CREATED,
 )
-async def register_user(
+def register_user(
     user_in: user_schemas.UserCreate, db: Session = Depends(get_db)
 ):
     """Register a new user."""
@@ -28,7 +28,7 @@ async def register_user(
 
 
 @router.post("/token", response_model=schemas.Token)
-async def login_for_access_token(
+def login_for_access_token(
     db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     """Authenticate user and return access and refresh tokens."""
@@ -57,7 +57,7 @@ async def login_for_access_token(
 
 
 @router.post("/refresh", response_model=schemas.Token)
-async def refresh_access_token(
+def refresh_access_token(
     refresh_request: schemas.RefreshTokenRequest, db: Session = Depends(get_db)
 ):
     """Get a new access token using a refresh token."""
@@ -94,13 +94,13 @@ CurrentUser = Annotated[User, Depends(get_current_active_user)]
 
 
 @router.get("/me", response_model=user_schemas.UserRead)
-async def read_users_me(current_user: CurrentUser):
+def read_users_me(current_user: CurrentUser):
     """Get current logged-in user's profile."""
     return current_user
 
 
 @router.patch("/me", response_model=user_schemas.UserRead)
-async def update_users_me(
+def update_users_me(
     user_in: user_schemas.UserUpdate,
     current_user: CurrentUser,
     db: Session = Depends(get_db),
@@ -112,7 +112,7 @@ async def update_users_me(
 
 
 @router.put("/password", response_model=common_schemas.Message)
-async def update_users_password(
+def update_users_password(
     password_in: user_schemas.UserPasswordUpdate,
     current_user: CurrentUser,
     db: Session = Depends(get_db),

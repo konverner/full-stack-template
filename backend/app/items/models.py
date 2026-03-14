@@ -23,5 +23,4 @@ class Item(Base, TimeStampMixin):
     available = Column(Boolean, nullable=False, default=0)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
-    # relationship fields
     owner = relationship("User", back_populates="items", foreign_keys=[owner_id])

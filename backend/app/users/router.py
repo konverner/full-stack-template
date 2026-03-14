@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload
 
@@ -11,12 +13,14 @@ router = APIRouter()
 
 
 @router.get("/", response_model=user_schemas.UserListResponse)
-async def list_users(
+def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     username: str = Query(None),
     email: str = Query(None),
     is_active: bool = Query(None),
+    created_at_from: datetime = Query(None, description="Filter users created on or after this datetime"),
+    created_at_to: datetime = Query(None, description="Filter users created on or before this datetime"),
     sort_field: str = Query("id"),
     sort_direction: str = Query("asc"),
     db: Session = Depends(get_db),
@@ -24,11 +28,9 @@ async def list_users(
     """
     List users with filtering, sorting, and pagination.
     """
-    # if not current_user.is_superuser:
-    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
-
     filters = user_schemas.UserFilter(
-        username=username, email=email, is_active=is_active
+        username=username, email=email, is_active=is_active,
+        created_at_from=created_at_from, created_at_to=created_at_to,
     )
     sort = user_schemas.UserSort(field=sort_field, direction=sort_direction)
     users = user_service.list_users(
@@ -45,7 +47,7 @@ async def list_users(
 @router.post(
     "/", response_model=user_schemas.UserRead, status_code=status.HTTP_201_CREATED
 )
-async def create_user(
+def create_user(
     user_in: user_schemas.UserCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -58,7 +60,6 @@ async def create_user(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
         )
 
-    # Check if username already exists
     existing_user = user_service.get_user_by_username(db=db, username=user_in.username)
     if existing_user:
         raise HTTPException(
@@ -70,7 +71,7 @@ async def create_user(
 
 
 @router.get("/{username}", response_model=user_schemas.UserRead)
-async def get_user_by_username(username: str, db: Session = Depends(get_db)):
+def get_user_by_username(username: str, db: Session = Depends(get_db)):
     """
     Get a specific user by username.
     """
@@ -82,15 +83,11 @@ async def get_user_by_username(username: str, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
 
-    # # Users can view their own profile, superusers can view any profile
-    # if user.id != current_user.id and not current_user.is_superuser:
-    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
-
     return user
 
 
 @router.put("/{username}", response_model=user_schemas.UserRead)
-async def update_user_by_username(
+def update_user_by_username(
     username: str,
     user_in: user_schemas.UserUpdate,
     db: Session = Depends(get_db),
@@ -116,7 +113,7 @@ async def update_user_by_username(
 
 
 @router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user_by_username(
+def delete_user_by_username(
     username: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),

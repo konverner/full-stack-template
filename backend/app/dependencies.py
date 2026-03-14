@@ -25,7 +25,7 @@ class TokenPayload(BaseModel):
     type: str
 
 
-async def get_current_user(
+def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ):
     credentials_exception = HTTPException(
@@ -64,7 +64,7 @@ async def get_current_user(
     return user
 
 
-async def get_optional_current_active_user(
+def get_optional_current_active_user(
     token: Optional[str] = Depends(oauth2_scheme_optional),  # Use the optional scheme
     db: Session = Depends(get_db),
 ) -> Optional[User]:
@@ -106,7 +106,7 @@ async def get_optional_current_active_user(
     return user
 
 
-async def get_current_active_user(
+def get_current_active_user(
     current_user=Depends(get_current_user),
 ):
     if not current_user.is_active:
@@ -114,7 +114,7 @@ async def get_current_active_user(
     return current_user
 
 
-async def get_current_admin_user(
+def get_current_admin_user(
     current_user: User = Depends(get_current_active_user),
 ) -> User:
     if not current_user.is_superuser:

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator, ConfigDict
 from typing import Optional
 import re
-from datetime import datetime
+from datetime import datetime, date
 from ..users.schemas import UserRead
 
 
@@ -13,6 +13,8 @@ class ItemBase(BaseModel):
     available: Optional[bool] = True
     image_url: Optional[str] = None
     website_url: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     @field_validator("slug")
     def validate_slug(cls, v):
@@ -38,7 +40,7 @@ class ItemCreate(ItemBase):
 
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
-    available: Optional[bool] = None  # Make this explicitly optional for updates
+    available: Optional[bool] = None
 
     model_config = ConfigDict(extra="ignore")
 
@@ -46,18 +48,14 @@ class ItemUpdate(ItemBase):
 class ItemRead(ItemBase):
     id: int
     slug: str
-    available: bool = True  # Remove Optional since this should always have a value
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    available: bool = True
     owner: Optional[UserRead] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class ItemReadDetails(ItemRead):
-    available: bool = True  # Remove Optional since this should always have a value
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    available: bool = True
 
 
 # --- Filtering and Sorting ---
@@ -67,6 +65,8 @@ class ItemFilter(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     owner_id: Optional[int] = None
+    created_from: Optional[date] = None
+    created_to: Optional[date] = None
 
 
 class ItemSort(BaseModel):
@@ -96,6 +96,8 @@ class ItemListResponse(BaseModel):
                         "image_url": "https://example.com/logo.png",
                         "website_url": "https://example.com",
                         "owner_id": 1,
+                        "created_at": "2024-01-01T12:00:00Z",
+                        "updated_at": "2024-01-02T12:00:00Z"
                     }
                 ],
                 "total": 1,

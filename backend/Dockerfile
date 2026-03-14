@@ -17,7 +17,7 @@ COPY ./alembic ./alembic
 COPY ./alembic.ini ./alembic.ini
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8080
 
 # Run the app
 CMD ["python", "-m", "app.main"]
