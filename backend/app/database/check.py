@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 """Wait for Postgres and create the target database if it doesn't exist."""
-import os
 import sys
 import time
 from psycopg import connect
 from psycopg import sql
 
+from app.config import settings
+
 
 def main():
-    host = os.getenv("PG_HOST", "db")
-    port = int(os.getenv("PG_PORT", "5432"))
-    user = os.getenv("PG_USER", "postgres")
-    password = os.getenv("PG_PASSWORD", "")
-    target_db = os.getenv("PG_DB", "full_stack_template_db")
+    host = settings.PG_HOST
+    port = settings.PG_PORT
+    user = settings.PG_USER
+    password = settings.PG_PASSWORD
+    target_db = settings.PG_DB
+
+    if not target_db:
+        print("PG_DB is not set. Skipping database existence check.")
+        return 0
 
     while True:
         try:
