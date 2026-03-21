@@ -32,7 +32,7 @@ const DEFAULT_ROWS_PER_PAGE = 20;
 const headCells: HeadCell[] = [
   { id: 'index', numeric: true, disablePadding: false, label: '#', sortable: false, align: 'center' },
   { id: 'image', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
-  { id: 'name', numeric: false, disablePadding: false, label: 'Name', sortable: true, align: 'center' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Name', sortable: true, align: 'left' },
   { id: 'rating', numeric: false, disablePadding: false, label: 'Rating', sortable: true, align: 'center' },
   { id: 'available', numeric: false, disablePadding: false, label: 'Available', sortable: true, align: 'center' },
   { id: 'creator', numeric: true, disablePadding: false, label: 'Creator', sortable: true, align: 'center' },
@@ -97,12 +97,12 @@ const ItemsTable: React.FC = () => {
     setPage(0); // Reset to first page on rows per page change
   };
 
-  const handleRowClick = (event: React.MouseEvent, slug: string): void => {
+  const handleRowClick = (event: React.MouseEvent, id: number | string): void => {
     // Prevent navigation if the click was on a link or button inside the row
     if ((event.target as HTMLElement).closest('a, button')) {
       return;
     }
-    navigate(`/items/${slug}`);
+    navigate(`/items/${id}`);
   };
 
   if (loading) {
@@ -206,7 +206,7 @@ const ItemsTable: React.FC = () => {
                     )}
 
                     {/* Name */}
-                    <TableCell align="center">
+                    <TableCell align="left">
                       <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                         {item.name || 'N/A'}
                       </Typography>
