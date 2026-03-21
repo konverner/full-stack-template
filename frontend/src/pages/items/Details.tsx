@@ -35,7 +35,7 @@ interface User {
 }
 
 const ItemsDetailsPage: React.FC = () => {
-    const { itemSlug } = useParams<{ itemSlug: string }>();
+    const { itemId } = useParams<{ itemId: string }>();
     const navigate = useNavigate();
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -49,19 +49,17 @@ const ItemsDetailsPage: React.FC = () => {
 
     useEffect(() => {
         const fetchItemDetails = async (): Promise<void> => {
-            if (!itemSlug) return;
+            if (!itemId) return;
 
             try {
                 setLoading(true);
                 setError(null);
-                const data = await ItemsService.getItemBySlugApiV1ItemsItemSlugGet({ itemSlug });
+                const data = await ItemsService.getItemByIdApiV1ItemsItemIdGet({ itemId: Number(itemId) });
                 setItem({
                     ...data,
                     id: Number(data.id),
                     available: typeof data.available === 'boolean' ? data.available : false,
-                    owner: data.owner
-                        ? data.owner
-                        : { id: 0, username: 'unknown' }
+                    owner: data.owner ? data.owner : { id: 0, username: 'unknown' }
                 });
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch item details.');
@@ -71,10 +69,10 @@ const ItemsDetailsPage: React.FC = () => {
             }
         };
 
-        if (itemSlug) {
+        if (itemId) {
             fetchItemDetails();
         }
-    }, [itemSlug]);
+    }, [itemId]);
 
     // Delete handler
     // const handleDelete = async (): Promise<void> => {
