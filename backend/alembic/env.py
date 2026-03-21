@@ -14,6 +14,7 @@ from alembic import context
 # Import project settings and models
 from app.config import settings
 from app.models import Base
+
 # Import all models to ensure they are registered with Base.metadata
 from app.users.models import User  # noqa
 from app.items.models import Item  # noqa

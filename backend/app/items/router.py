@@ -30,8 +30,11 @@ def list_items(
     List items with filtering, sorting, and pagination.
     """
     filters = item_schemas.ItemFilter(
-        name=name, description=description, owner_id=owner_id,
-        created_from=created_from, created_to=created_to,
+        name=name,
+        description=description,
+        owner_id=owner_id,
+        created_from=created_from,
+        created_to=created_to,
     )
     sort = item_schemas.ItemSort(field=sort_field, direction=sort_direction)
     items = item_service.list_items(
@@ -61,7 +64,6 @@ def create_item(
     return item
 
 
-
 @router.get("/{item_id}", response_model=item_schemas.ItemRead)
 def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
     """
@@ -75,7 +77,6 @@ def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
     return item
-
 
 
 @router.put("/{item_id}", response_model=item_schemas.ItemRead)
