@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { RegisterUserAuthRegisterPostData, RegisterUserAuthRegisterPostResponse, LoginForAccessTokenAuthTokenPostData, LoginForAccessTokenAuthTokenPostResponse, RefreshAccessTokenAuthRefreshPostData, RefreshAccessTokenAuthRefreshPostResponse, ReadUsersMeAuthMeGetResponse, UpdateUsersMeAuthMePatchData, UpdateUsersMeAuthMePatchResponse, UpdateUsersPasswordAuthPasswordPutData, UpdateUsersPasswordAuthPasswordPutResponse, HeadRootHealthHeadResponse, ListItemsApiV1ItemsGetData, ListItemsApiV1ItemsGetResponse, CreateItemApiV1ItemsPostData, CreateItemApiV1ItemsPostResponse, GetItemBySlugApiV1ItemsItemSlugGetData, GetItemBySlugApiV1ItemsItemSlugGetResponse, UpdateItemBySlugApiV1ItemsItemSlugPutData, UpdateItemBySlugApiV1ItemsItemSlugPutResponse, DeleteItemApiV1ItemsItemIdDeleteData, DeleteItemApiV1ItemsItemIdDeleteResponse, ReadRootGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, CreateUserApiV1UsersPostData, CreateUserApiV1UsersPostResponse, GetUserByUsernameApiV1UsersUsernameGetData, GetUserByUsernameApiV1UsersUsernameGetResponse, UpdateUserByUsernameApiV1UsersUsernamePutData, UpdateUserByUsernameApiV1UsersUsernamePutResponse, DeleteUserByUsernameApiV1UsersUsernameDeleteData, DeleteUserByUsernameApiV1UsersUsernameDeleteResponse } from './types.gen';
+import type { RegisterUserAuthRegisterPostData, RegisterUserAuthRegisterPostResponse, LoginForAccessTokenAuthTokenPostData, LoginForAccessTokenAuthTokenPostResponse, RefreshAccessTokenAuthRefreshPostData, RefreshAccessTokenAuthRefreshPostResponse, ReadUsersMeAuthMeGetResponse, UpdateUsersMeAuthMePatchData, UpdateUsersMeAuthMePatchResponse, UpdateUsersPasswordAuthPasswordPutData, UpdateUsersPasswordAuthPasswordPutResponse, GetHealthHealthGetResponse, ListItemsApiV1ItemsGetData, ListItemsApiV1ItemsGetResponse, CreateItemApiV1ItemsPostData, CreateItemApiV1ItemsPostResponse, GetItemByIdApiV1ItemsItemIdGetData, GetItemByIdApiV1ItemsItemIdGetResponse, UpdateItemByIdApiV1ItemsItemIdPutData, UpdateItemByIdApiV1ItemsItemIdPutResponse, DeleteItemApiV1ItemsItemIdDeleteData, DeleteItemApiV1ItemsItemIdDeleteResponse, ReadRootGetResponse, ListUsersApiV1UsersGetData, ListUsersApiV1UsersGetResponse, CreateUserApiV1UsersPostData, CreateUserApiV1UsersPostResponse, GetUserByUsernameApiV1UsersUsernameGetData, GetUserByUsernameApiV1UsersUsernameGetResponse, UpdateUserByUsernameApiV1UsersUsernamePutData, UpdateUserByUsernameApiV1UsersUsernamePutResponse, DeleteUserByUsernameApiV1UsersUsernameDeleteData, DeleteUserByUsernameApiV1UsersUsernameDeleteResponse } from './types.gen';
 
 export class AuthorizationProfileService {
     /**
@@ -123,15 +123,15 @@ export class AuthorizationProfileService {
 
 export class HealthCheckService {
     /**
-     * Head Root
-     * Root endpoint providing health check via HEAD request.
+     * Get Health
+     * Root endpoint providing health check via GET request.
      * This endpoint can be used to check if the API is up and running.
      * @returns unknown Successful Response
      * @throws ApiError
      */
-    public static headRootHealthHead(): CancelablePromise<HeadRootHealthHeadResponse> {
+    public static getHealthHealthGet(): CancelablePromise<GetHealthHealthGetResponse> {
         return __request(OpenAPI, {
-            method: 'HEAD',
+            method: 'GET',
             url: '/health'
         });
     }
@@ -148,6 +148,8 @@ export class ItemsService {
      * @param data.name
      * @param data.description
      * @param data.ownerId
+     * @param data.createdFrom
+     * @param data.createdTo
      * @param data.sortField
      * @param data.sortDirection
      * @returns ItemListResponse Successful Response
@@ -163,6 +165,8 @@ export class ItemsService {
                 name: data.name,
                 description: data.description,
                 owner_id: data.ownerId,
+                created_from: data.createdFrom,
+                created_to: data.createdTo,
                 sort_field: data.sortField,
                 sort_direction: data.sortDirection
             },
@@ -193,19 +197,19 @@ export class ItemsService {
     }
     
     /**
-     * Get Item By Slug
-     * Get a specific item by its slug.
+     * Get Item By Id
+     * Get a specific item by its ID.
      * @param data The data for the request.
-     * @param data.itemSlug
+     * @param data.itemId
      * @returns ItemRead Successful Response
      * @throws ApiError
      */
-    public static getItemBySlugApiV1ItemsItemSlugGet(data: GetItemBySlugApiV1ItemsItemSlugGetData): CancelablePromise<GetItemBySlugApiV1ItemsItemSlugGetResponse> {
+    public static getItemByIdApiV1ItemsItemIdGet(data: GetItemByIdApiV1ItemsItemIdGetData): CancelablePromise<GetItemByIdApiV1ItemsItemIdGetResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/items/{item_slug}',
+            url: '/api/v1/items/{item_id}',
             path: {
-                item_slug: data.itemSlug
+                item_id: data.itemId
             },
             errors: {
                 422: 'Validation Error'
@@ -214,20 +218,20 @@ export class ItemsService {
     }
     
     /**
-     * Update Item By Slug
-     * Update an item by slug.
+     * Update Item By Id
+     * Update an item by ID.
      * @param data The data for the request.
-     * @param data.itemSlug
+     * @param data.itemId
      * @param data.requestBody
      * @returns ItemRead Successful Response
      * @throws ApiError
      */
-    public static updateItemBySlugApiV1ItemsItemSlugPut(data: UpdateItemBySlugApiV1ItemsItemSlugPutData): CancelablePromise<UpdateItemBySlugApiV1ItemsItemSlugPutResponse> {
+    public static updateItemByIdApiV1ItemsItemIdPut(data: UpdateItemByIdApiV1ItemsItemIdPutData): CancelablePromise<UpdateItemByIdApiV1ItemsItemIdPutResponse> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/items/{item_slug}',
+            url: '/api/v1/items/{item_id}',
             path: {
-                item_slug: data.itemSlug
+                item_id: data.itemId
             },
             body: data.requestBody,
             mediaType: 'application/json',
@@ -286,6 +290,8 @@ export class UsersService {
      * @param data.username
      * @param data.email
      * @param data.isActive
+     * @param data.createdAtFrom Filter users created on or after this datetime
+     * @param data.createdAtTo Filter users created on or before this datetime
      * @param data.sortField
      * @param data.sortDirection
      * @returns UserListResponse Successful Response
@@ -301,6 +307,8 @@ export class UsersService {
                 username: data.username,
                 email: data.email,
                 is_active: data.isActive,
+                created_at_from: data.createdAtFrom,
+                created_at_to: data.createdAtTo,
                 sort_field: data.sortField,
                 sort_direction: data.sortDirection
             },

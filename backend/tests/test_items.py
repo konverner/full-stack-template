@@ -24,10 +24,6 @@ def test_get_item(db_session: Session, test_user: User):
     assert got_item_by_id
     assert got_item_by_id.id == item.id
 
-    got_item_by_slug = item_service.get_item_by_slug(db_session, item.slug)
-    assert got_item_by_slug
-    assert got_item_by_slug.slug == item.slug
-
 
 def test_list_items(db_session: Session, test_user: User):
     item_service.create_item(
@@ -112,11 +108,11 @@ def test_list_items_api(client: TestClient, test_item: Item):
     assert data["total"] >= 1
 
 
-def test_get_item_by_slug_api(client: TestClient, test_item: Item):
-    response = client.get(f"/api/v1/items/{test_item.slug}")
+def test_get_item_by_id_api(client: TestClient, test_item: Item):
+    response = client.get(f"/api/v1/items/{test_item.id}")
     assert response.status_code == 200
     data = response.json()
-    assert data["slug"] == test_item.slug
+    assert data["id"] == test_item.id
 
 
 def test_update_item_api(client_auth, db_session: Session, test_item: Item):
@@ -129,7 +125,7 @@ def test_update_item_api(client_auth, db_session: Session, test_item: Item):
         )
 
     response = client.put(
-        f"/api/v1/items/{test_item.slug}", json={"name": "Updated via API"}
+        f"/api/v1/items/{test_item.id}", json={"name": "Updated via API"}
     )
     assert response.status_code == 200
     data = response.json()

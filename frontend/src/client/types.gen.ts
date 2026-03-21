@@ -21,6 +21,8 @@ export type ItemCreate = {
     available?: (boolean | null);
     image_url?: (string | null);
     website_url?: (string | null);
+    created_at?: (string | null);
+    updated_at?: (string | null);
 };
 
 export type ItemListResponse = {
@@ -36,9 +38,9 @@ export type ItemRead = {
     available?: boolean;
     image_url?: (string | null);
     website_url?: (string | null);
-    id: number;
     created_at?: (string | null);
     updated_at?: (string | null);
+    id: number;
     owner?: (UserRead | null);
 };
 
@@ -50,6 +52,8 @@ export type ItemUpdate = {
     available?: (boolean | null);
     image_url?: (string | null);
     website_url?: (string | null);
+    created_at?: (string | null);
+    updated_at?: (string | null);
 };
 
 export type Message = {
@@ -94,11 +98,11 @@ export type UserCreate = {
     /**
      * Indicates if the user account is active
      */
-    is_active?: boolean;
+    is_active?: (boolean | null);
     /**
      * Indicates if the user has superuser privileges
      */
-    is_superuser?: boolean;
+    is_superuser?: (boolean | null);
     /**
      * Password for the user account, at least 8 characters
      */
@@ -151,7 +155,7 @@ export type UserRead = {
     /**
      * Indicates if the user account is active
      */
-    is_active?: boolean;
+    is_active?: (boolean | null);
     /**
      * Indicates if the user has superuser privileges
      */
@@ -223,9 +227,11 @@ export type UpdateUsersPasswordAuthPasswordPutData = {
 
 export type UpdateUsersPasswordAuthPasswordPutResponse = (Message);
 
-export type HeadRootHealthHeadResponse = (unknown);
+export type GetHealthHealthGetResponse = (unknown);
 
 export type ListItemsApiV1ItemsGetData = {
+    createdFrom?: string;
+    createdTo?: string;
     description?: string;
     limit?: number;
     name?: string;
@@ -243,18 +249,18 @@ export type CreateItemApiV1ItemsPostData = {
 
 export type CreateItemApiV1ItemsPostResponse = (ItemRead);
 
-export type GetItemBySlugApiV1ItemsItemSlugGetData = {
-    itemSlug: string;
+export type GetItemByIdApiV1ItemsItemIdGetData = {
+    itemId: number;
 };
 
-export type GetItemBySlugApiV1ItemsItemSlugGetResponse = (ItemRead);
+export type GetItemByIdApiV1ItemsItemIdGetResponse = (ItemRead);
 
-export type UpdateItemBySlugApiV1ItemsItemSlugPutData = {
-    itemSlug: string;
+export type UpdateItemByIdApiV1ItemsItemIdPutData = {
+    itemId: number;
     requestBody: ItemUpdate;
 };
 
-export type UpdateItemBySlugApiV1ItemsItemSlugPutResponse = (ItemRead);
+export type UpdateItemByIdApiV1ItemsItemIdPutResponse = (ItemRead);
 
 export type DeleteItemApiV1ItemsItemIdDeleteData = {
     itemId: number;
@@ -265,6 +271,14 @@ export type DeleteItemApiV1ItemsItemIdDeleteResponse = (void);
 export type ReadRootGetResponse = (unknown);
 
 export type ListUsersApiV1UsersGetData = {
+    /**
+     * Filter users created on or after this datetime
+     */
+    createdAtFrom?: string;
+    /**
+     * Filter users created on or before this datetime
+     */
+    createdAtTo?: string;
     email?: string;
     isActive?: boolean;
     limit?: number;

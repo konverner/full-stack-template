@@ -43,17 +43,7 @@ class ItemService:
         logger.info(f"Item with id {item_id} {'found' if item else 'not found'}.")
         return item
 
-    def get_item_by_slug(
-        self, db: Session, item_slug: str, options: List = None
-    ) -> Optional[item_models.Item]:
-        """Retrieve a single item by its slug."""
-        logger.info(f"Retrieving item with slug '{item_slug}'.")
-        query = db.query(item_models.Item)
-        if options:
-            query = query.options(*options)
-        item = query.filter(item_models.Item.slug == item_slug).first()
-        logger.info(f"Item with slug '{item_slug}' {'found' if item else 'not found'}.")
-        return item
+    # Removed get_item_by_slug; use get_item_by_id instead
 
     def list_items(
         self,

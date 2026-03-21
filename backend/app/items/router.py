@@ -61,13 +61,14 @@ def create_item(
     return item
 
 
-@router.get("/{item_slug}", response_model=item_schemas.ItemRead)
-def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
+
+@router.get("/{item_id}", response_model=item_schemas.ItemRead)
+def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
     """
-    Get a specific item by its slug.
+    Get a specific item by its ID.
     """
-    item = item_service.get_item_by_slug(
-        db=db, item_slug=item_slug, options=[selectinload(Item.owner)]
+    item = item_service.get_item_by_id(
+        db=db, item_id=item_id, options=[selectinload(Item.owner)]
     )
     if not item:
         raise HTTPException(
@@ -76,18 +77,19 @@ def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
     return item
 
 
-@router.put("/{item_slug}", response_model=item_schemas.ItemRead)
-def update_item_by_slug(
-    item_slug: str,
+
+@router.put("/{item_id}", response_model=item_schemas.ItemRead)
+def update_item_by_id(
+    item_id: int,
     item_in: item_schemas.ItemUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Update an item by slug.
+    Update an item by ID.
     """
-    item = item_service.get_item_by_slug(
-        db=db, item_slug=item_slug, options=[selectinload(Item.owner)]
+    item = item_service.get_item_by_id(
+        db=db, item_id=item_id, options=[selectinload(Item.owner)]
     )
     if not item:
         raise HTTPException(
