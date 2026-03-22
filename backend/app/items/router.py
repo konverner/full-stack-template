@@ -18,8 +18,11 @@ def list_items(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     name: str = Query(None),
+    slug: str = Query(None),
     description: str = Query(None),
     owner_id: int = Query(None),
+    rating: float = Query(None),
+    available: bool = Query(None),
     created_from: date = Query(None),
     created_to: date = Query(None),
     sort_field: str = Query("id"),
@@ -31,8 +34,11 @@ def list_items(
     """
     filters = item_schemas.ItemFilter(
         name=name,
+        slug=slug,
         description=description,
         owner_id=owner_id,
+        rating=rating,
+        available=available,
         created_from=created_from,
         created_to=created_to,
     )

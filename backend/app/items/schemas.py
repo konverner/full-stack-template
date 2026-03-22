@@ -63,8 +63,11 @@ class ItemReadDetails(ItemRead):
 
 class ItemFilter(BaseModel):
     name: Optional[str] = None
+    slug: Optional[str] = None
     description: Optional[str] = None
     owner_id: Optional[int] = None
+    rating: Optional[float] = None
+    available: Optional[bool] = None
     created_from: Optional[date] = None
     created_to: Optional[date] = None
 

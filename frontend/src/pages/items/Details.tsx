@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Container, Typography, CircularProgress, Link, Alert, Box, Breadcrumbs } from '@mui/material';
 import ItemDetails from '../../components/items/Details';
 import Header from '../../components/common/Header';
@@ -35,8 +35,9 @@ interface User {
 }
 
 const ItemsDetailsPage: React.FC = () => {
-    const { itemId } = useParams<{ itemId: string }>();
+    const { itemSlug } = useParams<{ itemSlug: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const [item, setItem] = useState<Item | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -49,11 +50,25 @@ const ItemsDetailsPage: React.FC = () => {
 
     useEffect(() => {
         const fetchItemDetails = async (): Promise<void> => {
-            if (!itemId) return;
+            if (!itemSlug) return;
 
             try {
                 setLoading(true);
                 setError(null);
+                
+                let itemId = (location.state as any)?.itemId;
+
+                if (!itemId) {
+                    // Fallback: find itemId by slug if not in state (direct link/refresh)
+                    const data = await ItemsService.listItemsApiV1ItemsGet({ slug: itemSlug });
+                    if (data.items && data.items.length > 0) {
+                        itemId = data.items[0].id;
+                    } else {
+                        throw new Error('Item not found');
+                    }
+                }
+
+                // Use itemId to get full info from backend as requested
                 const data = await ItemsService.getItemByIdApiV1ItemsItemIdGet({ itemId: Number(itemId) });
                 setItem({
                     ...data,
@@ -69,21 +84,8 @@ const ItemsDetailsPage: React.FC = () => {
             }
         };
 
-        if (itemId) {
-            fetchItemDetails();
-        }
-    }, [itemId]);
-
-    // Delete handler
-    // const handleDelete = async (): Promise<void> => {
-    //     if (!item || !window.confirm('Are you sure you want to delete this item?')) return;
-    //     try {
-    //         await ItemsService.deleteItemApiV1ItemsItemIdDelete({ itemId: Number(item.id) });
-    //         navigate('/items');
-    //     } catch (err) {
-    //         alert('Failed to delete item.');
-    //     }
-    // };
+        fetchItemDetails();
+    }, [itemSlug, location.state]);
 
     if (loading) {
         return (
@@ -109,8 +111,6 @@ const ItemsDetailsPage: React.FC = () => {
         );
     }
 
-
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
@@ -129,7 +129,6 @@ const ItemsDetailsPage: React.FC = () => {
                 <ItemDetails
                     item={item}
                     currentUser={currentUser}
-
                 />
             </Container>
             <Footer />

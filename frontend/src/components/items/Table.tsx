@@ -1,71 +1,154 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TableSortLabel, TablePagination, CircularProgress, Typography, Box, Link as MuiLink, Avatar,
-  useMediaQuery, useTheme
+  Paper, CircularProgress, Typography, Box, Link as MuiLink, Avatar,
+  useTheme, TextField, InputAdornment, useMediaQuery, MenuItem, Select, FormControl, InputLabel, styled
 } from '@mui/material';
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridSortModel,
+  GridPaginationModel,
+  GridFilterModel,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarExport,
+  Toolbar,
+  ToolbarButton,
+  QuickFilter,
+  QuickFilterControl,
+  QuickFilterClear,
+  QuickFilterTrigger,
+  getGridStringOperators,
+  getGridNumericOperators,
+  getGridBooleanOperators,
+  getGridDateOperators,
+} from '@mui/x-data-grid';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
-import DescriptionIcon from '@mui/icons-material/Description'; // <-- Added import
+import DescriptionIcon from '@mui/icons-material/Description';
+import SearchIcon from '@mui/icons-material/Search';
+import Tooltip from '@mui/material/Tooltip';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { ItemsService } from '@/client';
 import { ItemRead } from '@/client';
+import { formatDate } from '../../utils/locale';
 
-interface ItemsResponse {
-  items: ItemRead[];
-  total: number;
-}
+const DEFAULT_PAGE_SIZE = 20;
 
-interface HeadCell {
-  id: string;
-  numeric: boolean;
-  disablePadding: boolean;
-  label: string;
-  sortable: boolean;
-  align: 'left' | 'center' | 'right';
-}
+type OwnerState = {
+  expanded: boolean;
+};
 
-type SortDirection = 'asc' | 'desc';
+const StyledQuickFilter = styled(QuickFilter)({
+  display: 'grid',
+  alignItems: 'center',
+  marginLeft: 'auto',
+});
 
-const DEFAULT_ROWS_PER_PAGE = 20;
+const StyledToolbarButton = styled(ToolbarButton)<{ ownerState: OwnerState }>(({ theme, ownerState }) => ({
+  gridArea: '1 / 1',
+  width: 'min-content',
+  height: 'min-content',
+  zIndex: 1,
+  opacity: ownerState.expanded ? 0 : 1,
+  pointerEvents: ownerState.expanded ? 'none' : 'auto',
+  transition: theme.transitions.create(['opacity']),
+}));
 
-const headCells: HeadCell[] = [
-  { id: 'index', numeric: true, disablePadding: false, label: '#', sortable: false, align: 'center' },
-  { id: 'image', numeric: false, disablePadding: false, label: '', sortable: false, align: 'center' },
-  { id: 'name', numeric: false, disablePadding: false, label: 'Name', sortable: true, align: 'left' },
-  { id: 'rating', numeric: false, disablePadding: false, label: 'Rating', sortable: true, align: 'center' },
-  { id: 'available', numeric: false, disablePadding: false, label: 'Available', sortable: true, align: 'center' },
-  { id: 'creator', numeric: true, disablePadding: false, label: 'Creator', sortable: true, align: 'center' },
-];
+const StyledTextField = styled(TextField)<{ ownerState: OwnerState }>(({ theme, ownerState }) => ({
+  gridArea: '1 / 1',
+  overflowX: 'clip',
+  width: ownerState.expanded ? 260 : 'var(--trigger-width)',
+  opacity: ownerState.expanded ? 1 : 0,
+  transition: theme.transitions.create(['width', 'opacity']),
+}));
 
 const ItemsTable: React.FC = () => {
   const [items, setItems] = useState<ItemRead[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [order, setOrder] = useState<SortDirection>('desc');
-  const [orderBy, setOrderBy] = useState<string>('name');
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_ROWS_PER_PAGE);
   const [totalRows, setTotalRows] = useState<number>(0);
-  const navigate = useNavigate();
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    pageSize: DEFAULT_PAGE_SIZE,
+    page: 0,
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'name', sort: 'asc' }]);
+  const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] });
 
-  // We do not display index and image on small screens
+  // Toolbar Filter states
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [ratingFilter, setRatingFilter] = useState<number | ''>('');
+  const [availabilityFilter, setAvailabilityFilter] = useState<'all' | 'true' | 'false'>('all');
+  const [createdFrom, setCreatedFrom] = useState<string>('');
+  const [createdTo, setCreatedTo] = useState<string>('');
+
+  const navigate = useNavigate();
   const theme = useTheme();
-  const isSmDown = useMediaQuery(theme.breakpoints.down('sm'));
-  const visibleHeadCells = useMemo<HeadCell[]>(
-    () => headCells.filter((h) => !(isSmDown && (h.id === 'index' || h.id === 'image' || h.id === 'creator'))),
-    [isSmDown]
-  );
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const fetchItems = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
-      const data: ItemsResponse = await ItemsService.listItemsApiV1ItemsGet({
-        sortField: orderBy,
-        sortDirection: order,
-        limit: rowsPerPage,
-        skip: page * rowsPerPage,
+      const sortField = sortModel.length > 0 ? sortModel[0].field : undefined;
+      const sortDirection = sortModel.length > 0 ? (sortModel[0].sort as string) : undefined;
+
+      // Initialize filter parameters with toolbar values
+      let name = searchQuery || undefined;
+      let rating = ratingFilter !== '' ? Number(ratingFilter) : undefined;
+      let available = availabilityFilter === 'all' ? undefined : availabilityFilter === 'true';
+      let createdFromVal = createdFrom || undefined;
+      let createdToVal = createdTo || undefined;
+      let description = undefined;
+      let ownerId = undefined;
+      let slug = undefined;
+
+      // Override or add filters from DataGrid filterModel
+      filterModel.items.forEach((item) => {
+        if (!item.value && item.operator !== 'isEmpty' && item.operator !== 'isNotEmpty') return;
+
+        const value = item.value instanceof Date ? item.value.toISOString().split('T')[0] : item.value;
+
+        switch (item.field) {
+          case 'name':
+            name = value;
+            break;
+          case 'rating':
+            rating = Number(value);
+            break;
+          case 'available':
+            available = value === 'true' || value === true;
+            break;
+          case 'created_at':
+            if (item.operator === 'after' || item.operator === 'onOrAfter') createdFromVal = value;
+            if (item.operator === 'before' || item.operator === 'onOrBefore') createdToVal = value;
+            break;
+          case 'description':
+            description = value;
+            break;
+          case 'owner':
+            if (!isNaN(Number(value))) ownerId = Number(value);
+            break;
+          case 'slug':
+            slug = value;
+            break;
+        }
+      });
+
+      const data = await ItemsService.listItemsApiV1ItemsGet({
+        sortField,
+        sortDirection,
+        limit: paginationModel.pageSize,
+        skip: paginationModel.page * paginationModel.pageSize,
+        name,
+        slug,
+        description,
+        ownerId,
+        rating,
+        available,
+        createdFrom: createdFromVal,
+        createdTo: createdToVal,
       });
       setItems(data.items || []);
       setTotalRows(data.total || 0);
@@ -76,38 +159,242 @@ const ItemsTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [order, orderBy, page, rowsPerPage]);
+  }, [paginationModel, sortModel, filterModel, searchQuery, ratingFilter, availabilityFilter, createdFrom, createdTo]);
 
   useEffect(() => {
-    fetchItems();
+    const timeoutId = setTimeout(() => {
+      fetchItems();
+    }, 500); // Debounce search and filters
+    return () => clearTimeout(timeoutId);
   }, [fetchItems]);
 
-  const handleRequestSort = (property: string): void => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+  const columns: GridColDef[] = useMemo(() => {
+    const allColumns: GridColDef[] = [
+      {
+        field: 'image_url',
+        headerName: '',
+        width: 100,
+        sortable: false,
+        filterable: false,
+        hideable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            {params.value ? (
+              <Avatar
+                src={params.value as string}
+                alt={params.row.name || 'Item'}
+                variant="rounded"
+                sx={{ width: 40, height: 40, bgcolor: 'grey.200' }}
+              />
+            ) : (
+              <Avatar
+                variant="rounded"
+                sx={{ width: 40, height: 40, bgcolor: 'grey.200' }}
+              >
+                <DescriptionIcon sx={{ fontSize: 20, color: 'grey.500' }} />
+              </Avatar>
+            )}
+          </Box>
+        ),
+      },
+      {
+        field: 'name',
+        headerName: 'Name',
+        flex: 1,
+        minWidth: 150,
+        hideable: false,
+        filterOperators: getGridStringOperators(),
+      },
+      {
+        field: 'rating',
+        headerName: 'Rating',
+        type: 'number',
+        width: 100,
+        headerAlign: 'center',
+        align: 'center',
+        hideable: false,
+        filterOperators: getGridNumericOperators(),
+        renderCell: (params: GridRenderCellParams) => (
+          <Box>{(params.value ?? 0)} / 5</Box>
+        ),
+      },
+      {
+        field: 'available',
+        headerName: 'Available',
+        type: 'boolean',
+        width: 120,
+        headerAlign: 'center',
+        align: 'center',
+        hideable: false,
+        filterOperators: getGridBooleanOperators(),
+        renderCell: (params: GridRenderCellParams) => (
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            {params.value ? <DoneIcon color="primary" /> : <CancelIcon color="error" />}
+          </Box>
+        ),
+      },
+      {
+        field: 'owner',
+        headerName: 'Creator',
+        width: 150,
+        sortable: false,
+        hideable: false,
+        filterOperators: getGridStringOperators(),
+        renderCell: (params: GridRenderCellParams) => {
+          const owner = params.value as any;
+          return (
+            <MuiLink
+              color="primary"
+              component={RouterLink}
+              to={`/users/${owner?.username}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {owner?.username || 'N/A'}
+            </MuiLink>
+          );
+        },
+      },
+      {
+        field: 'created_at',
+        headerName: 'Created At',
+        type: 'date',
+        width: 180,
+        hideable: false,
+        filterOperators: getGridDateOperators(),
+        valueFormatter: (value?: string) => formatDate(value, { fallback: 'N/A' }),
+      },
+    ];
 
-  const handleChangePage = (_event: unknown, newPage: number): void => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page on rows per page change
-  };
-
-  const handleRowClick = (event: React.MouseEvent, id: number | string): void => {
-    // Prevent navigation if the click was on a link or button inside the row
-    if ((event.target as HTMLElement).closest('a, button')) {
-      return;
+    if (isMobile) {
+      return allColumns.filter(col => ['name', 'rating', 'available'].includes(col.field));
     }
-    navigate(`/items/${id}`);
-  };
+    return allColumns;
+  }, [isMobile]);
 
-  if (loading) {
-    return <Box display="flex" justifyContent="center" alignItems="center" sx={{ p: 3 }}><CircularProgress /></Box>;
-  }
+  const CustomToolbar = () => {
+    return (
+      <Toolbar sx={{ p: 2, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <GridToolbarFilterButton />
+          <GridToolbarExport />
+        </Box>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search by name..."
+            label="Name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ width: 200 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <TextField
+            label="Min Rating"
+            type="number"
+            size="small"
+            value={ratingFilter}
+            onChange={(e) => setRatingFilter(e.target.value === '' ? '' : Number(e.target.value))}
+            inputProps={{ min: 0, max: 5, step: 0.1 }}
+            sx={{ width: 100 }}
+          />
+
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Availability</InputLabel>
+            <Select
+              label="Availability"
+              value={availabilityFilter}
+              onChange={(e) => setAvailabilityFilter(e.target.value as any)}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="true">Available</MenuItem>
+              <MenuItem value="false">Unavailable</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            label="Created From"
+            type="date"
+            size="small"
+            value={createdFrom}
+            onChange={(e) => setCreatedFrom(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ width: 150 }}
+          />
+
+          <TextField
+            label="Created To"
+            type="date"
+            size="small"
+            value={createdTo}
+            onChange={(e) => setCreatedTo(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ width: 150 }}
+          />
+        </Box>
+
+        <StyledQuickFilter>
+          <QuickFilterTrigger
+            render={(triggerProps, state) => (
+              <Tooltip title="Search" enterDelay={0}>
+                <StyledToolbarButton
+                  {...triggerProps}
+                  ownerState={{ expanded: state.expanded }}
+                  color="default"
+                  aria-disabled={state.expanded}
+                >
+                  <SearchIcon fontSize="small" />
+                </StyledToolbarButton>
+              </Tooltip>
+            )}
+          />
+          <QuickFilterControl
+            render={({ ref, ...controlProps }, state) => (
+              <StyledTextField
+                {...controlProps}
+                ownerState={{ expanded: state.expanded }}
+                inputRef={ref}
+                aria-label="Search"
+                placeholder="Search..."
+                size="small"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: state.value ? (
+                      <InputAdornment position="end">
+                        <QuickFilterClear
+                          edge="end"
+                          size="small"
+                          aria-label="Clear search"
+                          material={{ sx: { marginRight: -0.75 } }}
+                        >
+                          <CancelIcon fontSize="small" />
+                        </QuickFilterClear>
+                      </InputAdornment>
+                    ) : null,
+                    ...controlProps.slotProps?.input,
+                  },
+                  ...controlProps.slotProps,
+                }}
+              />
+            )}
+          />
+        </StyledQuickFilter>
+      </Toolbar>
+    );
+  };
 
   if (error) {
     return <Typography color="error" sx={{ p: 3 }}>Error loading items: {error}</Typography>;
@@ -115,146 +402,42 @@ const ItemsTable: React.FC = () => {
 
   return (
     <Paper sx={{ width: '100%', mb: 2 }}>
-      <TableContainer>
-        <Table stickyHeader aria-label="items table">
-          <TableHead>
-            <TableRow>
-              {visibleHeadCells.map((headCell) => (
-                <TableCell
-                  key={headCell.id}
-                  align={headCell.align || (headCell.numeric ? 'right' : 'left')}
-                  padding={headCell.disablePadding ? 'none' : 'normal'}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                  sx={{
-                    fontWeight: 'bold',
-                    ...(headCell.id === 'image' && { width: '80px' }),
-                    ...(headCell.id === 'index' && { width: '60px' })
-                  }}
-                >
-                  {headCell.sortable ? (
-                    <TableSortLabel
-                      active={orderBy === headCell.id}
-                      direction={orderBy === headCell.id ? order : 'asc'}
-                      onClick={() => handleRequestSort(headCell.id)}
-                    >
-                      {headCell.label}
-                    </TableSortLabel>
-                  ) : (
-                    headCell.label
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={visibleHeadCells.length} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                  No items found matching your criteria.
-                </TableCell>
-              </TableRow>
-            ) : (
-              items.map((item, index) => {
-                const startIndex = page * rowsPerPage;
-
-                return (
-                  <TableRow
-                    hover
-                    key={item.id}
-                    onClick={(event) => handleRowClick(event, item.slug)}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    {/* Index */}
-                    {!isSmDown && (
-                      <TableCell align="center">
-                        {startIndex + index + 1}
-                      </TableCell>
-                    )}
-
-                    {/* Image */}
-                    {!isSmDown && (
-                      <TableCell align="center">
-                        {item.image_url ? (
-                          <Avatar
-                            src={item.image_url}
-                            alt={item.name || 'Item'}
-                            variant="rounded"
-                            sx={{
-                              width: 90,
-                              height: 90,
-                              mx: 'auto',
-                              bgcolor: 'grey.200'
-                            }}
-                          />
-                        ) : (
-                          <Avatar
-                            variant="rounded"
-                            sx={{
-                              width: 90,
-                              height: 90,
-                              mx: 'auto',
-                              bgcolor: 'grey.200',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            <DescriptionIcon sx={{ fontSize: 40, color: 'grey.500' }} />
-                          </Avatar>
-                        )}
-                      </TableCell>
-                    )}
-
-                    {/* Name */}
-                    <TableCell align="left">
-                      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                        {item.name || 'N/A'}
-                      </Typography>
-                    </TableCell>
-
-                    {/* Rating */}
-                    <TableCell align="center">
-                      <Box component="span">
-                        {(item.rating ?? 0)} / 5
-                      </Box>
-                    </TableCell>
-
-                    {/* Available */}
-                    <TableCell align="center">
-                      <Box component="span">
-                        {item.available ? <DoneIcon color="primary" /> : <CancelIcon />}
-                      </Box>
-                    </TableCell>
-
-                    {/* Creator */}
-                    {!isSmDown && (
-                      <TableCell align="center">
-                        <MuiLink
-                          color="text.secondary"
-                          component={RouterLink}
-                          to={`/users/${item.owner?.username}`}
-                          onClick={(e) => e.stopPropagation()}
-                      >
-                        {item.owner?.username || 'N/A'}
-                      </MuiLink>
-                    </TableCell>
-                    )
-                  }
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 20, 50]}
-        component="div"
-        count={totalRows}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+      <DataGrid
+        rows={items}
+        columns={columns}
+        rowCount={totalRows}
+        loading={loading}
+        paginationMode="server"
+        sortingMode="server"
+        filterMode="server"
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        sortModel={sortModel}
+        onSortModelChange={setSortModel}
+        filterModel={filterModel}
+        onFilterModelChange={setFilterModel}
+        pageSizeOptions={[10, 20, 50]}
+        onRowClick={(params) => navigate(`/items/${params.row.slug}`, { state: { itemId: params.row.id } })}
+        getRowId={(row) => row.id}
+        autoHeight
+        slots={{
+          toolbar: CustomToolbar,
+        }}
+        disableColumnSelector
+        sx={{
+          border: 'none',
+          '& .MuiDataGrid-row': {
+            cursor: 'pointer',
+          },
+          '& .MuiDataGrid-cell:focus': {
+            outline: 'none',
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            borderBottom: 1,
+            borderColor: 'divider',
+          }
+        }}
+        disableRowSelectionOnClick
       />
     </Paper>
   );

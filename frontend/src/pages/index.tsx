@@ -10,7 +10,7 @@ const IndexPage = () => {
       <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
         <Box sx={{ textAlign: 'center', mt: 8 }}>
           <h1>Welcome to the Full Stack Template</h1>
-          <p>This is a basic template (v0.3.0) for a full stack application using React and Material UI.</p>
+          <p>This is a basic template (v0.4.0) for a full stack application using React and Material UI.</p>
           <p>GitHub Repo: <Link href="https://github.com/konverner/full-stack-template" color="primary" target="_blank" rel="noopener noreferrer">https://github.com/konverner/full-stack-template</Link></p>
         </Box>
       </Container>

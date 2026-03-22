@@ -146,8 +146,11 @@ export class ItemsService {
      * @param data.skip
      * @param data.limit
      * @param data.name
+     * @param data.slug
      * @param data.description
      * @param data.ownerId
+     * @param data.rating
+     * @param data.available
      * @param data.createdFrom
      * @param data.createdTo
      * @param data.sortField
@@ -163,8 +166,11 @@ export class ItemsService {
                 skip: data.skip,
                 limit: data.limit,
                 name: data.name,
+                slug: data.slug,
                 description: data.description,
                 owner_id: data.ownerId,
+                rating: data.rating,
+                available: data.available,
                 created_from: data.createdFrom,
                 created_to: data.createdTo,
                 sort_field: data.sortField,

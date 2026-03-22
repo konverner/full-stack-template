@@ -172,7 +172,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ item, currentUser, onDelete }
                     <Button
                         variant="outlined"
                         color="primary"
-                        href={`/items/${item.slug}/edit`}
+                        href={`/items/${item.id}/${item.slug}/edit`}
                     >
                         Edit
                     </Button>
