@@ -9,6 +9,7 @@ import {
   GridSortModel,
   GridPaginationModel,
   GridFilterModel,
+  GridToolbarContainer,
   Toolbar,
   ToolbarButton,
   QuickFilter,
@@ -41,7 +42,7 @@ const StyledQuickFilter = styled(QuickFilter)({
   marginLeft: 'auto',
 });
 
-const StyledToolbarButton = styled(ToolbarButton)<{ ownerState: OwnerState }>(({ theme, ownerState }) => ({
+const StyledToolbarButton = styled(ToolbarButton as any)<{ ownerState: OwnerState }>(({ theme, ownerState }) => ({
   gridArea: '1 / 1',
   width: 'min-content',
   height: 'min-content',
@@ -147,18 +148,17 @@ const UsersTable: React.FC = () => {
       {
         field: 'avatar_url',
         headerName: '',
-        width: 80,
+        width: 60,
         sortable: false,
         filterable: false,
-        hideable: false,
         renderCell: (params: GridRenderCellParams) => (
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <Avatar
-              src={params.value as string || undefined}
-              alt={params.row.username}
-              sx={{ width: 40, height: 40, bgcolor: 'grey.200' }}
-            />
-          </Box>
+          <Avatar
+            src={params.value as string}
+            alt={params.row.username || 'User'}
+            sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+          >
+            {(params.row.username as string)?.charAt(0).toUpperCase()}
+          </Avatar>
         ),
       },
       {
@@ -166,40 +166,22 @@ const UsersTable: React.FC = () => {
         headerName: 'Username',
         flex: 1,
         minWidth: 150,
-        hideable: false,
         filterOperators: getGridStringOperators(),
       },
       {
         field: 'email',
         headerName: 'Email',
-        flex: 1.5,
+        flex: 1,
         minWidth: 200,
-        hideable: false,
         filterOperators: getGridStringOperators(),
       },
       {
         field: 'is_active',
-        headerName: 'Active',
-        type: 'boolean',
-        width: 100,
-        headerAlign: 'center',
-        align: 'center',
-        hideable: false,
-        filterOperators: getGridBooleanOperators(),
-        renderCell: (params: GridRenderCellParams) => (
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            {params.value ? <DoneIcon color="primary" /> : <CancelIcon color="error" />}
-          </Box>
-        ),
-      },
-      {
-        field: 'is_superuser',
-        headerName: 'Superuser',
+        headerName: 'Status',
         type: 'boolean',
         width: 120,
         headerAlign: 'center',
         align: 'center',
-        hideable: false,
         filterOperators: getGridBooleanOperators(),
         renderCell: (params: GridRenderCellParams) => (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -209,97 +191,97 @@ const UsersTable: React.FC = () => {
       },
       {
         field: 'created_at',
-        headerName: 'Created At',
+        headerName: 'Joined',
         type: 'date',
         width: 180,
-        hideable: false,
         filterOperators: getGridDateOperators(),
         valueFormatter: (value?: string) => formatDate(value, { fallback: 'N/A' }),
       },
     ];
 
     if (isMobile) {
-      return allColumns.filter(col => ['username', 'is_active'].includes(col.field));
+      return allColumns.filter(col => ['avatar_url', 'username', 'is_active'].includes(col.field));
     }
     return allColumns;
   }, [isMobile]);
 
   const CustomToolbar = () => {
     return (
-      <Toolbar sx={{ p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <GridToolbarFilterButton />
-          <GridToolbarExport />
-        </Box>
+      <Toolbar render={(toolbarProps) => (
+        <GridToolbarContainer {...toolbarProps} sx={{ p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <GridToolbarFilterButton />
+            <GridToolbarExport />
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ ml: 1, width: 200 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
 
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search by username..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 250 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        <StyledQuickFilter>
-          <QuickFilterTrigger
-            render={(triggerProps, state) => (
-              <Tooltip title="Search" enterDelay={0}>
-                <StyledToolbarButton
-                  {...triggerProps}
+          <StyledQuickFilter>
+            <QuickFilterTrigger
+              render={(triggerProps, state) => (
+                <Tooltip title="Search" enterDelay={0}>
+                  <StyledToolbarButton
+                    {...triggerProps}
+                    ownerState={{ expanded: state.expanded }}
+                    color="default"
+                    aria-disabled={state.expanded}
+                  >
+                    <SearchIcon fontSize="small" />
+                  </StyledToolbarButton>
+                </Tooltip>
+              )}
+            />
+            <QuickFilterControl
+              render={({ ref, ...controlProps }, state) => (
+                <StyledTextField
+                  {...controlProps}
                   ownerState={{ expanded: state.expanded }}
-                  color="default"
-                  aria-disabled={state.expanded}
-                >
-                  <SearchIcon fontSize="small" />
-                </StyledToolbarButton>
-              </Tooltip>
-            )}
-          />
-          <QuickFilterControl
-            render={({ ref, ...controlProps }, state) => (
-              <StyledTextField
-                {...controlProps}
-                ownerState={{ expanded: state.expanded }}
-                inputRef={ref}
-                aria-label="Search"
-                placeholder="Search..."
-                size="small"
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: state.value ? (
-                      <InputAdornment position="end">
-                        <QuickFilterClear
-                          edge="end"
-                          size="small"
-                          aria-label="Clear search"
-                          material={{ sx: { marginRight: -0.75 } }}
-                        >
-                          <CancelIcon fontSize="small" />
-                        </QuickFilterClear>
-                      </InputAdornment>
-                    ) : null,
-                    ...controlProps.slotProps?.input,
-                  },
-                  ...controlProps.slotProps,
-                }}
-              />
-            )}
-          />
-        </StyledQuickFilter>
-      </Toolbar>
+                  inputRef={ref}
+                  aria-label="Search"
+                  placeholder="Search..."
+                  size="small"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: state.value ? (
+                        <InputAdornment position="end">
+                          <QuickFilterClear
+                            edge="end"
+                            size="small"
+                            aria-label="Clear search"
+                            material={{ sx: { marginRight: -0.75 } }}
+                          >
+                            <CancelIcon fontSize="small" />
+                          </QuickFilterClear>
+                        </InputAdornment>
+                      ) : null,
+                      ...controlProps.slotProps?.input,
+                    },
+                    ...controlProps.slotProps,
+                  }}
+                />
+              )}
+            />
+          </StyledQuickFilter>
+        </GridToolbarContainer>
+      )} />
     );
   };
 
@@ -339,6 +321,10 @@ const UsersTable: React.FC = () => {
           '& .MuiDataGrid-cell:focus': {
             outline: 'none',
           },
+          '& .MuiDataGrid-columnHeaders': {
+            borderBottom: 1,
+            borderColor: 'divider',
+          }
         }}
         disableRowSelectionOnClick
       />

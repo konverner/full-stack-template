@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  Paper, CircularProgress, Typography, Box, Link as MuiLink, Avatar,
+  Paper, Typography, Box, Link as MuiLink, Avatar,
   useTheme, TextField, InputAdornment, useMediaQuery, MenuItem, Select, FormControl, InputLabel, styled
 } from '@mui/material';
 import {
@@ -46,7 +46,7 @@ const StyledQuickFilter = styled(QuickFilter)({
   marginLeft: 'auto',
 });
 
-const StyledToolbarButton = styled(ToolbarButton)<{ ownerState: OwnerState }>(({ theme, ownerState }) => ({
+const StyledToolbarButton = styled(ToolbarButton as any)<{ ownerState: OwnerState }>(({ theme, ownerState }) => ({
   gridArea: '1 / 1',
   width: 'min-content',
   height: 'min-content',
@@ -273,126 +273,128 @@ const ItemsTable: React.FC = () => {
 
   const CustomToolbar = () => {
     return (
-      <Toolbar sx={{ p: 2, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', borderBottom: 1, borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <GridToolbarFilterButton />
-          <GridToolbarExport />
-        </Box>
+      <Toolbar render={(toolbarProps) => (
+        <GridToolbarContainer {...toolbarProps} sx={{ p: 2, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', borderBottom: 1, borderColor: 'divider' }}>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <GridToolbarFilterButton />
+            <GridToolbarExport />
+          </Box>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search by name..."
-            label="Name"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 200 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-          />
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search by name..."
+              label="Name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ width: 200 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <TextField
-            label="Min Rating"
-            type="number"
-            size="small"
-            value={ratingFilter}
-            onChange={(e) => setRatingFilter(e.target.value === '' ? '' : Number(e.target.value))}
-            inputProps={{ min: 0, max: 5, step: 0.1 }}
-            sx={{ width: 100 }}
-          />
+            <TextField
+              label="Min Rating"
+              type="number"
+              size="small"
+              value={ratingFilter}
+              onChange={(e) => setRatingFilter(e.target.value === '' ? '' : Number(e.target.value))}
+              inputProps={{ min: 0, max: 5, step: 0.1 }}
+              sx={{ width: 100 }}
+            />
 
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Availability</InputLabel>
-            <Select
-              label="Availability"
-              value={availabilityFilter}
-              onChange={(e) => setAvailabilityFilter(e.target.value as any)}
-            >
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="true">Available</MenuItem>
-              <MenuItem value="false">Unavailable</MenuItem>
-            </Select>
-          </FormControl>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Availability</InputLabel>
+              <Select
+                label="Availability"
+                value={availabilityFilter}
+                onChange={(e) => setAvailabilityFilter(e.target.value as any)}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="true">Available</MenuItem>
+                <MenuItem value="false">Unavailable</MenuItem>
+              </Select>
+            </FormControl>
 
-          <TextField
-            label="Created From"
-            type="date"
-            size="small"
-            value={createdFrom}
-            onChange={(e) => setCreatedFrom(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ width: 150 }}
-          />
+            <TextField
+              label="Created From"
+              type="date"
+              size="small"
+              value={createdFrom}
+              onChange={(e) => setCreatedFrom(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{ width: 150 }}
+            />
 
-          <TextField
-            label="Created To"
-            type="date"
-            size="small"
-            value={createdTo}
-            onChange={(e) => setCreatedTo(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ width: 150 }}
-          />
-        </Box>
+            <TextField
+              label="Created To"
+              type="date"
+              size="small"
+              value={createdTo}
+              onChange={(e) => setCreatedTo(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{ width: 150 }}
+            />
+          </Box>
 
-        <StyledQuickFilter>
-          <QuickFilterTrigger
-            render={(triggerProps, state) => (
-              <Tooltip title="Search" enterDelay={0}>
-                <StyledToolbarButton
-                  {...triggerProps}
+          <StyledQuickFilter>
+            <QuickFilterTrigger
+              render={(triggerProps, state) => (
+                <Tooltip title="Search" enterDelay={0}>
+                  <StyledToolbarButton
+                    {...triggerProps}
+                    ownerState={{ expanded: state.expanded }}
+                    color="default"
+                    aria-disabled={state.expanded}
+                  >
+                    <SearchIcon fontSize="small" />
+                  </StyledToolbarButton>
+                </Tooltip>
+              )}
+            />
+            <QuickFilterControl
+              render={({ ref, ...controlProps }, state) => (
+                <StyledTextField
+                  {...controlProps}
                   ownerState={{ expanded: state.expanded }}
-                  color="default"
-                  aria-disabled={state.expanded}
-                >
-                  <SearchIcon fontSize="small" />
-                </StyledToolbarButton>
-              </Tooltip>
-            )}
-          />
-          <QuickFilterControl
-            render={({ ref, ...controlProps }, state) => (
-              <StyledTextField
-                {...controlProps}
-                ownerState={{ expanded: state.expanded }}
-                inputRef={ref}
-                aria-label="Search"
-                placeholder="Search..."
-                size="small"
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: state.value ? (
-                      <InputAdornment position="end">
-                        <QuickFilterClear
-                          edge="end"
-                          size="small"
-                          aria-label="Clear search"
-                          material={{ sx: { marginRight: -0.75 } }}
-                        >
-                          <CancelIcon fontSize="small" />
-                        </QuickFilterClear>
-                      </InputAdornment>
-                    ) : null,
-                    ...controlProps.slotProps?.input,
-                  },
-                  ...controlProps.slotProps,
-                }}
-              />
-            )}
-          />
-        </StyledQuickFilter>
-      </Toolbar>
+                  inputRef={ref}
+                  aria-label="Search"
+                  placeholder="Search..."
+                  size="small"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: state.value ? (
+                        <InputAdornment position="end">
+                          <QuickFilterClear
+                            edge="end"
+                            size="small"
+                            aria-label="Clear search"
+                            material={{ sx: { marginRight: -0.75 } }}
+                          >
+                            <CancelIcon fontSize="small" />
+                          </QuickFilterClear>
+                        </InputAdornment>
+                      ) : null,
+                      ...controlProps.slotProps?.input,
+                    },
+                    ...controlProps.slotProps,
+                  }}
+                />
+              )}
+            />
+          </StyledQuickFilter>
+        </GridToolbarContainer>
+      )} />
     );
   };
 

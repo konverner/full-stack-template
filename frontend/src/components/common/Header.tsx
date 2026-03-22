@@ -13,7 +13,6 @@ interface UserProfile {
 
 const Header: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,24 +27,16 @@ const Header: React.FC = () => {
     setIsAuthenticated(authStatus);
     if (authStatus) {
       const userProfile: UserProfile | null = getUserProfileData();
-      setIsAdmin(userProfile?.is_superuser === true);
       setUserProfile(userProfile);
-    } else {
-      setIsAdmin(false);
     }
   }, []);
 
   const onLogoutClick = (): void => {
     clearAuthData();
     setIsAuthenticated(false);
-    setIsAdmin(false);
     setUserProfile(null);
     navigate('/login');
   };
-
-  const activeLinkStyle = ({ isActive }: { isActive: boolean }) => ({
-    fontWeight: isActive ? 'bold' : 'normal',
-  });
 
   const isItemsActive = location.pathname.startsWith('/items');
   const isUsersActive = location.pathname.startsWith('/users');
