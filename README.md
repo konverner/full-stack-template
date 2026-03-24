@@ -78,3 +78,4 @@ The following references were used:
 - [Microsoft Learn: Best practices for RESTful web API design](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)
 - [RFC 6749: The OAuth 2.0 Authorization Framework](https://datatracker.ietf.org/doc/html/rfc6749)
 - [RFC 7591: OAuth 2.0 Dynamic Registration](https://datatracker.ietf.org/doc/html/rfc7591)
+- [Material Design Guidelines](https://m2.material.io)

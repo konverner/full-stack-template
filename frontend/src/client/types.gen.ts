@@ -230,13 +230,16 @@ export type UpdateUsersPasswordAuthPasswordPutResponse = (Message);
 export type GetHealthHealthGetResponse = (unknown);
 
 export type ListItemsApiV1ItemsGetData = {
+    available?: boolean;
     createdFrom?: string;
     createdTo?: string;
     description?: string;
     limit?: number;
     name?: string;
     ownerId?: number;
+    rating?: number;
     skip?: number;
+    slug?: string;
     sortDirection?: string;
     sortField?: string;
 };

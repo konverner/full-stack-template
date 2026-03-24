@@ -63,12 +63,18 @@ class ItemService:
         if filters:
             if filters.name is not None:
                 query = query.where(item_models.Item.name.ilike(f"%{filters.name}%"))
+            if filters.slug is not None:
+                query = query.where(item_models.Item.slug == filters.slug)
             if filters.description is not None:
                 query = query.where(
                     item_models.Item.description.ilike(f"%{filters.description}%")
                 )
             if filters.owner_id is not None:
                 query = query.where(item_models.Item.owner_id == filters.owner_id)
+            if filters.rating is not None:
+                query = query.where(item_models.Item.rating >= filters.rating)
+            if filters.available is not None:
+                query = query.where(item_models.Item.available == filters.available)
             if filters.created_from is not None:
                 query = query.where(item_models.Item.created_at >= filters.created_from)
             if filters.created_to is not None:
@@ -94,6 +100,8 @@ class ItemService:
                 total_query = total_query.where(
                     item_models.Item.name.ilike(f"%{filters.name}%")
                 )
+            if filters.slug is not None:
+                total_query = total_query.where(item_models.Item.slug == filters.slug)
             if filters.description is not None:
                 total_query = total_query.where(
                     item_models.Item.description.ilike(f"%{filters.description}%")
@@ -102,6 +110,10 @@ class ItemService:
                 total_query = total_query.where(
                     item_models.Item.owner_id == filters.owner_id
                 )
+            if filters.rating is not None:
+                total_query = total_query.where(item_models.Item.rating >= filters.rating)
+            if filters.available is not None:
+                total_query = total_query.where(item_models.Item.available == filters.available)
             if filters.created_from is not None:
                 total_query = total_query.where(
                     item_models.Item.created_at >= filters.created_from

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Checkbox, TextField, Button, Typography, CircularProgress, FormControlLabel, Rating } from '@mui/material';
 import { ItemsService } from '@/client';

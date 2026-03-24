@@ -21,7 +21,7 @@ interface FieldErrors {
 
 interface EditFormProps {
     initialValues?: Partial<ItemData>;
-    itemId?: string;
+    itemId?: number;
 }
 
 const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemId }) => {
@@ -124,7 +124,7 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemId }) => {
             } else {
                 updatedItem = await ItemsService.createItemApiV1ItemsPost({ requestBody: dataToSubmit });
             }
-            navigate(`/items/${updatedItem.id}`);
+            navigate(`/items/${updatedItem.id}/${updatedItem.slug}`);
         } catch (err: any) {
             setError(err.message || `An error occurred while ${itemId ? 'updating' : 'creating'} the item.`);
             console.error(err);
