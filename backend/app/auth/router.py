@@ -20,9 +20,7 @@ router = APIRouter()
     response_model=user_schemas.UserRead,
     status_code=status.HTTP_201_CREATED,
 )
-def register_user(
-    user_in: user_schemas.UserCreate, db: Session = Depends(get_db)
-):
+def register_user(user_in: user_schemas.UserCreate, db: Session = Depends(get_db)):
     """Register a new user."""
     return auth_service.create_user(db=db, user_in=user_in)
 

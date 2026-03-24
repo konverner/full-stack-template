@@ -43,17 +43,7 @@ class ItemService:
         logger.info(f"Item with id {item_id} {'found' if item else 'not found'}.")
         return item
 
-    def get_item_by_slug(
-        self, db: Session, item_slug: str, options: List = None
-    ) -> Optional[item_models.Item]:
-        """Retrieve a single item by its slug."""
-        logger.info(f"Retrieving item with slug '{item_slug}'.")
-        query = db.query(item_models.Item)
-        if options:
-            query = query.options(*options)
-        item = query.filter(item_models.Item.slug == item_slug).first()
-        logger.info(f"Item with slug '{item_slug}' {'found' if item else 'not found'}.")
-        return item
+    # Removed get_item_by_slug; use get_item_by_id instead
 
     def list_items(
         self,
@@ -73,16 +63,24 @@ class ItemService:
         if filters:
             if filters.name is not None:
                 query = query.where(item_models.Item.name.ilike(f"%{filters.name}%"))
+            if filters.slug is not None:
+                query = query.where(item_models.Item.slug == filters.slug)
             if filters.description is not None:
                 query = query.where(
                     item_models.Item.description.ilike(f"%{filters.description}%")
                 )
             if filters.owner_id is not None:
                 query = query.where(item_models.Item.owner_id == filters.owner_id)
+            if filters.rating is not None:
+                query = query.where(item_models.Item.rating >= filters.rating)
+            if filters.available is not None:
+                query = query.where(item_models.Item.available == filters.available)
             if filters.created_from is not None:
                 query = query.where(item_models.Item.created_at >= filters.created_from)
             if filters.created_to is not None:
-                query = query.where(item_models.Item.created_at < filters.created_to + timedelta(days=1))
+                query = query.where(
+                    item_models.Item.created_at < filters.created_to + timedelta(days=1)
+                )
 
         if sort:
             sort_field = getattr(item_models.Item, sort.field, None)
@@ -102,6 +100,8 @@ class ItemService:
                 total_query = total_query.where(
                     item_models.Item.name.ilike(f"%{filters.name}%")
                 )
+            if filters.slug is not None:
+                total_query = total_query.where(item_models.Item.slug == filters.slug)
             if filters.description is not None:
                 total_query = total_query.where(
                     item_models.Item.description.ilike(f"%{filters.description}%")
@@ -110,6 +110,10 @@ class ItemService:
                 total_query = total_query.where(
                     item_models.Item.owner_id == filters.owner_id
                 )
+            if filters.rating is not None:
+                total_query = total_query.where(item_models.Item.rating >= filters.rating)
+            if filters.available is not None:
+                total_query = total_query.where(item_models.Item.available == filters.available)
             if filters.created_from is not None:
                 total_query = total_query.where(
                     item_models.Item.created_at >= filters.created_from

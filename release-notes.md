@@ -1,3 +1,12 @@
+# 0.4.0
+
+## Features
+
+- replace Table component with DataGrid for better performance and built-in features like pagination, sorting, and filtering
+- add posibility to filter items and users by categories and fuzzy text search
+- add created_at fields to items and users tables in the UI
+- use item id in api endpoints but slug in frontend routes for better SEO and user-friendly URLs
+
 # 0.3.0
 
 ## Features

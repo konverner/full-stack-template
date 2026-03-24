@@ -19,8 +19,12 @@ def list_users(
     username: str = Query(None),
     email: str = Query(None),
     is_active: bool = Query(None),
-    created_at_from: datetime = Query(None, description="Filter users created on or after this datetime"),
-    created_at_to: datetime = Query(None, description="Filter users created on or before this datetime"),
+    created_at_from: datetime = Query(
+        None, description="Filter users created on or after this datetime"
+    ),
+    created_at_to: datetime = Query(
+        None, description="Filter users created on or before this datetime"
+    ),
     sort_field: str = Query("id"),
     sort_direction: str = Query("asc"),
     db: Session = Depends(get_db),
@@ -29,8 +33,11 @@ def list_users(
     List users with filtering, sorting, and pagination.
     """
     filters = user_schemas.UserFilter(
-        username=username, email=email, is_active=is_active,
-        created_at_from=created_at_from, created_at_to=created_at_to,
+        username=username,
+        email=email,
+        is_active=is_active,
+        created_at_from=created_at_from,
+        created_at_to=created_at_to,
     )
     sort = user_schemas.UserSort(field=sort_field, direction=sort_direction)
     users = user_service.list_users(

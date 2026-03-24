@@ -63,8 +63,11 @@ class ItemReadDetails(ItemRead):
 
 class ItemFilter(BaseModel):
     name: Optional[str] = None
+    slug: Optional[str] = None
     description: Optional[str] = None
     owner_id: Optional[int] = None
+    rating: Optional[float] = None
+    available: Optional[bool] = None
     created_from: Optional[date] = None
     created_to: Optional[date] = None
 
@@ -97,7 +100,7 @@ class ItemListResponse(BaseModel):
                         "website_url": "https://example.com",
                         "owner_id": 1,
                         "created_at": "2024-01-01T12:00:00Z",
-                        "updated_at": "2024-01-02T12:00:00Z"
+                        "updated_at": "2024-01-02T12:00:00Z",
                     }
                 ],
                 "total": 1,

@@ -18,8 +18,11 @@ def list_items(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     name: str = Query(None),
+    slug: str = Query(None),
     description: str = Query(None),
     owner_id: int = Query(None),
+    rating: float = Query(None),
+    available: bool = Query(None),
     created_from: date = Query(None),
     created_to: date = Query(None),
     sort_field: str = Query("id"),
@@ -30,8 +33,14 @@ def list_items(
     List items with filtering, sorting, and pagination.
     """
     filters = item_schemas.ItemFilter(
-        name=name, description=description, owner_id=owner_id,
-        created_from=created_from, created_to=created_to,
+        name=name,
+        slug=slug,
+        description=description,
+        owner_id=owner_id,
+        rating=rating,
+        available=available,
+        created_from=created_from,
+        created_to=created_to,
     )
     sort = item_schemas.ItemSort(field=sort_field, direction=sort_direction)
     items = item_service.list_items(
@@ -61,13 +70,13 @@ def create_item(
     return item
 
 
-@router.get("/{item_slug}", response_model=item_schemas.ItemRead)
-def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
+@router.get("/{item_id}", response_model=item_schemas.ItemRead)
+def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
     """
-    Get a specific item by its slug.
+    Get a specific item by its ID.
     """
-    item = item_service.get_item_by_slug(
-        db=db, item_slug=item_slug, options=[selectinload(Item.owner)]
+    item = item_service.get_item_by_id(
+        db=db, item_id=item_id, options=[selectinload(Item.owner)]
     )
     if not item:
         raise HTTPException(
@@ -76,18 +85,18 @@ def get_item_by_slug(item_slug: str, db: Session = Depends(get_db)):
     return item
 
 
-@router.put("/{item_slug}", response_model=item_schemas.ItemRead)
-def update_item_by_slug(
-    item_slug: str,
+@router.put("/{item_id}", response_model=item_schemas.ItemRead)
+def update_item_by_id(
+    item_id: int,
     item_in: item_schemas.ItemUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Update an item by slug.
+    Update an item by ID.
     """
-    item = item_service.get_item_by_slug(
-        db=db, item_slug=item_slug, options=[selectinload(Item.owner)]
+    item = item_service.get_item_by_id(
+        db=db, item_id=item_id, options=[selectinload(Item.owner)]
     )
     if not item:
         raise HTTPException(

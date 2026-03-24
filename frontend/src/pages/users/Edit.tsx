@@ -83,6 +83,7 @@ const EditUserPage = () => {
                         ...initialValues,
                         email: initialValues.email ?? undefined,
                         avatar_url: initialValues.avatar_url ?? undefined,
+                        is_active: initialValues.is_active ?? undefined,
                     }}
                     username={username as string}
                     currentUser={currentUser}

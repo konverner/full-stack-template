@@ -21,10 +21,10 @@ interface FieldErrors {
 
 interface EditFormProps {
     initialValues?: Partial<ItemData>;
-    itemSlug?: string;
+    itemId?: number;
 }
 
-const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemSlug }) => {
+const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemId }) => {
     const [itemData, setItemData] = useState<ItemData>({
         name: '',
         slug: '',
@@ -119,14 +119,14 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemSlug }) => 
 
         try {
             let updatedItem: any;
-            if (itemSlug) {
-                updatedItem = await ItemsService.updateItemBySlugApiV1ItemsItemSlugPut({ itemSlug, requestBody: dataToSubmit });
+            if (itemId) {
+                updatedItem = await ItemsService.updateItemByIdApiV1ItemsItemIdPut({ itemId, requestBody: dataToSubmit });
             } else {
                 updatedItem = await ItemsService.createItemApiV1ItemsPost({ requestBody: dataToSubmit });
             }
-            navigate(`/items/${updatedItem.slug}`);
+            navigate(`/items/${updatedItem.id}/${updatedItem.slug}`);
         } catch (err: any) {
-            setError(err.message || `An error occurred while ${itemSlug ? 'updating' : 'creating'} the item.`);
+            setError(err.message || `An error occurred while ${itemId ? 'updating' : 'creating'} the item.`);
             console.error(err);
         } finally {
             setLoading(false);
@@ -138,7 +138,7 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemSlug }) => 
             <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
                 <Stack spacing={2}>
                     <Typography variant="h4" component="h1" gutterBottom>
-                        {itemSlug ? 'Edit Item' : 'Create Item'}
+                        {itemId ? 'Edit Item' : 'Create Item'}
                     </Typography>
                     {error && <Alert severity="error">{error}</Alert>}
 
@@ -233,7 +233,7 @@ const EditForm: React.FC<EditFormProps> = ({ initialValues = {}, itemSlug }) => 
                             variant="contained"
                             disabled={loading}
                         >
-                            {loading ? <CircularProgress size={24} /> : (itemSlug ? 'Save Changes' : 'Save Item')}
+                            {loading ? <CircularProgress size={24} /> : (itemId ? 'Save Changes' : 'Save Item')}
                         </Button>
                     </Box>
                 </Stack>

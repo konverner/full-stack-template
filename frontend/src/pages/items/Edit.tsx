@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useParams, Link as RouterLink, useLocation } from 'react-router-dom';
 import { Box, Container, Typography, Breadcrumbs, Link, CircularProgress, Alert } from '@mui/material';
 import EditForm from '../../components/items/EditForm';
 import Header from '../../components/common/Header';
@@ -9,9 +9,11 @@ import { ItemRead } from '@/client';
 
 const EditItemPage: React.FC = () => {
     const { itemSlug } = useParams<{ itemSlug: string }>();
+    const location = useLocation();
     const [initialValues, setInitialValues] = useState<ItemRead | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [itemId, setItemId] = useState<number | null>((location.state as any)?.itemId || null);
 
     useEffect(() => {
         const fetchItem = async (): Promise<void> => {
@@ -20,7 +22,22 @@ const EditItemPage: React.FC = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await ItemsService.getItemBySlugApiV1ItemsItemSlugGet({ itemSlug });
+                
+                let currentItemId = itemId;
+
+                if (!currentItemId) {
+                    // Fallback: find itemId by slug if not in state
+                    const data = await ItemsService.listItemsApiV1ItemsGet({ slug: itemSlug });
+                    if (data.items && data.items.length > 0) {
+                        currentItemId = data.items[0].id;
+                        setItemId(currentItemId);
+                    } else {
+                        throw new Error('Item not found');
+                    }
+                }
+
+                // Use currentItemId to get info from backend as requested
+                const data = await ItemsService.getItemByIdApiV1ItemsItemIdGet({ itemId: Number(currentItemId) });
                 setInitialValues(data);
             } catch (err) {
                 setError('Failed to load item data.');
@@ -29,7 +46,7 @@ const EditItemPage: React.FC = () => {
             }
         };
         fetchItem();
-    }, [itemSlug]);
+    }, [itemSlug, location.state]);
 
     if (loading) {
         return (
@@ -47,7 +64,7 @@ const EditItemPage: React.FC = () => {
         );
     }
 
-    if (!initialValues) {
+    if (!initialValues || !itemId) {
         return (
             <Container sx={{ mt: 5 }}>
                 <Typography variant="h6">Item not found.</Typography>
@@ -66,6 +83,9 @@ const EditItemPage: React.FC = () => {
                     <Link component={RouterLink} underline="hover" color="inherit" to="/items">
                         Items
                     </Link>
+                    <Link component={RouterLink} underline="hover" color="inherit" to={`/items/${itemSlug}`}>
+                        {initialValues.name}
+                    </Link>
                     <Typography color="text.primary">Edit</Typography>
                 </Breadcrumbs>
                 <EditForm
@@ -79,7 +99,7 @@ const EditItemPage: React.FC = () => {
                               }
                             : undefined
                     }
-                    itemSlug={itemSlug}
+                    itemId={itemId}
                 />
             </Container>
             <Footer />
