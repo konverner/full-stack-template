@@ -2,8 +2,8 @@
 """Wait for Postgres and create the target database if it doesn't exist."""
 import sys
 import time
-from psycopg import connect
-from psycopg import sql
+
+from psycopg import connect, sql
 
 from app.config import settings
 

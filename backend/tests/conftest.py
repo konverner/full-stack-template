@@ -1,17 +1,17 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 
-from app.users.service import user_service
-from app.users.schemas import UserCreate, UserUpdate, UserFilter
-from app.users.models import User
-from app.main import app
-from app.database.core import get_db, Base
 from app.auth.service import auth_service
-from app.items.service import item_service
-from app.items.schemas import ItemCreate
+from app.database.core import Base, get_db
 from app.items.models import Item
+from app.items.schemas import ItemCreate
+from app.items.service import item_service
+from app.main import app
+from app.users.models import User
+from app.users.schemas import UserCreate, UserFilter, UserUpdate
+from app.users.service import user_service
 
 
 @pytest.fixture(name="db_session")

@@ -1,11 +1,11 @@
 import logging
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
 
-from ..models import Base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+
 from ..config import settings
+from ..models import Base
 
 logger = logging.getLogger(__name__)
 

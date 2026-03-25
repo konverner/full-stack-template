@@ -1,10 +1,11 @@
-from typing import Optional, List, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc
-from passlib.context import CryptContext
+from typing import Any, List, Optional
 
-from .models import User
+from passlib.context import CryptContext
+from sqlalchemy import asc, desc
+from sqlalchemy.orm import Session
+
 from . import schemas as user_schemas
+from .models import User
 from .schemas import validate_username
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

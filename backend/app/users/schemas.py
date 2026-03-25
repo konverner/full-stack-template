@@ -1,7 +1,8 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
-from typing import Optional, List
-from datetime import datetime
 import re
+from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 def validate_username(username: str) -> str:
@@ -23,10 +24,11 @@ def validate_username(username: str) -> str:
     if username in reserved_words:
         raise ValueError(f"Username '{username}' is a reserved word and cannot be used")
 
-    # Check allowed characters: letters, numbers, dashes, underscores, apostrophes, periods
+    # Check allowed characters
     if not re.match(r"^[a-z0-9\-_'.]+$", username):
         raise ValueError(
-            "Username can only contain letters (a-z), numbers (0-9), dashes (-), underscores (_), and periods (.)"
+            "Username can only contain letters (a-z), numbers (0-9),"
+            " dashes (-), underscores (_), apostrophes ('), and periods (.)"
         )
 
     # Check for consecutive periods

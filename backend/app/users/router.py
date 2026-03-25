@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session, selectinload
 
 from ..database.core import get_db
-from . import schemas as user_schemas
-from .service import user_service
 from ..dependencies import get_current_active_user
+from . import schemas as user_schemas
 from .models import User
+from .service import user_service
 
 router = APIRouter()
 

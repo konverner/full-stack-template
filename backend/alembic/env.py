@@ -6,18 +6,17 @@ sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
 # Import project settings and models
 from app.config import settings
+from app.items.models import Item  # noqa
 from app.models import Base
 
 # Import all models to ensure they are registered with Base.metadata
 from app.users.models import User  # noqa
-from app.items.models import Item  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

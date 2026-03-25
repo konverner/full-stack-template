@@ -3,9 +3,8 @@
 from datetime import datetime, timezone
 
 from pydantic import Field, StringConstraints
-
-from sqlalchemy import Column, DateTime, Integer, event, ForeignKey
-from sqlalchemy.orm import declared_attr, declarative_base, relationship
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, event
+from sqlalchemy.orm import declarative_base, declared_attr, relationship
 from typing_extensions import Annotated
 
 # pydantic type that limits the range of primary keys

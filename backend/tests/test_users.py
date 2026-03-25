@@ -3,8 +3,8 @@ from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from app.users.schemas import UserCreate, UserFilter, UserUpdate
 from app.users.service import user_service
-from app.users.schemas import UserCreate, UserUpdate, UserFilter
 
 
 def test_password_hashing():

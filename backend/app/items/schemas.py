@@ -1,7 +1,9 @@
-from pydantic import BaseModel, field_validator, ConfigDict
-from typing import Optional
 import re
-from datetime import datetime, date
+from datetime import date, datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, field_validator
+
 from ..users.schemas import UserRead
 
 
