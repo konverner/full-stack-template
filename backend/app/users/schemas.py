@@ -1,7 +1,8 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
-from typing import Optional, List
-from datetime import datetime
 import re
+from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 def validate_username(username: str) -> str:

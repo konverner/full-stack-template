@@ -2,22 +2,23 @@ import logging
 import random
 
 from faker import Faker
+from slugify import slugify
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from slugify import slugify
 
-from app.database.core import get_db
-from app.config import settings
 from app.auth.service import AuthService
+from app.config import settings
+from app.database.core import get_db
 from app.items import schemas as item_schemas
-from app.items.service import item_service
-from app.users import schemas as users_schemas
-from .core import init_db
 
 # Import all models to ensure they are registered with Base.metadata
 # and to avoid sqlalchemy.exc.InvalidRequestError when initializing mappers
 from app.items.models import Item
+from app.items.service import item_service
+from app.users import schemas as users_schemas
 from app.users.models import User
+
+from .core import init_db
 
 logger = logging.getLogger(__name__)
 

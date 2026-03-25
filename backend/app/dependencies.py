@@ -1,16 +1,17 @@
 from datetime import datetime, timezone
 from typing import Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from jose import JWTError
 
-from .users.models import User
-from .config import settings
-from .database.core import get_db
 from .auth.security import decode_token
 from .auth.service import auth_service
+from .config import settings
+from .database.core import get_db
+from .users.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.AUTH_STR}/token")
 oauth2_scheme_optional = OAuth2PasswordBearer(

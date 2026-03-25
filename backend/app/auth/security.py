@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Union, Any
+from typing import Any, Optional, Union
 
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from ..config import settings

@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from fastapi import HTTPException, status
 from typing import Optional
 
+from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from ..users import schemas as user_schemas
 from ..users.models import User
 from . import security
-from ..users import schemas as user_schemas
 
 
 class AuthService:
