@@ -41,8 +41,7 @@ High-level layout:
 │       └── service.py      # User domain logic
 ├── alembic.ini             # Alembic configuration file
 ├── Dockerfile              # Backend image build
-├── pyproject.toml          # Project metadata (editable install) + tooling (if configured)
-├── requirements.txt        # Pinned runtime deps
+├── pyproject.toml          # Project metadata, dependencies
 └── tests
     ├── conftest.py         # Shared pytest fixtures (test client, db session override)
     ├── test_database.py    # DB layer tests
@@ -81,11 +80,13 @@ Alembic is configured to use the same database URI as the FastAPI application, d
 ## Development Workflow
 
 1. Backend environment: set virtual environment + install deps (from /backend).
-    ```
-    python -m venv venv
-    source venv/bin/activate
-    pip install --no-cache-dir -r requirements.txt
-    ```
+   ```
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install --no-cache-dir .
+   pip install --no-cache-dir .[dev]  # for dev dependencies (ruff, mypy, pytest, etc.)
+   ```
+
 2. Frontend environment: install all npm deps (from /frontend):
    ```
    npm install
@@ -123,6 +124,31 @@ Alembic is configured to use the same database URI as the FastAPI application, d
    ```
    restart service will set, seed (if neede) database and run migrations from `/alembic/versions`
 
+
+## Code Quality: Ruff & Mypy
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and [Mypy](https://mypy-lang.org/) for static type checking. Both are configured in `pyproject.toml`.
+
+### Run Ruff (lint/fix):
+
+```
+ruff check .
+ruff check . --fix   # auto-fix issues
+```
+
+### Run Mypy (type check):
+
+```
+mypy .
+```
+
+You can install both tools (if not already present) with:
+
+```
+pip install ruff mypy
+```
+
+See the `[tool.ruff]` and `[tool.mypy]` sections in `pyproject.toml` for configuration details.
 
 ## Database Migrations and Seeding
 
