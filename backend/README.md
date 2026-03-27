@@ -43,10 +43,13 @@ High-level layout:
 ├── Dockerfile              # Backend image build
 ├── pyproject.toml          # Project metadata, dependencies
 └── tests
-    ├── conftest.py         # Shared pytest fixtures (test client, db session override)
-    ├── test_database.py    # DB layer tests
-    ├── test_items.py       # Item feature tests
-    └── test_users.py       # User feature tests
+   ├── unit/               # Unit tests
+   │   ├── conftest.py         # Shared pytest fixtures (test client, db session override)
+   │   ├── test_database.py    # DB layer tests
+   │   ├── test_items.py       # Item feature tests
+   │   ├── test_seed.py        # Database seeding tests
+   │   └── test_users.py       # User feature tests
+   └── integration/        # Integration tests (add here)
 ```
 
 ### Request Lifecycle (Typical Authenticated Endpoint)
@@ -97,7 +100,8 @@ Alembic is configured to use the same database URI as the FastAPI application, d
    - schemas.py (http schemas)
    - service.py (business logic)
    - router.py (endpoints)
-   - tests/test_<feature>.py (unit tests)
+   - tests/unit/test_<feature>.py (unit tests)
+   - tests/integration/test_<feature>.py (integration tests, if needed)
 5. Generate a migration file:
    ```
    alembic revision -m "Add items filtering feature"
@@ -112,18 +116,60 @@ Alembic is configured to use the same database URI as the FastAPI application, d
     ```
 7. Run unit tests:
    ```
-   python -m pytest -q
+   python -m pytest tests/unit -q
    ```
-8. Regenerate frontend client if schemas changed:
+
+8. Run integration tests (if any):
+   ```
+   python -m pytest tests/integration -q
+   ```
+9. Regenerate frontend client if schemas changed:
    ```
    sudo bash ./scripts/generate-client.sh
    ```
-9. Now you can rebuild docker images and re-run the application:
+10. Now you can rebuild docker images and re-run the application:
    ```
    docker-compose up --build
    ```
-   restart service will set, seed (if neede) database and run migrations from `/alembic/versions`
+   restart service will set, seed (if needed) database and run migrations from `/alembic/versions`
 
+
+## Testing
+
+Unit tests should mock the database or test pure logic, while Integration tests should run against a real PostgreSQL instance.
+
+### Running Unit Tests
+
+```bash
+python -m pytest tests/unit -q
+```
+
+### Running Integration Tests (Docker)
+
+To run integration tests in a clean environment using Docker:
+
+1. Start the test environment:
+   ```bash
+   docker-compose -f docker-compose.test.yml up --build -d
+   ```
+
+2. Run the tests:
+   ```bash
+   docker-compose -f docker-compose.test.yml exec backend pytest tests/integration
+   ```
+
+3. Clean up:
+   ```bash
+   docker-compose -f docker-compose.test.yml down -v
+   ```
+
+### Running Integration Tests (Local)
+
+If you have a local PostgreSQL instance, ensure your environment variables (e.g., in `.env`) point to it, then run:
+
+```bash
+python -m pytest tests/integration -q
+```
 
 ## Code Quality: Ruff & Mypy
 
