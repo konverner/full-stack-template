@@ -7,7 +7,9 @@ from app.users.schemas import UserCreate
 from app.users.service import user_service
 
 
-def test_list_users(client: TestClient, superuser_token_headers: dict, db_session: Session):
+def test_list_users(
+    client: TestClient, superuser_token_headers: dict, db_session: Session
+):
     """Test listing users."""
     # Create some users
     user_service.create_user(
@@ -19,7 +21,9 @@ def test_list_users(client: TestClient, superuser_token_headers: dict, db_sessio
         UserCreate(username="user2", email="user2@example.com", password="password123"),
     )
 
-    response = client.get(f"{settings.API_V1_STR}/users/", headers=superuser_token_headers)
+    response = client.get(
+        f"{settings.API_V1_STR}/users/", headers=superuser_token_headers
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["total"] >= 3  # superuser + user1 + user2
