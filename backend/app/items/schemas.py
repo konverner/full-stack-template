@@ -24,7 +24,8 @@ class ItemBase(BaseModel):
             # Check if slug matches URL-friendly pattern
             if not re.match(r"^[a-z0-9]+(?:-[a-z0-9]+)*$", v):
                 raise ValueError(
-                    "Slug must contain only lowercase letters, numbers, and hyphens. Cannot start or end with hyphens."
+                    "Slug must contain only lowercase letters, numbers, and hyphens. "
+                    "Cannot start or end with hyphens."
                 )
             # Check length
             if len(v) > 255:
