@@ -72,6 +72,8 @@ class UserService:
             email=user_in.email,
             password_hash=hashed_password,
             avatar_url=user_in.avatar_url,
+            is_superuser=user_in.is_superuser,
+            is_active=user_in.is_active,
         )
         db.add(user)
         db.commit()

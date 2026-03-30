@@ -111,9 +111,13 @@ class ItemService:
                     item_models.Item.owner_id == filters.owner_id
                 )
             if filters.rating is not None:
-                total_query = total_query.where(item_models.Item.rating >= filters.rating)
+                total_query = total_query.where(
+                    item_models.Item.rating >= filters.rating
+                )
             if filters.available is not None:
-                total_query = total_query.where(item_models.Item.available == filters.available)
+                total_query = total_query.where(
+                    item_models.Item.available == filters.available
+                )
             if filters.created_from is not None:
                 total_query = total_query.where(
                     item_models.Item.created_at >= filters.created_from

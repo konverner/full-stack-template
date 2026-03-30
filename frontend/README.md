@@ -94,9 +94,14 @@ Put text content for static pages (e.g., about, contact, faq) in the correspondi
 
 It is recommended to respect the existing pattern:
 
-1.  Create components for new feature in `/components/{feature_name}`
-2.  Ensemble the components in a new page `/pages/{feature_name}/feature-page.tsx`
-3.  Add a route to the page in `App.tsx`
+1. Create components for new feature in `/components/{feature_name}`
+2. Ensemble the components in a new page `/pages/{feature_name}/feature-page.tsx`
+3. Add a route to the page in `App.tsx`
+4. Run linter and formatter:
+   ```
+   npm run lint
+   npm run format
+   ```
 
 ### Generate client
 
