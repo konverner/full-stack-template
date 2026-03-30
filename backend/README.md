@@ -1,8 +1,21 @@
+
 # Full-Stack Template - Backend
 
 ## Overview
 
 This backend provides a modular FastAPI application skeleton featuring user management, authentication (JWT / OAuth2 password flow), and CRUD operations for items.
+
+## Contents
+
+- [Overview](#overview)
+- [Structure](#structure)
+- [Configuration](#configuration)
+- [Development Workflow](#development-workflow)
+- [Database Migrations and Seeding](#database-migrations-and-seeding)
+- [Testing](#testing)
+- [Code Quality: Ruff & Mypy](#code-quality-ruff--mypy)
+- [Error Handling](#error-handling)
+- [Code Style & Conventions](#code-style--conventions)
 
 ## Structure
 
@@ -49,7 +62,12 @@ High-level layout:
    │   ├── test_items.py       # Item feature tests
    │   ├── test_seed.py        # Database seeding tests
    │   └── test_users.py       # User feature tests
-   └── integration/        # Integration tests (add here)
+   └── integration/        # Integration tests
+       ├── conftest.py         # Shared pytest fixtures (test client, db session override)
+       ├── test_auth_flow.py    # Auth flow tests
+       ├── test_items_flow.py       # Items flow tests
+       └── test_users_flow.py       # Users flow tests
+
 ```
 
 ### Request Lifecycle (Typical Authenticated Endpoint)
@@ -78,7 +96,6 @@ Configuration is centralized in `config.py` using Pydantic BaseSettings. Environ
 Add new settings by extending the Settings class and referencing them via dependency injection or direct import of the singleton instance.
 
 Alembic is configured to use the same database URI as the FastAPI application, defined in `app/config.py`. It automatically detects models that inherit from `app.models.Base`.
-
 
 ## Development Workflow
 
@@ -113,7 +130,7 @@ Alembic is configured to use the same database URI as the FastAPI application, d
 
     def downgrade() -> None:
         op.drop_column('users', 'full_name')
-    ```
+   ```
 7. Run unit tests:
    ```
    python -m pytest tests/unit -q
@@ -132,69 +149,6 @@ Alembic is configured to use the same database URI as the FastAPI application, d
    docker-compose up --build
    ```
    restart service will set, seed (if needed) database and run migrations from `/alembic/versions`
-
-
-## Testing
-
-Unit tests should mock the database or test pure logic, while Integration tests should run against a real PostgreSQL instance.
-
-### Running Unit Tests
-
-```bash
-python -m pytest tests/unit -q
-```
-
-### Running Integration Tests (Docker)
-
-To run integration tests in a clean environment using Docker:
-
-1. Start the test environment:
-   ```bash
-   docker-compose -f docker-compose.test.yml up --build -d
-   ```
-
-2. Run the tests:
-   ```bash
-   docker-compose -f docker-compose.test.yml exec backend pytest tests/integration
-   ```
-
-3. Clean up:
-   ```bash
-   docker-compose -f docker-compose.test.yml down -v
-   ```
-
-### Running Integration Tests (Local)
-
-If you have a local PostgreSQL instance, ensure your environment variables (e.g., in `.env`) point to it, then run:
-
-```bash
-python -m pytest tests/integration -q
-```
-
-## Code Quality: Ruff & Mypy
-
-This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and [Mypy](https://mypy-lang.org/) for static type checking. Both are configured in `pyproject.toml`.
-
-### Run Ruff (lint/fix):
-
-```
-ruff check .
-ruff check . --fix   # auto-fix issues
-```
-
-### Run Mypy (type check):
-
-```
-mypy .
-```
-
-You can install both tools (if not already present) with:
-
-```
-pip install ruff mypy
-```
-
-See the `[tool.ruff]` and `[tool.mypy]` sections in `pyproject.toml` for configuration details.
 
 ## Database Migrations and Seeding
 
@@ -240,6 +194,48 @@ If the containers are already running:
    python -m app.database.seed
    ```
 
+## Testing
+
+Unit tests should mock the database or test pure logic, while Integration tests should run against a real PostgreSQL instance.
+
+### Running Unit Tests
+
+```bash
+python -m pytest tests/unit -q
+```
+
+### Running Integration Tests (Docker)
+
+To run integration tests in a clean environment using Docker:
+
+```bash
+source ./scripts/integration-tests.sh
+```
+
+## Code Quality: Ruff & Mypy
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and [Mypy](https://mypy-lang.org/) for static type checking. Both are configured in `pyproject.toml`.
+
+### Run Ruff (lint/fix):
+
+```
+ruff check .
+ruff check . --fix   # auto-fix issues
+```
+
+### Run Mypy (type check):
+
+```
+mypy .
+```
+
+You can install both tools (if not already present) with:
+
+```
+pip install ruff mypy
+```
+
+See the `[tool.ruff]` and `[tool.mypy]` sections in `pyproject.toml` for configuration details.
 
 ## Error Handling
 
