@@ -196,7 +196,7 @@ If the containers are already running:
 
 ## Testing
 
-Unit tests should mock the database or test pure logic, while Integration tests should run against a real PostgreSQL instance.
+Unit tests should mock the database or test pure logic, while Integration tests should run against a real PostgreSQL instance and other services.
 
 ### Running Unit Tests
 
@@ -204,9 +204,13 @@ Unit tests should mock the database or test pure logic, while Integration tests 
 python -m pytest tests/unit -q
 ```
 
-### Running Integration Tests (Docker)
+### Running Integration Tests in Docker
 
 To run integration tests in a clean environment using Docker:
+
+1) Create .env.test with values for test environment
+
+2) Run script:
 
 ```bash
 source ./scripts/integration-tests.sh
@@ -237,9 +241,6 @@ pip install ruff mypy
 
 See the `[tool.ruff]` and `[tool.mypy]` sections in `pyproject.toml` for configuration details.
 
-## Error Handling
-
-Raise `HTTPException` in router for explicit HTTP semantics. Prefer custom exception classes in service layer then translate to HTTP errors in router if domain-specific.
 
 ## Code Style & Conventions
 
