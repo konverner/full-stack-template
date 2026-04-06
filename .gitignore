@@ -11,3 +11,4 @@ playwright/.cache/
 .env.prod
 .env.dev
 .env.test
+*.log
