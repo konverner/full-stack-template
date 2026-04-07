@@ -1,10 +1,4 @@
-import {
-	CssBaseline,
-	ThemeProvider,
-	createTheme,
-	useMediaQuery,
-} from "@mui/material";
-import { enUS } from "@mui/material/locale";
+import { CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
 import IndexPage from "./pages";
 import AboutPage from "./pages/about";
@@ -19,37 +13,11 @@ import EditItemPage from "./pages/items/Edit";
 import ItemsTablePage from "./pages/items/Table";
 import PrivacyPage from "./pages/privacy";
 import TermsOfServicePage from "./pages/terms";
+import { darkTheme, lightTheme } from "./theme";
 import CreateUserPage from "./pages/users/Create";
 import UserDetails from "./pages/users/Details";
 import EditUserPage from "./pages/users/Edit";
 import UsersTablePage from "./pages/users/Table";
-
-const createAppTheme = (mode: "light" | "dark") =>
-	createTheme(
-		{
-			palette:
-				mode === "dark"
-					? {
-							primary: { main: "#56c4be" },
-							secondary: { main: "#272727" },
-							background: { default: "#1f1f1f", paper: "#272727" },
-							text: { primary: "#e6e6e6", secondary: "#bebebe" },
-							success: { main: "#6dca70" },
-							mode,
-						}
-					: {
-							primary: { main: "#272727" },
-							secondary: { main: "#56c4be" },
-							background: { default: "#f5f5f5", paper: "#ffffff" },
-							text: { primary: "#242424", secondary: "#a0a0a0" },
-							mode,
-						},
-		},
-		enUS,
-	);
-
-const lightTheme = createAppTheme("light");
-const darkTheme = createAppTheme("dark");
 
 function App() {
 	const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
