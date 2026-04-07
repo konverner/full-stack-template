@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import Footer from "../../components/common/Footer";
 import Header from "../../components/common/Header";
 import ItemDetails from "../../components/items/Details";
@@ -45,7 +45,6 @@ interface User {
 
 const ItemsDetailsPage: React.FC = () => {
 	const { itemSlug } = useParams<{ itemSlug: string }>();
-	const navigate = useNavigate();
 	const location = useLocation();
 	const [item, setItem] = useState<Item | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -130,37 +129,21 @@ const ItemsDetailsPage: React.FC = () => {
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
 			<Header />
-			<Container maxWidth="md">
-				<Box
-					sx={{
-						mb: 2,
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-					}}
-				>
-					<Breadcrumbs aria-label="breadcrumb" sx={{ mt: 2 }}>
-						<Link
-							underline="hover"
-							component="button"
-							onClick={() => navigate("/")}
-							sx={{ display: "flex", alignItems: "center" }}
-							color="inherit"
-						>
-							Home
-						</Link>
-						<Link
-							underline="hover"
-							component="button"
-							onClick={() => navigate("/items")}
-							sx={{ display: "flex", alignItems: "center" }}
-							color="inherit"
-						>
-							Items
-						</Link>
-						<Typography color="text.primary">{item.name}</Typography>
-					</Breadcrumbs>
-				</Box>
+			<Container maxWidth="md" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+				<Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
+					<Link component={RouterLink} underline="hover" color="inherit" to="/">
+						Home
+					</Link>
+					<Link
+						component={RouterLink}
+						underline="hover"
+						color="inherit"
+						to="/items"
+					>
+						Items
+					</Link>
+					<Typography color="text.primary">{item.name}</Typography>
+				</Breadcrumbs>
 				<ItemDetails item={item} currentUser={currentUser} />
 			</Container>
 			<Footer />

@@ -6,6 +6,8 @@ import {
 	Checkbox,
 	CircularProgress,
 	FormControlLabel,
+	Paper,
+	Stack,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -133,100 +135,105 @@ const CreateForm: React.FC = () => {
 	};
 
 	return (
-		<Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-			<Typography variant="h4" component="h1" gutterBottom>
-				Create User
-			</Typography>
-			{error && (
-				<Alert severity="error" sx={{ mb: 2 }}>
-					{error}
-				</Alert>
-			)}
-			<TextField
-				margin="normal"
-				required
-				fullWidth
-				id="username"
-				label="Username"
-				name="username"
-				autoComplete="username"
-				autoFocus
-				value={userData.username}
-				onChange={handleChange}
-				error={!!fieldErrors.username}
-				helperText={
-					fieldErrors.username || "3-50 chars, letters, numbers, _ or -"
-				}
-			/>
-			<TextField
-				margin="normal"
-				required
-				fullWidth
-				id="password"
-				label="Password"
-				name="password"
-				type="password"
-				value={userData.password}
-				onChange={handleChange}
-				error={!!fieldErrors.password}
-				helperText={fieldErrors.password || "At least 8 characters"}
-			/>
-			<TextField
-				margin="normal"
-				fullWidth
-				id="email"
-				label="Email"
-				name="email"
-				value={userData.email}
-				onChange={handleChange}
-				error={!!fieldErrors.email}
-				helperText={fieldErrors.email}
-			/>
-			<TextField
-				margin="normal"
-				fullWidth
-				name="avatar_url"
-				label="Avatar URL"
-				id="avatar_url"
-				value={userData.avatar_url}
-				onChange={handleChange}
-				error={!!fieldErrors.avatar_url}
-				helperText={fieldErrors.avatar_url}
-			/>
-			<FormControlLabel
-				control={
-					<Checkbox
-						checked={!!userData.is_active}
+		<Box
+			component="form"
+			onSubmit={handleSubmit}
+			noValidate
+			sx={{ mt: 1, maxWidth: 640, mx: "auto" }}
+		>
+			<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
+				<Stack spacing={2}>
+					<Typography variant="h4" component="h1" gutterBottom>
+						Create User
+					</Typography>
+					{error && <Alert severity="error">{error}</Alert>}
+
+					<TextField
+						margin="normal"
+						required
+						fullWidth
+						id="username"
+						label="Username"
+						name="username"
+						autoComplete="username"
+						autoFocus
+						value={userData.username}
 						onChange={handleChange}
-						color="primary"
-						name="is_active"
-						id="is_active"
+						error={!!fieldErrors.username}
+						helperText={
+							fieldErrors.username || "3-50 chars, letters, numbers, _ or -"
+						}
 					/>
-				}
-				label="Active"
-				sx={{ mt: 2, mb: 1 }}
-			/>
-			<FormControlLabel
-				control={
-					<Checkbox
-						checked={!!userData.is_superuser}
+					<TextField
+						margin="normal"
+						required
+						fullWidth
+						id="password"
+						label="Password"
+						name="password"
+						type="password"
+						value={userData.password}
 						onChange={handleChange}
-						color="primary"
-						name="is_superuser"
-						id="is_superuser"
+						error={!!fieldErrors.password}
+						helperText={fieldErrors.password || "At least 8 characters"}
 					/>
-				}
-				label="Superuser"
-				sx={{ mb: 2 }}
-			/>
-			<Button
-				type="submit"
-				variant="contained"
-				sx={{ mt: 2, mb: 2 }}
-				disabled={loading}
-			>
-				{loading ? <CircularProgress size={24} /> : "Create User"}
-			</Button>
+					<TextField
+						margin="normal"
+						fullWidth
+						id="email"
+						label="Email"
+						name="email"
+						value={userData.email}
+						onChange={handleChange}
+						error={!!fieldErrors.email}
+						helperText={fieldErrors.email}
+					/>
+					<TextField
+						margin="normal"
+						fullWidth
+						name="avatar_url"
+						label="Avatar URL"
+						id="avatar_url"
+						value={userData.avatar_url}
+						onChange={handleChange}
+						error={!!fieldErrors.avatar_url}
+						helperText={fieldErrors.avatar_url}
+					/>
+
+					<Stack direction="row" spacing={2}>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={!!userData.is_active}
+									onChange={handleChange}
+									color="primary"
+									name="is_active"
+									id="is_active"
+								/>
+							}
+							label="Active"
+						/>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={!!userData.is_superuser}
+									onChange={handleChange}
+									color="primary"
+									name="is_superuser"
+									id="is_superuser"
+								/>
+							}
+							label="Superuser"
+						/>
+					</Stack>
+
+					<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+						<Button type="submit" variant="contained" disabled={loading}>
+							{loading ? <CircularProgress size={24} /> : "Create User"}
+						</Button>
+					</Box>
+				</Stack>
+			</Paper>
 		</Box>
 	);
 };

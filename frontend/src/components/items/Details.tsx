@@ -79,7 +79,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
 
 	return (
 		<Box>
-			<Paper elevation={3} sx={{ p: { xs: 2, sm: 4 }, mt: 2 }}>
+			<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
 				<Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
 					<Grid>
 						<Avatar
@@ -122,7 +122,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
 
 			<Grid container spacing={3} sx={{ mt: item.description ? 0 : 4 }}>
 				<Grid size={12}>
-					<Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
+					<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
 						<Typography
 							variant="subtitle1"
 							gutterBottom
@@ -178,7 +178,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
 				</Grid>
 
 				<Grid size={12}>
-					<Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
+					<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
 						<Typography
 							variant="subtitle1"
 							gutterBottom
@@ -247,20 +247,34 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
 				)}
 			</Grid>
 
-			{/* Buttons at the bottom */}
+			{/* Action Buttons */}
 			{canEditOrDelete && (
-				<Stack direction="row" spacing={2} sx={{ mt: 4, mb: 4 }}>
-					<Button
-						variant="outlined"
-						color="primary"
-						href={`/items/${item.id}/${item.slug}/edit`}
+				<Paper elevation={1} sx={{ p: 2, mt: 3 }}>
+					<Stack
+						direction={{ xs: "column", sm: "row" }}
+						spacing={2}
+						sx={{
+							alignItems: { xs: "stretch", sm: "center" },
+						}}
 					>
-						Edit
-					</Button>
-					<Button variant="outlined" color="error" onClick={handleDelete}>
-						Delete
-					</Button>
-				</Stack>
+						<Button
+							variant="contained"
+							color="primary"
+							href={`/items/${item.slug}/edit`}
+							sx={{ minWidth: 100 }}
+						>
+							Edit Item
+						</Button>
+						<Button
+							variant="outlined"
+							color="error"
+							onClick={handleDelete}
+							sx={{ minWidth: 100 }}
+						>
+							Delete Item
+						</Button>
+					</Stack>
+				</Paper>
 			)}
 		</Box>
 	);

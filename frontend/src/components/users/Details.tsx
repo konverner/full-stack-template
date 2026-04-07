@@ -53,9 +53,9 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
 	};
 
 	return (
-		<Box sx={{ maxWidth: 1200, mx: "auto", p: { xs: 2, sm: 3 } }}>
+		<Box>
 			{/* Header Section */}
-			<Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+			<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
 				<Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
 					<Avatar
 						src={user.avatar_url || ""}
@@ -97,14 +97,13 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
 			</Paper>
 
 			{/* Content Grid */}
-			<Grid container spacing={3} sx={{ mb: 3 }}>
+			<Grid container spacing={3} sx={{ mt: 3, mb: 3 }}>
 				<Grid size={12}>
-					<Paper elevation={2} sx={{ p: 3, height: "100%" }}>
+					<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
 						<Typography
-							variant="h6"
-							component="h2"
+							variant="subtitle1"
 							gutterBottom
-							sx={{ fontWeight: 600, mb: 2 }}
+							sx={{ fontWeight: 500 }}
 						>
 							Account Status
 						</Typography>
@@ -158,12 +157,11 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
 				</Grid>
 
 				<Grid size={12}>
-					<Paper elevation={2} sx={{ p: 3, height: "100%" }}>
+					<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
 						<Typography
-							variant="h6"
-							component="h2"
+							variant="subtitle1"
 							gutterBottom
-							sx={{ fontWeight: 600, mb: 2 }}
+							sx={{ fontWeight: 500 }}
 						>
 							Account Information
 						</Typography>
@@ -195,14 +193,12 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, currentUser }) => {
 
 			{/* Action Buttons */}
 			{canEditOrDelete && (
-				<Paper elevation={1} sx={{ p: 2 }}>
+				<Paper elevation={1} sx={{ p: 2, mt: 3 }}>
 					<Stack
 						direction={{ xs: "column", sm: "row" }}
 						spacing={2}
 						sx={{
 							alignItems: { xs: "stretch", sm: "center" },
-							flexWrap: "wrap",
-							gap: 1,
 						}}
 					>
 						<Button

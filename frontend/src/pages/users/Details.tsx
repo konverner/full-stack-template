@@ -94,8 +94,8 @@ const UserDetailsPage = () => {
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
 			<Header />
-			<Container maxWidth="md">
-				<Breadcrumbs aria-label="breadcrumb" sx={{ mt: 2, mb: 2 }}>
+			<Container maxWidth="md" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+				<Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
 					<Link component={RouterLink} underline="hover" color="inherit" to="/">
 						Home
 					</Link>

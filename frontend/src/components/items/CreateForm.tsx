@@ -7,7 +7,9 @@ import {
 	Checkbox,
 	CircularProgress,
 	FormControlLabel,
+	Paper,
 	Rating,
+	Stack,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -153,112 +155,121 @@ const CreateForm: React.FC = () => {
 	};
 
 	return (
-		<Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-			<Typography variant="h4" component="h1" gutterBottom>
-				Create Item
-			</Typography>
-			{error && (
-				<Alert severity="error" sx={{ mb: 2 }}>
-					{error}
-				</Alert>
-			)}
-			<TextField
-				margin="normal"
-				required
-				fullWidth
-				id="name"
-				label="Item Name"
-				name="name"
-				autoComplete="name"
-				autoFocus
-				value={itemData.name}
-				onChange={handleChange}
-			/>
-			<TextField
-				margin="normal"
-				fullWidth
-				id="slug"
-				label="Slug (URL-friendly name)"
-				name="slug"
-				value={itemData.slug}
-				onChange={handleChange}
-				helperText={
-					fieldErrors.slug ||
-					"Optional. Use lowercase letters, numbers, and hyphens."
-				}
-				error={!!fieldErrors.slug}
-			/>
-			<TextField
-				margin="normal"
-				fullWidth
-				name="description"
-				label="Description"
-				id="description"
-				multiline
-				rows={4}
-				value={itemData.description}
-				onChange={handleChange}
-			/>
-			<FormControlLabel
-				control={
-					<Checkbox
-						checked={itemData.available}
-						onChange={(event) =>
-							setItemData({ ...itemData, available: event.target.checked })
+		<Box
+			component="form"
+			onSubmit={handleSubmit}
+			noValidate
+			sx={{ mt: 1, maxWidth: 640, mx: "auto" }}
+		>
+			<Paper elevation={1} sx={{ p: { xs: 2, sm: 3 } }}>
+				<Stack spacing={2}>
+					<Typography variant="h4" component="h1" gutterBottom>
+						Create Item
+					</Typography>
+					{error && <Alert severity="error">{error}</Alert>}
+
+					<TextField
+						margin="normal"
+						required
+						fullWidth
+						id="name"
+						label="Item Name"
+						name="name"
+						autoComplete="name"
+						autoFocus
+						value={itemData.name}
+						onChange={handleChange}
+					/>
+					<TextField
+						margin="normal"
+						fullWidth
+						id="slug"
+						label="Slug (URL-friendly name)"
+						name="slug"
+						value={itemData.slug}
+						onChange={handleChange}
+						helperText={
+							fieldErrors.slug ||
+							"Optional. Use lowercase letters, numbers, and hyphens."
 						}
-						color="primary"
-						name="available"
-						id="available"
+						error={!!fieldErrors.slug}
 					/>
-				}
-				label="Available"
-				sx={{ mt: 2, mb: 1 }}
-			/>
-			<TextField
-				margin="normal"
-				fullWidth
-				name="image_url"
-				label="Image URL"
-				id="image_url"
-				value={itemData.image_url}
-				onChange={handleChange}
-				helperText={fieldErrors.image_url}
-				error={!!fieldErrors.image_url}
-			/>
-			<TextField
-				margin="normal"
-				fullWidth
-				name="website_url"
-				label="Website URL"
-				id="website_url"
-				value={itemData.website_url}
-				onChange={handleChange}
-				helperText={fieldErrors.website_url}
-				error={!!fieldErrors.website_url}
-			/>
-
-			<Box sx={{ mt: 2, mb: 1 }}>
-				<Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-					Rating
-				</Typography>
-				<Box sx={{ display: "flex", alignItems: "center" }}>
-					<Rating
-						name="rating"
-						precision={0.5}
-						value={itemData.rating}
-						onChange={handleRatingChange}
+					<TextField
+						margin="normal"
+						fullWidth
+						name="description"
+						label="Description"
+						id="description"
+						multiline
+						rows={4}
+						value={itemData.description}
+						onChange={handleChange}
 					/>
-				</Box>
-			</Box>
 
-			<Button
-				type="submit"
-				variant="contained"
-				sx={{ mt: 2, mb: 2 }}
-				disabled={loading}
-			>
-				{loading ? <CircularProgress size={24} /> : "Create Item"}
-			</Button>
+					<Stack direction="row" spacing={2}>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={itemData.available}
+									onChange={(event) =>
+										setItemData({
+											...itemData,
+											available: event.target.checked,
+										})
+									}
+									color="primary"
+									name="available"
+									id="available"
+								/>
+							}
+							label="Available"
+						/>
+					</Stack>
+
+					<TextField
+						margin="normal"
+						fullWidth
+						name="image_url"
+						label="Image URL"
+						id="image_url"
+						value={itemData.image_url}
+						onChange={handleChange}
+						helperText={fieldErrors.image_url}
+						error={!!fieldErrors.image_url}
+					/>
+					<TextField
+						margin="normal"
+						fullWidth
+						name="website_url"
+						label="Website URL"
+						id="website_url"
+						value={itemData.website_url}
+						onChange={handleChange}
+						helperText={fieldErrors.website_url}
+						error={!!fieldErrors.website_url}
+					/>
+
+					<Box sx={{ mt: 1 }}>
+						<Typography variant="subtitle1" sx={{ mb: 0.5 }}>
+							Rating
+						</Typography>
+						<Box sx={{ display: "flex", alignItems: "center" }}>
+							<Rating
+								name="rating"
+								precision={0.5}
+								value={itemData.rating}
+								onChange={handleRatingChange}
+							/>
+						</Box>
+					</Box>
+
+					<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+						<Button type="submit" variant="contained" disabled={loading}>
+							{loading ? <CircularProgress size={24} /> : "Create Item"}
+						</Button>
+					</Box>
+				</Stack>
+			</Paper>
 		</Box>
 	);
 };
