@@ -4,9 +4,9 @@
 
 set -euo pipefail
 
-# Start test environment
+# Start test environment only for backend integration tests
 echo "[1/3] Starting test environment..."
-docker-compose --env-file .env.test up --build -d
+docker-compose --env-file .env.test up --build -d backend
 
 # Run integration tests
 echo "[2/3] Running integration tests..."
