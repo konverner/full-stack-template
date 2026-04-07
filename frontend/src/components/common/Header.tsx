@@ -58,7 +58,11 @@ const Header: React.FC = () => {
 	const isUsersActive = location.pathname.startsWith("/users");
 
 	return (
-		<AppBar position="static" className="main-header" color="default">
+		<AppBar
+			position="static"
+			className="main-header"
+			color="default"
+		>
 			<Container maxWidth="lg">
 				<Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
 					<MuiLink
