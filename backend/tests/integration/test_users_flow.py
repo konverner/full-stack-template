@@ -68,6 +68,84 @@ def test_get_user_by_username(client: TestClient, user_token_headers: dict):
     assert data["username"] == "testuser"
 
 
+def test_update_own_username(client: TestClient, user_token_headers: dict):
+    """Test updating own username."""
+    update_data = {"username": "newusername"}
+    response = client.put(
+        f"{settings.API_V1_STR}/users/testuser",
+        headers=user_token_headers,
+        json=update_data,
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["username"] == "newusername"
+
+    # Verify old username no longer resolves
+    response = client.get(
+        f"{settings.API_V1_STR}/users/testuser", headers=user_token_headers
+    )
+    assert response.status_code == 404
+
+    # Verify new username resolves
+    response = client.get(
+        f"{settings.API_V1_STR}/users/newusername", headers=user_token_headers
+    )
+    assert response.status_code == 200
+    assert response.json()["username"] == "newusername"
+
+
+def test_update_username_as_admin(
+    client: TestClient, superuser_token_headers: dict, test_user: User
+):
+    """Test admin updating another user's username."""
+    update_data = {"username": "adminrenamed"}
+    response = client.put(
+        f"{settings.API_V1_STR}/users/{test_user.username}",
+        headers=superuser_token_headers,
+        json=update_data,
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["username"] == "adminrenamed"
+
+
+def test_update_username_duplicate(
+    client: TestClient, user_token_headers: dict, superuser: User
+):
+    """Test updating username to one that already exists (should fail)."""
+    update_data = {"username": superuser.username}
+    response = client.put(
+        f"{settings.API_V1_STR}/users/testuser",
+        headers=user_token_headers,
+        json=update_data,
+    )
+    assert response.status_code == 400
+    assert "already exists" in response.json()["detail"].lower()
+
+
+def test_update_username_invalid(client: TestClient, user_token_headers: dict):
+    """Test updating username with invalid characters (should fail)."""
+    update_data = {"username": "invalid user!"}
+    response = client.put(
+        f"{settings.API_V1_STR}/users/testuser",
+        headers=user_token_headers,
+        json=update_data,
+    )
+    assert response.status_code == 422
+
+
+def test_update_username_to_same(client: TestClient, user_token_headers: dict):
+    """Test updating username to the same value (should succeed)."""
+    update_data = {"username": "testuser"}
+    response = client.put(
+        f"{settings.API_V1_STR}/users/testuser",
+        headers=user_token_headers,
+        json=update_data,
+    )
+    assert response.status_code == 200
+    assert response.json()["username"] == "testuser"
+
+
 def test_update_other_user_non_admin(
     client: TestClient, user_token_headers: dict, superuser: User
 ):
