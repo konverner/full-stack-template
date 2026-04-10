@@ -1,0 +1,48 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "Backend service for the full-stack template using FastAPI, SQLAlchemy, Alembic, and PostgreSQL."
+authors = [
+	{ name = "Your Name", email = "your.email@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+	"fastapi==0.111.0",
+	"uvicorn[standard]==0.30.1",
+	"sqlalchemy[asyncio]==2.0.31",
+	"psycopg==3.1.9",
+	"alembic==1.13.2",
+	"python-slugify==8.0.4",
+	"Faker==37.0.0",
+	"pydantic[email]==2.8.2",
+	"pydantic-settings==2.3.4",
+	"python-jose[cryptography]==3.3.0",
+	"passlib[bcrypt]==1.7.4",
+	"python-dotenv==1.0.1",
+	"bcrypt==4.0.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest<8.0.0,>=7.4.3",
+    "mypy<2.0.0,>=1.8.0",
+    "ruff<1.0.0,>=0.2.2",
+    "coverage<8.0.0,>=7.4.3",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+select = ["E", "F", "I", "B", "C4"] # Errors, Pyflakes, Isort, Bugbear, Comprehensions
+fix = true
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+strict = true
+ignore_missing_imports = true
+
+[tool.setuptools.packages.find]
+include = ["app*", "alembic*"]

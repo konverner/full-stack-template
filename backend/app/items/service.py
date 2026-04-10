@@ -1,10 +1,10 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import select, asc, desc
-from typing import Optional, List
-from datetime import timedelta
 import logging
-from slugify import slugify
+from datetime import timedelta
+from typing import List, Optional
 
+from slugify import slugify
+from sqlalchemy import asc, desc, select
+from sqlalchemy.orm import Session
 
 from . import models as item_models
 from . import schemas as item_schemas
@@ -111,9 +111,13 @@ class ItemService:
                     item_models.Item.owner_id == filters.owner_id
                 )
             if filters.rating is not None:
-                total_query = total_query.where(item_models.Item.rating >= filters.rating)
+                total_query = total_query.where(
+                    item_models.Item.rating >= filters.rating
+                )
             if filters.available is not None:
-                total_query = total_query.where(item_models.Item.available == filters.available)
+                total_query = total_query.where(
+                    item_models.Item.available == filters.available
+                )
             if filters.created_from is not None:
                 total_query = total_query.where(
                     item_models.Item.created_at >= filters.created_from

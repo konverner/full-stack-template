@@ -7,22 +7,30 @@ The project is divided into frontend and backend parts. Each part has its own RE
 - [Frontend README](frontend/README.md)
 - [Backend README](backend/README.md)
 
+```
+.
+├── backend/                    # Backend source code
+├── frontend/                   # Frontend source code
+├── docker-compose.yml          # Docker Compose for local development and integration tests
+├── .env                        # Environment variables for local development
+├── .env.test                   # Environment variables for test environment
+└── scripts/
+    ├── build-push-deploy.sh    # Script to build, push and deploy the project
+    ├── generate-client.sh      # Script to generate API client from OpenAPI spec
+    └── integration-tests.sh    # Script to run integration tests
+```
+
 ## Docker Compose
 
-TODO
+A single `docker-compose.yml` is used for both local development and integration tests. The environment is controlled via the env file:
 
-## Local Development
-
-## The .env file
-
-The .env file is the one that contains all your configurations, generated keys and passwords, etc.
-
-Depending on your workflow, you could want to exclude it from Git, for example if your project is public. In that case, you would have to make sure to set up a way for your CI tools to obtain it while building or deploying your project.
-
-One way to do it could be to add each environment variable to your CI/CD system, and updating the docker-compose.yml file to read that specific env var instead of reading the .env file.
+- Local development: uses `.env`
+- Integration tests: uses `.env.test` (passed via `--env-file .env.test`)
 
 ## Pre-commits and code linting
 
-we are using a tool called pre-commit for code linting and formatting.
+we are using a tool called pre-commit for code linting and formatting:
 
-When you install it, it runs right before making a commit in git. This way it ensures that the code is consistent and formatted even before it is committed.
+```bash
+pre-commit run --all-files
+```

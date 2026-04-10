@@ -6,6 +6,12 @@
 - add posibility to filter items and users by categories and fuzzy text search
 - add created_at fields to items and users tables in the UI
 - use item id in api endpoints but slug in frontend routes for better SEO and user-friendly URLs
+- use pyproject.toml intead of requirements.txt for dependency management and project metadata
+- add integration tests run inside docker containers
+
+## Fixes
+
+- code style improvements and refactoring
 
 # 0.3.0
 

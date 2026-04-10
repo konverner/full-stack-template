@@ -40,8 +40,19 @@ You can set several variables, like:
 | PG_USER                  | The Postgres user, you can leave the default.                                                                  | postgres                       |
 | PG_DB                    | The database name to use for this application. Default is `full_stack_template_db`.                                               | full_stack_template_db                            |
 | SEED_MOCK_DATA           | Whether to seed the database with mock data.                                                                    | true                           |
+| DOCKER_IMAGE_BACKEND     | Base name of the backend image repository. By default this points to a Docker Hub repository and is used as `${DOCKER_IMAGE_BACKEND}:${TAG}` and `${DOCKER_IMAGE_BACKEND}:latest`. The repository must already exist before running the deployment script. | workerone/full-stack-template-backend |
+| DOCKER_IMAGE_FRONTEND    | Base name of the frontend image repository. By default this points to a Docker Hub repository and is used as `${DOCKER_IMAGE_FRONTEND}:${TAG}` and `${DOCKER_IMAGE_FRONTEND}:latest`. The repository must already exist before running the deployment script. | workerone/full-stack-template-frontend |
 
 The best practice is to have `.env` file for each environment, for example `.env.dev`, `.env.test` and `.env.prod`.
+
+By default, `DOCKER_IMAGE_BACKEND` and `DOCKER_IMAGE_FRONTEND` are expected to be Docker Hub repository names in the `namespace/repository` format. Example:
+
+```bash
+DOCKER_IMAGE_BACKEND=workerone/full-stack-template-backend
+DOCKER_IMAGE_FRONTEND=workerone/full-stack-template-frontend
+```
+
+If you use another registry, provide the fully-qualified repository name for that registry instead.
 
 Deploy with Docker Compose
 
@@ -57,6 +68,12 @@ You can use flag `--no-build` to avoid building images from local files and forc
 
 You can also use the provided script to build, push and deploy the project: `scripts/build-push-deploy.sh`. For that, copy `.env` and `docker-compose.yml` on remote server.
 
+Before running the script:
+
+- Make sure `DOCKER_IMAGE_BACKEND` and `DOCKER_IMAGE_FRONTEND` point to existing repositories in your Docker registry.
+- By default, the script assumes those repositories are on Docker Hub.
+- Authenticate locally with your registry first, for example with `docker login` when using Docker Hub.
+
 The script performs the following steps:
 
 1. **Environment Loading**: Loads variables from your `.env` file.
@@ -69,16 +86,18 @@ The script performs the following steps:
 To run it, ensure your `.env` file has the deployment credentials and Docker image names configured.  You can pass path to .env file, for example if you have separate environments: `.env.test` and `.env.prod`:
 
 ```bash
-source scripts/build-push-deploy.sh .env.prod
+source scripts/build-push-deploy.sh .env.prod > deploy.log 2>&1
 ```
 
 or
 
 ```bash
-source scripts/build-push-deploy.sh
+source scripts/build-push-deploy.sh > deploy.log 2>&1
 ```
 
 by default, the script is looking for `.env`
+
+Logs of the deployment process will be saved in `deploy.log` for later review.
 
 ## Continuous Deployment (CD)
 

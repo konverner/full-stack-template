@@ -1,7 +1,9 @@
-from pydantic import BaseModel, field_validator, ConfigDict
-from typing import Optional
 import re
-from datetime import datetime, date
+from datetime import date, datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, field_validator
+
 from ..users.schemas import UserRead
 
 
@@ -22,7 +24,8 @@ class ItemBase(BaseModel):
             # Check if slug matches URL-friendly pattern
             if not re.match(r"^[a-z0-9]+(?:-[a-z0-9]+)*$", v):
                 raise ValueError(
-                    "Slug must contain only lowercase letters, numbers, and hyphens. Cannot start or end with hyphens."
+                    "Slug must contain only lowercase letters, numbers, and hyphens. "
+                    "Cannot start or end with hyphens."
                 )
             # Check length
             if len(v) > 255:

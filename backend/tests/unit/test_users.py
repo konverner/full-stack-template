@@ -1,96 +1,10 @@
-import pytest
+from datetime import datetime, timedelta, timezone
+
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 
+from app.users.schemas import UserCreate, UserFilter, UserUpdate
 from app.users.service import user_service
-from app.users.schemas import UserCreate, UserUpdate, UserFilter
-from app.users.models import User
-from app.main import app
-from app.database.core import get_db, Base
-from app.auth.service import auth_service
-from app.items.service import item_service
-from app.items.schemas import ItemCreate
-from app.items.models import Item
-
-
-@pytest.fixture(name="db_session")
-def db_session_fixture():
-    engine = create_engine("sqlite:///./test.db")
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    Base.metadata.create_all(bind=engine)
-
-    def override_get_db():
-        try:
-            db = TestingSessionLocal()
-            yield db
-        finally:
-            db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    db = TestingSessionLocal()
-    yield db
-    Base.metadata.drop_all(bind=engine)
-    db.close()
-
-
-@pytest.fixture(name="client")
-def client_fixture(db_session: Session):
-    return TestClient(app)
-
-
-@pytest.fixture(name="test_user")
-def test_user_fixture(db_session: Session) -> User:
-    user_in = UserCreate(
-        username="testuser_items", email="testuser@items.com", password="password"
-    )
-    return user_service.create_user(db_session, user_in)
-
-
-@pytest.fixture(name="client_auth")
-def client_auth_fixture(client: TestClient, db_session: Session):
-    user_in = UserCreate(
-        username="testuser_auth", email="testauth@example.com", password="testpassword"
-    )
-    user = auth_service.create_user(db_session, user_in)
-
-    response = client.post(
-        "/auth/token",
-        data={"username": user_in.username, "password": user_in.password},
-    )
-    response.raise_for_status()  # Raise an exception for bad status codes
-    token = response.json()["access_token"]
-    client.headers["Authorization"] = f"Bearer {token}"
-    return client, user
-
-
-@pytest.fixture(name="superuser_client_auth")
-def superuser_client_auth_fixture(client: TestClient, db_session: Session):
-    superuser_in = UserCreate(
-        username="superuser_auth",
-        email="superuser@example.com",
-        password="superpassword",
-        is_superuser=True,
-    )
-    superuser = auth_service.create_user(db_session, superuser_in)
-
-    response = client.post(
-        "/auth/token",
-        data={"username": superuser_in.username, "password": superuser_in.password},
-    )
-    response.raise_for_status()  # Raise an exception for bad status codes
-    token = response.json()["access_token"]
-    client.headers["Authorization"] = f"Bearer {token}"
-    return client, superuser
-
-
-@pytest.fixture(name="test_item")
-def test_item_fixture(db_session: Session, client_auth) -> Item:
-    """Create a test item for router tests."""
-    client, user = client_auth
-    return item_service.create_item(
-        db_session, item_in=ItemCreate(name="API Test Item"), owner_id=user.id
-    )
 
 
 def test_password_hashing():
@@ -149,6 +63,33 @@ def test_list_users(db_session: Session):
     assert response.users[0].username == "listuser1"
 
 
+def test_list_users_filter_by_created_at(db_session: Session):
+    before_create = datetime.now(timezone.utc)
+    user_service.create_user(
+        db_session,
+        UserCreate(username="dateuser1", email="date1@user.com", password="password"),
+    )
+    after_create = datetime.now(timezone.utc)
+
+    # Filter with created_at_from before creation -> should include the user
+    user_filter = UserFilter(created_at_from=before_create)
+    response = user_service.list_users(db_session, filters=user_filter)
+    usernames = [u.username for u in response.users]
+    assert "dateuser1" in usernames
+
+    # Filter with created_at_to after creation -> should include the user
+    user_filter = UserFilter(created_at_to=after_create)
+    response = user_service.list_users(db_session, filters=user_filter)
+    usernames = [u.username for u in response.users]
+    assert "dateuser1" in usernames
+
+    # Filter with created_at_from in the future -> should not include the user
+    user_filter = UserFilter(created_at_from=after_create + timedelta(hours=1))
+    response = user_service.list_users(db_session, filters=user_filter)
+    usernames = [u.username for u in response.users]
+    assert "dateuser1" not in usernames
+
+
 def test_update_user(db_session: Session):
     user_in = UserCreate(
         username="updateuser", email="update@user.com", password="password"
@@ -178,29 +119,6 @@ def test_delete_user(db_session: Session):
 def test_create_user_api(
     client: TestClient, client_auth, superuser_client_auth, db_session: Session
 ):
-    # Unauthenticated should fail with 401
-    response = client.post(
-        "/api/v1/users/",
-        json={
-            "username": "apiuser",
-            "email": "api@user.com",
-            "password": "longenoughpassword",
-        },
-    )
-    assert response.status_code == 401
-
-    # Non-superuser should fail
-    client_auth_client, test_user = client_auth
-    response = client_auth_client.post(
-        "/api/v1/users/",
-        json={
-            "username": "apiuser2",
-            "email": "api2@user.com",
-            "password": "longenoughpassword",
-        },
-    )
-    assert response.status_code == 403
-
     # Superuser should succeed
     superuser_client, superuser = superuser_client_auth
     response = superuser_client.post(

@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import Annotated
-from fastapi.security import OAuth2PasswordRequestForm
 
-from ..database.core import get_db
-from ..users import schemas as user_schemas
-from .service import auth_service
-from . import security
-from ..dependencies import get_current_active_user
-from ..users.models import User
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+
 from .. import schemas as common_schemas
-from . import schemas
+from ..database.core import get_db
+from ..dependencies import get_current_active_user
+from ..users import schemas as user_schemas
+from ..users.models import User
+from . import schemas, security
+from .service import auth_service
 
 router = APIRouter()
 
