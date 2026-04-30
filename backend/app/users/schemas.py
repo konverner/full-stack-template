@@ -110,6 +110,7 @@ class UserUpdate(BaseModel):
         if v is not None:
             return validate_username(v)
         return v
+
     is_active: Optional[bool] = Field(
         None, description="Indicates if the user account is active (optional)"
     )

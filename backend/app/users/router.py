@@ -117,10 +117,13 @@ def update_user_by_username(
 
     # Check username uniqueness if being updated
     if user_in.username is not None and user_in.username != user.username:
-        existing_user = user_service.get_user_by_username(db=db, username=user_in.username)
+        existing_user = user_service.get_user_by_username(
+            db=db, username=user_in.username
+        )
         if existing_user:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already exists",
             )
 
     updated_user = user_service.update_user(db=db, user=user, user_in=user_in)
