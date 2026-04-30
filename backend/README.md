@@ -146,7 +146,7 @@ Alembic is configured to use the same database URI as the FastAPI application, d
    ```
 10. Now you can rebuild docker images and re-run the application:
    ```
-   docker-compose up --build
+   docker compose up --build
    ```
    restart service will set, seed (if needed) database and run migrations from `/alembic/versions`
 
@@ -170,17 +170,17 @@ If the containers are already running:
 
 - **Generate a new migration**:
   ```bash
-  docker-compose exec backend alembic revision --autogenerate -m "Add new field"
+  docker compose exec backend alembic revision --autogenerate -m "Add new field"
   ```
 
 - **Apply migrations manually**:
   ```bash
-  docker-compose exec backend alembic upgrade head
+  docker compose exec backend alembic upgrade head
   ```
 
 - **Seed data manually**:
   ```bash
-  docker-compose exec backend python -m app.database.seed
+  docker compose exec backend python -m app.database.seed
   ```
 
 ### Local Development (without Docker)
