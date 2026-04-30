@@ -14,7 +14,7 @@ const IndexPage = () => {
 				<Box sx={{ textAlign: "center", mt: 8 }}>
 					<h1>Welcome to the Full Stack Template</h1>
 					<p>
-						This is a basic template (v0.4.0) for a full stack application using
+						This is a basic template (v0.5.0) for a full stack application using
 						React and Material UI.
 					</p>
 					<p>
