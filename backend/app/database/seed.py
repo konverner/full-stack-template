@@ -18,8 +18,6 @@ from app.items.service import item_service
 from app.users import schemas as users_schemas
 from app.users.models import User
 
-from .core import init_db
-
 logger = logging.getLogger(__name__)
 
 MOCK_USER_COUNT = 10
@@ -128,9 +126,6 @@ def seed_mock_data(
 
 
 def seed_db() -> None:
-    logger.info("Initializing database...")
-    init_db()
-
     logger.info("Seeding database...")
     db_gen = get_db()
     db = next(db_gen)

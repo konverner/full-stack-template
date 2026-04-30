@@ -1,3 +1,10 @@
+# 0.5.0
+
+## Features
+
+- add initial alembic migration ; use alembic instead of Base.create_all() for database schema management
+
+
 # 0.4.0
 
 ## Features
