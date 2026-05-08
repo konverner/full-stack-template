@@ -24,7 +24,8 @@ engine = create_engine(
     echo=False,
     connect_args={
         "connect_timeout": 5,
-        "options": "-c statement_timeout=30000 -c idle_in_transaction_session_timeout=30000",
+        "options":
+            "-c statement_timeout=30000 -c idle_in_transaction_session_timeout=30000",
     },
 )
 # Create sessionmaker

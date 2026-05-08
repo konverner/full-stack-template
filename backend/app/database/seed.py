@@ -80,7 +80,8 @@ def _build_mock_items(
         item_in = item_schemas.ItemCreate(
             name=name,
             description=(
-                f"{name} is a {category.lower()} product for {fake.catch_phrase().lower()} "
+                f"{name} is a {category.lower()}"
+                f" product for {fake.catch_phrase().lower()} "
                 f"{fake.sentence(nb_words=10).rstrip('.').lower()}."
             ),
             rating=round(rng.uniform(3.6, 5.0), 1),
