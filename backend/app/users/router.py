@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session, selectinload
+from fastapi import APIRouter, HTTPException, Query, status
+from sqlalchemy.orm import selectinload
 
-from ..database.core import get_db
-from ..dependencies import get_current_active_user
+from ..dependencies import CurrentUser, DbSession
 from . import schemas as user_schemas
 from .models import User
 from .service import user_service
@@ -14,6 +13,7 @@ router = APIRouter()
 
 @router.get("/", response_model=user_schemas.UserListResponse)
 def list_users(
+    db: DbSession,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     username: str = Query(None),
@@ -27,7 +27,6 @@ def list_users(
     ),
     sort_field: str = Query("id"),
     sort_direction: str = Query("asc"),
-    db: Session = Depends(get_db),
 ):
     """
     List users with filtering, sorting, and pagination.
@@ -56,8 +55,8 @@ def list_users(
 )
 def create_user(
     user_in: user_schemas.UserCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: DbSession,
+    current_user: CurrentUser,
 ):
     """
     Create a new user.
@@ -78,7 +77,7 @@ def create_user(
 
 
 @router.get("/{username}", response_model=user_schemas.UserRead)
-def get_user_by_username(username: str, db: Session = Depends(get_db)):
+def get_user_by_username(username: str, db: DbSession):
     """
     Get a specific user by username.
     """
@@ -97,8 +96,8 @@ def get_user_by_username(username: str, db: Session = Depends(get_db)):
 def update_user_by_username(
     username: str,
     user_in: user_schemas.UserUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: DbSession,
+    current_user: CurrentUser,
 ):
     """
     Update a user by username.
@@ -133,8 +132,8 @@ def update_user_by_username(
 @router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user_by_username(
     username: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: DbSession,
+    current_user: CurrentUser,
 ):
     """
     Delete a user by username.

@@ -2,13 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 
 from .. import schemas as common_schemas
-from ..database.core import get_db
-from ..dependencies import get_current_active_user
+from ..dependencies import CurrentUser, DbSession
 from ..users import schemas as user_schemas
-from ..users.models import User
 from . import schemas, security
 from .service import auth_service
 
@@ -20,14 +17,14 @@ router = APIRouter()
     response_model=user_schemas.UserRead,
     status_code=status.HTTP_201_CREATED,
 )
-def register_user(user_in: user_schemas.UserCreate, db: Session = Depends(get_db)):
+def register_user(user_in: user_schemas.UserCreate, db: DbSession):
     """Register a new user."""
     return auth_service.create_user(db=db, user_in=user_in)
 
 
 @router.post("/token", response_model=schemas.Token)
 def login_for_access_token(
-    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+    db: DbSession, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
     """Authenticate user and return access and refresh tokens."""
     user = auth_service.authenticate_user(
@@ -56,7 +53,7 @@ def login_for_access_token(
 
 @router.post("/refresh", response_model=schemas.Token)
 def refresh_access_token(
-    refresh_request: schemas.RefreshTokenRequest, db: Session = Depends(get_db)
+    refresh_request: schemas.RefreshTokenRequest, db: DbSession
 ):
     """Get a new access token using a refresh token."""
     credentials_exception = HTTPException(
@@ -88,9 +85,6 @@ def refresh_access_token(
     return schemas.Token(access_token=new_access_token, refresh_token=new_refresh_token)
 
 
-CurrentUser = Annotated[User, Depends(get_current_active_user)]
-
-
 @router.get("/me", response_model=user_schemas.UserRead)
 def read_users_me(current_user: CurrentUser):
     """Get current logged-in user's profile."""
@@ -101,7 +95,7 @@ def read_users_me(current_user: CurrentUser):
 def update_users_me(
     user_in: user_schemas.UserUpdate,
     current_user: CurrentUser,
-    db: Session = Depends(get_db),
+    db: DbSession,
 ):
     """Update current logged-in user's profile."""
     return auth_service.update_user_profile(
@@ -113,7 +107,7 @@ def update_users_me(
 def update_users_password(
     password_in: user_schemas.UserPasswordUpdate,
     current_user: CurrentUser,
-    db: Session = Depends(get_db),
+    db: DbSession,
 ):
     """Update current logged-in user's password."""
     auth_service.update_user_password(

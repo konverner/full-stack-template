@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -18,17 +18,17 @@ oauth2_scheme_optional = OAuth2PasswordBearer(
     tokenUrl=f"{settings.AUTH_STR}/token", auto_error=False
 )
 
+DbSession = Annotated[Session, Depends(get_db)]
+TokenDep = Annotated[str, Depends(oauth2_scheme)]
 
-# Add the missing type field to the TokenPayload model
+
 class TokenPayload(BaseModel):
     sub: str
     exp: datetime
     type: str
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-):
+def get_current_user(token: TokenDep, db: DbSession) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -40,7 +40,6 @@ def get_current_user(
         if payload is None:
             raise credentials_exception
 
-        # Validate that this is an access token
         if payload.get("type") != "access":
             raise credentials_exception
 
@@ -48,7 +47,6 @@ def get_current_user(
         if user_id_str is None:
             raise credentials_exception
 
-        # Validate token hasn't expired
         token_exp = payload.get("exp")
         if token_exp is None or datetime.fromtimestamp(
             token_exp, tz=timezone.utc
@@ -65,62 +63,65 @@ def get_current_user(
     return user
 
 
-def get_optional_current_active_user(
-    token: Optional[str] = Depends(oauth2_scheme_optional),  # Use the optional scheme
-    db: Session = Depends(get_db),
+def get_current_active_user(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user",
+        )
+    return current_user
+
+
+def get_optional_current_user(
+    token: Annotated[Optional[str], Depends(oauth2_scheme_optional)],
+    db: DbSession,
 ) -> Optional[User]:
     if not token:
-        return None  # No token provided
+        return None
 
     try:
         payload = decode_token(token)
         if payload is None:
-            return None  # Invalid token structure
+            return None
 
-        # Validate that this is an access token
         if payload.get("type") != "access":
-            return None  # Not an access token
+            return None
 
         user_id_str: Optional[str] = payload.get("sub")
         if user_id_str is None:
-            return None  # No user ID in token
+            return None
 
-        # Validate token hasn't expired
         token_exp: Optional[int] = payload.get("exp")
         if token_exp is None or datetime.fromtimestamp(
             token_exp, tz=timezone.utc
         ) < datetime.now(timezone.utc):
-            return None  # Token expired
+            return None
 
         user_id = int(user_id_str)
     except (JWTError, ValueError):
-        return None  # Token decoding or parsing error
-
-    user = auth_service.get_user_by_id(db=db, user_id=user_id)
-    if user is None:
         return None
 
-    # Optional: Check if user is active, similar to get_current_active_user
-    if not user.is_active:
+    user = auth_service.get_user_by_id(db=db, user_id=user_id)
+    if user is None or not user.is_active:
         return None
 
     return user
 
 
-def get_current_active_user(
-    current_user=Depends(get_current_user),
-):
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+CurrentUser = Annotated[User, Depends(get_current_active_user)]
+OptionalUser = Annotated[Optional[User], Depends(get_optional_current_user)]
 
 
-def get_current_admin_user(
-    current_user: User = Depends(get_current_active_user),
-) -> User:
+def get_current_admin_user(current_user: CurrentUser) -> User:
     if not current_user.is_superuser:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The user doesn't have enough privileges",
         )
     return current_user
+
+
+AdminUser = Annotated[User, Depends(get_current_admin_user)]
+

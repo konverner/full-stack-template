@@ -1,11 +1,10 @@
 from datetime import date
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session, selectinload
+from fastapi import APIRouter, HTTPException, Query, status
+from sqlalchemy.orm import selectinload
 
-from ..database.core import get_db
-from ..dependencies import get_current_active_user
-from ..users.models import User
+from ..dependencies import CurrentUser, DbSession
 from . import schemas as item_schemas
 from .models import Item
 from .service import item_service
@@ -15,6 +14,7 @@ router = APIRouter()
 
 @router.get("/", response_model=item_schemas.ItemListResponse)
 def list_items(
+    db: DbSession,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     name: str = Query(None),
@@ -27,7 +27,6 @@ def list_items(
     created_to: date = Query(None),
     sort_field: str = Query("id"),
     sort_direction: str = Query("asc"),
-    db: Session = Depends(get_db),
 ):
     """
     List items with filtering, sorting, and pagination.
@@ -59,8 +58,8 @@ def list_items(
 )
 def create_item(
     item_in: item_schemas.ItemCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: DbSession,
+    current_user: CurrentUser,
 ):
     """
     Create a new item.
@@ -71,7 +70,7 @@ def create_item(
 
 
 @router.get("/{item_id}", response_model=item_schemas.ItemRead)
-def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
+def get_item_by_id(item_id: int, db: DbSession):
     """
     Get a specific item by its ID.
     """
@@ -89,8 +88,8 @@ def get_item_by_id(item_id: int, db: Session = Depends(get_db)):
 def update_item_by_id(
     item_id: int,
     item_in: item_schemas.ItemUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: DbSession,
+    current_user: CurrentUser,
 ):
     """
     Update an item by ID.
@@ -114,8 +113,8 @@ def update_item_by_id(
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_item(
     item_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: DbSession,
+    current_user: CurrentUser,
 ):
     """
     Delete an item.

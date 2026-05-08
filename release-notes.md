@@ -3,7 +3,7 @@
 ## Features
 
 - add initial alembic migration ; use alembic instead of Base.create_all() for database schema management
-
+- do not use Depends() in defualt values of endpoint parameters ; create Dependency instances separately and use them in endpoint parameters to avoid issues with FastAPI's dependency injection system
 
 # 0.4.0
 
